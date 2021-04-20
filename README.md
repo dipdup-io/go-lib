@@ -19,7 +19,7 @@ if args.Help {
 ```go
 import "github.com/dipdup-net/go-lib/config"
 
-type MyConfig {
+type MyConfig struct {
 	config.Config `yaml:",inline"`
     // Custom field here
     Fields Fields `yaml:"fields"`
@@ -74,5 +74,60 @@ type State struct {
 	IndexType string
 	Hash      string
 	Level     uint64
+}
+```
+
+* `tzkt` - package with API and Events wrapper for TzKT.
+
+You can find docs on Events wrapper [here](tzkt/events/README.md).
+
+Example usage of events
+
+```go
+package main
+
+import (
+	"log"
+
+	"github.com/dipdup-net/go-lib/tzkt/events"
+)
+
+func main() {
+	tzkt := events.NewTzKT(events.BaseURL)
+	if err := tzkt.Connect(); err != nil {
+		log.Panic(err)
+	}
+	defer tzkt.Close()
+
+	if err := tzkt.SubscribeToBlocks(); err != nil {
+		log.Panic(err)
+	}
+
+	for msg := range tzkt.Listen() {
+		log.Println(msg)
+	}
+}
+
+```
+
+Example usage of API wrapper
+
+```go
+package main
+
+import (
+	"log"
+
+	"github.com/dipdup-net/go-lib/tzkt/api"
+)
+
+func main() {
+    tzkt := api.New("url here")
+    
+    head, err := tzkt.GetHead()
+    if err != nil {
+        log.Panic(err)
+    }
+    log.Println(head)
 }
 ```

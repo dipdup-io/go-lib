@@ -3,8 +3,10 @@ module github.com/dipdup-net/go-lib
 go 1.15
 
 require (
+	github.com/gorilla/websocket v1.4.2
 	github.com/json-iterator/go v1.1.10
 	github.com/pkg/errors v0.9.1
+	github.com/sirupsen/logrus v1.4.2
 	gopkg.in/yaml.v2 v2.4.0
 	gorm.io/driver/clickhouse v0.1.0
 	gorm.io/driver/mysql v1.0.5
