@@ -1,10 +1,11 @@
 package api
 
 import (
-	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path"
+	"strconv"
 
 	jsoniter "github.com/json-iterator/go"
 	"github.com/pkg/errors"
@@ -26,10 +27,10 @@ func New(baseURL string) *API {
 	}
 }
 
-func (tzkt *API) get(endpoint string, args map[string]string, output interface{}) error {
+func (tzkt *API) get(endpoint string, args map[string]string) (*http.Response, error) {
 	u, err := url.Parse(tzkt.url)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	u.Path = path.Join(u.Path, endpoint)
 
@@ -41,10 +42,14 @@ func (tzkt *API) get(endpoint string, args map[string]string, output interface{}
 
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	resp, err := tzkt.client.Do(req)
+	return tzkt.client.Do(req)
+}
+
+func (tzkt *API) json(endpoint string, args map[string]string, output interface{}) error {
+	resp, err := tzkt.get(endpoint, args)
 	if err != nil {
 		return err
 	}
@@ -57,86 +62,23 @@ func (tzkt *API) get(endpoint string, args map[string]string, output interface{}
 	return errors.New(resp.Status)
 }
 
+func (tzkt *API) count(endpoint string) (uint64, error) {
+	resp, err := tzkt.get(endpoint, nil)
+	if err != nil {
+		return 0, err
+	}
+	defer resp.Body.Close()
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return 0, err
+	}
+
+	return strconv.ParseUint(string(data), 10, 64)
+}
+
 // GetHead -
 func (tzkt *API) GetHead() (head Head, err error) {
-	err = tzkt.get("/v1/head", nil, &head)
-	return
-}
-
-// GetBlock -
-func (tzkt *API) GetBlock(level uint64) (b Block, err error) {
-	err = tzkt.get(fmt.Sprintf("/v1/blocks/%d", level), nil, &b)
-	return
-}
-
-// GetBlocks -
-func (tzkt *API) GetBlocks(filters map[string]string) (b []Block, err error) {
-	err = tzkt.get("/v1/blocks", filters, &b)
-	return
-}
-
-// GetEndorsements -
-func (tzkt *API) GetEndorsements(filters map[string]string) (operations []Operation, err error) {
-	err = tzkt.get("/v1/operations/endorsements", filters, &operations)
-	return
-}
-
-// GetBallots -
-func (tzkt *API) GetBallots(filters map[string]string) (operations []Operation, err error) {
-	err = tzkt.get("/v1/operations/ballots", filters, &operations)
-	return
-}
-
-// GetProposals -
-func (tzkt *API) GetProposals(filters map[string]string) (operations []Operation, err error) {
-	err = tzkt.get("/v1/operations/proposals", filters, &operations)
-	return
-}
-
-// GetActivations -
-func (tzkt *API) GetActivations(filters map[string]string) (operations []Operation, err error) {
-	err = tzkt.get("/v1/operations/activations", filters, &operations)
-	return
-}
-
-// GetDoubleBakings -
-func (tzkt *API) GetDoubleBakings(filters map[string]string) (operations []Operation, err error) {
-	err = tzkt.get("/v1/operations/double_baking", filters, &operations)
-	return
-}
-
-// GetDoubleEndorsings -
-func (tzkt *API) GetDoubleEndorsings(filters map[string]string) (operations []Operation, err error) {
-	err = tzkt.get("/v1/operations/double_endorsing", filters, &operations)
-	return
-}
-
-// GetNonceRevelations -
-func (tzkt *API) GetNonceRevelations(filters map[string]string) (operations []Operation, err error) {
-	err = tzkt.get("/v1/operations/nonce_revelations", filters, &operations)
-	return
-}
-
-// GetDelegations -
-func (tzkt *API) GetDelegations(filters map[string]string) (operations []Operation, err error) {
-	err = tzkt.get("/v1/operations/delegations", filters, &operations)
-	return
-}
-
-// GetOriginations -
-func (tzkt *API) GetOriginations(filters map[string]string) (operations []Operation, err error) {
-	err = tzkt.get("/v1/operations/originations", filters, &operations)
-	return
-}
-
-// GetTransactions -
-func (tzkt *API) GetTransactions(filters map[string]string) (operations []Operation, err error) {
-	err = tzkt.get("/v1/operations/transactions", filters, &operations)
-	return
-}
-
-// GetReveals -
-func (tzkt *API) GetReveals(filters map[string]string) (operations []Operation, err error) {
-	err = tzkt.get("/v1/operations/reveals", filters, &operations)
+	err = tzkt.json("/v1/head", nil, &head)
 	return
 }
