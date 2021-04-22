@@ -92,7 +92,7 @@ func (tzkt *TzKT) SubscribeToOperations(address string, types ...string) error {
 func (tzkt *TzKT) SubscribeToBigMaps(ptr *int64, contract, path string, tags ...string) error {
 	args := make(map[string]interface{})
 	if len(tags) > 0 {
-		args["ptr"] = tags
+		args["tags"] = tags
 	}
 	if contract != "" {
 		args["contract"] = contract
