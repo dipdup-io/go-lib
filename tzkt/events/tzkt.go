@@ -85,10 +85,25 @@ func (tzkt *TzKT) SubscribeToOperations(address string, types ...string) error {
 	if address != "" {
 		args["address"] = address
 	}
-	if len(args) > 0 {
-		return tzkt.subscribe(MethodOperations, args)
+	return tzkt.subscribe(MethodOperations, args)
+}
+
+// SubscribeToBigMaps - subscribe to bigmaps channel. Sends bigmap updates.
+func (tzkt *TzKT) SubscribeToBigMaps(ptr *int64, contract, path string, tags ...string) error {
+	args := make(map[string]interface{})
+	if len(tags) > 0 {
+		args["ptr"] = tags
 	}
-	return tzkt.subscribe(MethodOperations)
+	if contract != "" {
+		args["contract"] = contract
+	}
+	if path != "" {
+		args["path"] = path
+	}
+	if ptr != nil {
+		args["ptr"] = *ptr
+	}
+	return tzkt.subscribe(MethodBigMap, args)
 }
 
 func (tzkt *TzKT) subscribe(channel string, args ...interface{}) error {
@@ -108,39 +123,40 @@ func (tzkt *TzKT) listen() {
 			case <-tzkt.stop:
 				return
 			case msg := <-tzkt.s.Messages():
-				typ, ok := msg.(signalr.Invocation)
-				if !ok {
-					continue
-				}
-				if len(typ.Arguments) == 0 {
-					log.Warnf("Empty arguments of invokation: %v", typ)
-					continue
-				}
-				args, ok := typ.Arguments[0].(map[string]interface{})
-				if !ok {
-					log.Warnf("Invalid arguments type: %v", typ)
-					continue
-				}
-				msgType, ok := args["type"]
-				if !ok {
-					log.Warnf("Empty tzkt message type: %v", args)
-					continue
-				}
-				msgState, ok := args["state"]
-				if !ok {
-					log.Warnf("Empty tzkt message state: %v", args)
-					continue
-				}
-				data, ok := args["data"]
-				if !ok {
-					data = nil
-				}
+				switch typ := msg.(type) {
+				case signalr.Invocation:
+					if len(typ.Arguments) == 0 {
+						log.Warnf("Empty arguments of invokation: %v", typ)
+						continue
+					}
+					args, ok := typ.Arguments[0].(map[string]interface{})
+					if !ok {
+						log.Warnf("Invalid arguments type: %v", typ)
+						continue
+					}
+					msgType, ok := args["type"]
+					if !ok {
+						log.Warnf("Empty tzkt message type: %v", args)
+						continue
+					}
+					msgState, ok := args["state"]
+					if !ok {
+						log.Warnf("Empty tzkt message state: %v", args)
+						continue
+					}
+					data, ok := args["data"]
+					if !ok {
+						data = nil
+					}
 
-				tzkt.msgs <- Message{
-					Channel: typ.Target,
-					Type:    MessageType(msgType.(float64)),
-					State:   uint64(msgState.(float64)),
-					Body:    data,
+					tzkt.msgs <- Message{
+						Channel: typ.Target,
+						Type:    MessageType(msgType.(float64)),
+						State:   uint64(msgState.(float64)),
+						Body:    data,
+					}
+				case signalr.Completion:
+					log.Print("subscribed")
 				}
 			}
 		}

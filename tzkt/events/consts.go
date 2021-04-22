@@ -5,6 +5,7 @@ const (
 	MethodHead       = "SubscribeToHead"
 	MethodBlocks     = "SubscribeToBlocks"
 	MethodOperations = "SubscribeToOperations"
+	MethodBigMap     = "SubscribeToBigMaps"
 )
 
 // Channels
@@ -12,6 +13,7 @@ const (
 	ChannelHead       = "head"
 	ChannelBlocks     = "blocks"
 	ChannelOperations = "operations"
+	ChannelBigMap     = "bigmaps"
 )
 
 // operation kinds
@@ -32,4 +34,10 @@ const (
 // Base URL
 const (
 	BaseURL = "https://api.tzkt.io/v1/events"
+)
+
+// Big map tags
+const (
+	BigMapTagMetadata      = "metadata"
+	BigMapTagTokenMetadata = "token_metadata"
 )
