@@ -15,10 +15,6 @@ func Parse() (args Args) {
 
 	flag.Parse()
 
-	if flag.NFlag() == 0 {
-		args.Help = true
-	}
-
 	if args.Help {
 		flag.Usage()
 	}
