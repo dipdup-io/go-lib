@@ -34,6 +34,11 @@ func (testTable3) TableName() (int64, error) {
 type testTable4 struct {
 	Field1 string `gorm:"-"`
 	Field2 int64
+	inherited
+}
+
+type inherited struct {
+	Field3 string
 }
 
 func (testTable4) TableName() int64 {
@@ -100,7 +105,7 @@ func Test_getColumns(t *testing.T) {
 		}, {
 			name:  "Test 4",
 			model: &testTable4{},
-			want:  []string{"field_2"},
+			want:  []string{"field_2", "field_3"},
 		},
 	}
 	for _, tt := range tests {
@@ -137,7 +142,7 @@ func TestGenerate(t *testing.T) {
 					&testTable{}, &testTable2{}, &testTable3{}, &testTable4{},
 				},
 			},
-			want: `{"tables":[{"array_relationships":[],"object_relationships":[],"select_permissions":[{"permission":{"allow_aggregations":true,"columns":["field_1","field_2"],"filter":{}},"role":"user"}],"table":{"name":"test_table","schema":"public"}},{"array_relationships":[],"object_relationships":[],"select_permissions":[{"permission":{"allow_aggregations":true,"columns":["field_1","field_2"],"filter":{}},"role":"user"}],"table":{"name":"fake_name","schema":"public"}},{"array_relationships":[],"object_relationships":[],"select_permissions":[{"permission":{"allow_aggregations":true,"columns":["field_2"],"filter":{}},"role":"user"}],"table":{"name":"test_table_3","schema":"public"}},{"array_relationships":[],"object_relationships":[],"select_permissions":[{"permission":{"allow_aggregations":true,"columns":["field_2"],"filter":{}},"role":"user"}],"table":{"name":"test_table_4","schema":"public"}}],"version":2}`,
+			want: `{"tables":[{"array_relationships":[],"object_relationships":[],"select_permissions":[{"permission":{"allow_aggregations":true,"columns":["field_1","field_2"],"filter":{}},"role":"user"}],"table":{"name":"test_table","schema":"public"}},{"array_relationships":[],"object_relationships":[],"select_permissions":[{"permission":{"allow_aggregations":true,"columns":["field_1","field_2"],"filter":{}},"role":"user"}],"table":{"name":"fake_name","schema":"public"}},{"array_relationships":[],"object_relationships":[],"select_permissions":[{"permission":{"allow_aggregations":true,"columns":["field_2"],"filter":{}},"role":"user"}],"table":{"name":"test_table_3","schema":"public"}},{"array_relationships":[],"object_relationships":[],"select_permissions":[{"permission":{"allow_aggregations":true,"columns":["field_2","field_3"],"filter":{}},"role":"user"}],"table":{"name":"test_table_4","schema":"public"}}],"version":2}`,
 		},
 	}
 	for _, tt := range tests {

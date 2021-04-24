@@ -175,9 +175,14 @@ func getColumns(typ reflect.Type) []string {
 	columns := make([]string, 0)
 	for i := 0; i < typ.NumField(); i++ {
 		field := typ.Field(i)
-		tag := field.Tag.Get("gorm")
-		if !strings.HasPrefix(tag, "-") {
-			columns = append(columns, strcase.ToSnake(field.Name))
+		if !field.Anonymous {
+			tag := field.Tag.Get("gorm")
+			if !strings.HasPrefix(tag, "-") {
+				columns = append(columns, strcase.ToSnake(field.Name))
+			}
+		} else {
+			cols := getColumns(field.Type)
+			columns = append(columns, cols...)
 		}
 	}
 	return columns
