@@ -14,6 +14,7 @@ type Config struct {
 	Database    Database              `yaml:"database"`
 	DataSources map[string]DataSource `yaml:"datasources"`
 	Contracts   map[string]Contract   `yaml:"contracts"`
+	Hasura      Hasura                `yaml:"hasura"`
 }
 
 // Validate -
@@ -42,6 +43,12 @@ type Contract struct {
 type Database struct {
 	Path string `yaml:"path"`
 	Kind string `yaml:"kind"`
+}
+
+// Hasura -
+type Hasura struct {
+	URL    string `yaml:"url"`
+	Secret string `yaml:"admin_secret"`
 }
 
 // Validate -
