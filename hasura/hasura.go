@@ -49,10 +49,12 @@ func Create(hasura config.Hasura, cfg config.Database, models ...interface{}) er
 	}
 
 	for _, table := range export.Tables {
-		name, ok := table["table"]
+		tableData, ok := table["table"].(map[string]interface{})
 		if !ok {
 			continue
 		}
+
+		name := tableData["name"]
 		if _, ok := tables[name.(string)]; !ok {
 			dataTables = append(dataTables, table)
 		}
