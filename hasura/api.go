@@ -2,6 +2,7 @@ package hasura
 
 import (
 	"bytes"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path"
@@ -80,11 +81,17 @@ func (api *API) post(endpoint string, args map[string]string, body interface{}, 
 	}
 	defer resp.Body.Close()
 
+	decoder := json.NewDecoder(resp.Body)
+
 	if resp.StatusCode != http.StatusOK {
-		return errors.Errorf("Invalid status code: %s", resp.Status)
+		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return errors.Wrap(err, "Hasura's response decoding error")
+		}
+		return errors.Errorf("Invalid status code: %s %s", resp.Status, string(bodyBytes))
 	}
 
-	return json.NewDecoder(resp.Body).Decode(output)
+	return decoder.Decode(output)
 }
 
 // Health

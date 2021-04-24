@@ -34,9 +34,17 @@ func Create(hasura config.Hasura, cfg config.Database, models ...interface{}) er
 
 	log.Info("Merging metadata...")
 	tables := make(map[string]struct{})
-	dataTables := metadata["tables"].([]map[string]interface{})
+	dataTables := metadata["tables"].([]interface{})
 	for i := range dataTables {
-		name := dataTables[i]["table"].(string)
+		dataTable, ok := dataTables[i].(map[string]interface{})
+		if !ok {
+			continue
+		}
+		table, ok := dataTable["table"].(map[string]interface{})
+		if !ok {
+			continue
+		}
+		name := table["name"].(string)
 		tables[name] = struct{}{}
 	}
 
