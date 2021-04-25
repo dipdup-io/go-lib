@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/dipdup-net/go-lib/tzkt/events/signalr"
 	log "github.com/sirupsen/logrus"
@@ -13,7 +12,7 @@ import (
 // TzKT - struct that used for connection to TzKT events server
 type TzKT struct {
 	s            *signalr.SignalR
-	invokationID string
+	invokationID int
 
 	subscriptions []signalr.Invocation
 
@@ -29,7 +28,6 @@ func NewTzKT(url string) *TzKT {
 	}
 	return &TzKT{
 		s:             signalr.NewSignalR(url),
-		invokationID:  fmt.Sprintf("%d", time.Now().UnixNano()),
 		msgs:          make(chan Message),
 		stop:          make(chan struct{}),
 		subscriptions: make([]signalr.Invocation, 0),
@@ -107,7 +105,8 @@ func (tzkt *TzKT) SubscribeToBigMaps(ptr *int64, contract, path string, tags ...
 }
 
 func (tzkt *TzKT) subscribe(channel string, args ...interface{}) error {
-	msg := signalr.NewInvocation(tzkt.invokationID, channel, args...)
+	tzkt.invokationID += 1
+	msg := signalr.NewInvocation(fmt.Sprintf("%d", tzkt.invokationID), channel, args...)
 	tzkt.subscriptions = append(tzkt.subscriptions, msg)
 	return tzkt.s.Send(msg)
 }
