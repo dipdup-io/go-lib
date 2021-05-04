@@ -11,7 +11,7 @@ type Args struct {
 // Parse -
 func Parse() (args Args) {
 	flag.BoolVar(&args.Help, "h", false, "Show usage")
-	flag.StringVar(&args.Config, "f", "config.yaml", "Path to YAML config file")
+	flag.StringVar(&args.Config, "c", "dipdup.yml", "Path to YAML config file")
 
 	flag.Parse()
 

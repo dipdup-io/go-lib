@@ -1,45 +1,40 @@
 package state
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"time"
 
+	"github.com/dipdup-net/go-lib/config"
 	"github.com/pkg/errors"
-	"gorm.io/driver/clickhouse"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
-	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
 
-// Supported database kinds
-const (
-	DBKindSqlite     = "sqlite"
-	DBKindPostgres   = "postgres"
-	DBKindMysql      = "mysql"
-	DBKindClickHouse = "clickhouse"
-	DBKindSqlServer  = "sqlserver"
-)
-
 // OpenConnection -
-func OpenConnection(kind, path string) (*gorm.DB, error) {
+func OpenConnection(cfg config.Database) (*gorm.DB, error) {
 	var dialector gorm.Dialector
-	switch kind {
-	case DBKindSqlite:
-		dialector = sqlite.Open(path)
-	case DBKindPostgres:
-		dialector = postgres.Open(path)
-	case DBKindMysql:
-		dialector = mysql.Open(path)
-	case DBKindClickHouse:
-		dialector = clickhouse.Open(path)
-	case DBKindSqlServer:
-		dialector = sqlserver.Open(path)
+	switch cfg.Kind {
+	case config.DBKindSqlite:
+		dialector = sqlite.Open(cfg.Path)
+	case config.DBKindPostgres:
+		connString := fmt.Sprintf(
+			"host=%s user=%s password=%s dbname=%s port=%d",
+			cfg.Host, cfg.User, cfg.Password, cfg.Database, cfg.Port,
+		)
+		dialector = postgres.Open(connString)
+	case config.DBKindMysql:
+		connString := fmt.Sprintf(
+			"%s:%s@tcp(%s:%d)/%s",
+			cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.Database,
+		)
+		dialector = mysql.Open(connString)
 	default:
-		return nil, errors.Errorf("Unsupported database %s", kind)
+		return nil, errors.Errorf("Unsupported database kind %s", cfg.Kind)
 	}
 
 	return gorm.Open(dialector, &gorm.Config{

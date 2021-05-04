@@ -4,13 +4,12 @@ import "github.com/pkg/errors"
 
 // Supported database kinds
 const (
-	DBKindSqlite     = "sqlite"
-	DBKindPostgres   = "postgres"
-	DBKindMysql      = "mysql"
-	DBKindClickHouse = "clickhouse"
-	DBKindSqlServer  = "sqlserver"
+	DBKindSqlite   = "sqlite"
+	DBKindPostgres = "postgres"
+	DBKindMysql    = "mysql"
 )
 
 var (
 	ErrUnsupportedDB = errors.New("Unsupported database")
+	ErrMissingField  = errors.New("Missing field")
 )

@@ -41,8 +41,14 @@ type Contract struct {
 
 // Database
 type Database struct {
-	Path string `yaml:"path"`
-	Kind string `yaml:"kind"`
+	Path       string `yaml:"path"`
+	Kind       string `yaml:"kind"`
+	Host       string `yaml:"host"`
+	Port       int    `yaml:"port"`
+	User       string `yaml:"user"`
+	Password   string `yaml:"password"`
+	Database   string `yaml:"database"`
+	SchemaName string `yaml:"schema_name"`
 }
 
 // Hasura -
@@ -53,12 +59,28 @@ type Hasura struct {
 
 // Validate -
 func (db *Database) Validate() error {
-	for _, valid := range []string{
-		DBKindClickHouse, DBKindMysql, DBKindPostgres, DBKindSqlServer, DBKindSqlite,
-	} {
-		if valid == db.Kind {
-			return nil
+	if db.Kind == DBKindSqlite {
+		if db.Path == "" {
+			return errors.Wrap(ErrMissingField, "Path")
 		}
+		return nil
+	} else if db.Kind == DBKindPostgres || db.Kind == DBKindMysql {
+		if db.Host == "" {
+			return errors.Wrap(ErrMissingField, "Host")
+		}
+		if db.Port == 0 {
+			return errors.Wrap(ErrMissingField, "Port")
+		}
+		if db.User == "" {
+			return errors.Wrap(ErrMissingField, "User")
+		}
+		if db.Password == "" {
+			return errors.Wrap(ErrMissingField, "Password")
+		}
+		if db.Database == "" {
+			return errors.Wrap(ErrMissingField, "Database")
+		}
+		return nil
 	}
 	return errors.Wrap(ErrUnsupportedDB, db.Kind)
 }
