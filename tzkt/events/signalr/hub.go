@@ -1,7 +1,6 @@
 package signalr
 
 import (
-	"bufio"
 	"net"
 	"net/url"
 	"sync"
@@ -170,18 +169,25 @@ func (hub *Hub) readOneMessage(msg interface{}) error {
 	if scanner == nil {
 		return nil
 	}
-	if scanner.Scan() {
-		if err := json.Unmarshal(scanner.Bytes(), msg); err != nil {
-			return err
-		}
-
-		if err := hub.conn.SetReadDeadline(getDeadline()); err != nil {
-			return errors.Wrap(err, "SetReadDeadline")
-		}
-
-		return nil
+	if err := scanner.Scan(); err != nil {
+		return err
 	}
-	return ErrEmptyResponse
+	data, err := scanner.Bytes()
+	if err != nil {
+		return err
+	}
+	if len(data) == 0 {
+		return ErrEmptyResponse
+	}
+	if err := json.Unmarshal(data, msg); err != nil {
+		return err
+	}
+
+	if err := hub.conn.SetReadDeadline(getDeadline()); err != nil {
+		return errors.Wrap(err, "SetReadDeadline")
+	}
+
+	return nil
 }
 
 func (hub *Hub) readAllMessages() error {
@@ -193,17 +199,26 @@ func (hub *Hub) readAllMessages() error {
 		log.Warn("No messages during read timeout")
 		return ErrEmptyResponse
 	}
-	for scanner.Scan() {
-		data := scanner.Bytes()
-		if len(data) > 0 {
-			msg, err := hub.encoder.Decode(data)
-			if err != nil {
-				return err
-			}
-			hub.msgs <- msg
-			if closeMsg, ok := msg.(CloseMessage); ok {
-				return hub.closeMessageHandler(closeMsg)
-			}
+	if err := scanner.Scan(); err != nil {
+		return err
+	}
+
+	for {
+		data, err := scanner.Bytes()
+		if err != nil {
+			return err
+		}
+		if len(data) == 0 {
+			break
+		}
+
+		msg, err := hub.encoder.Decode(data)
+		if err != nil {
+			return err
+		}
+		hub.msgs <- msg
+		if closeMsg, ok := msg.(CloseMessage); ok {
+			return hub.closeMessageHandler(closeMsg)
 		}
 	}
 
@@ -224,7 +239,7 @@ func (hub *Hub) closeMessageHandler(msg CloseMessage) error {
 	return hub.reconnect()
 }
 
-func (hub *Hub) getScanner() (*bufio.Scanner, error) {
+func (hub *Hub) getScanner() (*JSONReader, error) {
 	_, r, err := hub.conn.NextReader()
 	if err != nil {
 		if e, ok := err.(net.Error); ok && e.Timeout() {
@@ -232,9 +247,7 @@ func (hub *Hub) getScanner() (*bufio.Scanner, error) {
 		}
 		return nil, errors.Wrap(err, "NextReader")
 	}
-	scanner := bufio.NewScanner(bufio.NewReader(r))
-	scanner.Split(SplitJSON)
-	return scanner, nil
+	return NewJSONReader(r), nil
 }
 
 func getDeadline() time.Time {

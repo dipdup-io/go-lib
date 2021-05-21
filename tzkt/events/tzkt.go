@@ -155,7 +155,7 @@ func (tzkt *TzKT) listen() {
 						Body:    data,
 					}
 				case signalr.Completion:
-					log.Print("subscribed")
+					// log.Print("subscribed")
 				}
 			}
 		}

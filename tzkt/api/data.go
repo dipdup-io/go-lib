@@ -21,11 +21,12 @@ const (
 
 // Operation -
 type Operation struct {
-	ID    uint64 `json:"id"`
-	Level uint64 `json:"level"`
-	Hash  string `json:"hash"`
-	Kind  string `json:"type"`
-	Block string `json:"block"`
+	ID       uint64   `json:"id"`
+	Level    uint64   `json:"level"`
+	Hash     string   `json:"hash"`
+	Kind     string   `json:"type"`
+	Block    string   `json:"block"`
+	Delegate *Address `json:"delegate,omitempty"`
 }
 
 // Address -
@@ -110,4 +111,60 @@ type BigMapKey struct {
 	FirstLevel uint64             `json:"firstLevel"`
 	LastLevel  uint64             `json:"lastLevel"`
 	Updates    uint64             `json:"updates"`
+}
+
+// Delegate -
+type Delegate struct {
+	Type                   string    `json:"type"`
+	Alias                  string    `json:"alias"`
+	Address                string    `json:"address"`
+	PublicKey              string    `json:"publicKey"`
+	Balance                int64     `json:"balance"`
+	FrozenDeposits         int64     `json:"frozenDeposits"`
+	FrozenRewards          int64     `json:"frozenRewards"`
+	FrozenFees             int64     `json:"frozenFees"`
+	Counter                int64     `json:"counter"`
+	ActivationLevel        int64     `json:"activationLevel"`
+	StakingBalance         int64     `json:"stakingBalance"`
+	NumContracts           int64     `json:"numContracts"`
+	NumDelegators          int64     `json:"numDelegators"`
+	NumBlocks              int64     `json:"numBlocks"`
+	NumEndorsements        int64     `json:"numEndorsements"`
+	NumBallots             int64     `json:"numBallots"`
+	NumProposals           int64     `json:"numProposals"`
+	NumActivations         int64     `json:"numActivations"`
+	NumDoubleBaking        int64     `json:"numDoubleBaking"`
+	NumDoubleEndorsing     int64     `json:"numDoubleEndorsing"`
+	NumNonceRevelations    int64     `json:"numNonceRevelations"`
+	NumRevelationPenalties int64     `json:"numRevelationPenalties"`
+	NumDelegations         int64     `json:"numDelegations"`
+	NumOriginations        int64     `json:"numOriginations"`
+	NumTransactions        int64     `json:"numTransactions"`
+	NumReveals             int64     `json:"numReveals"`
+	NumMigrations          int64     `json:"numMigrations"`
+	FirstActivity          int64     `json:"firstActivity"`
+	LastActivity           int64     `json:"lastActivity"`
+	FirstActivityTime      time.Time `json:"firstActivityTime"`
+	LastActivityTime       time.Time `json:"lastActivityTime"`
+	ActivationTime         time.Time `json:"activationTime"`
+	Software               Software  `json:"software"`
+	Active                 bool      `json:"active"`
+	Revealed               bool      `json:"revealed"`
+}
+
+// Software -
+type Software struct {
+	Version string    `json:"version"`
+	Date    time.Time `json:"date"`
+}
+
+// Right -
+type Right struct {
+	Type      string    `json:"type"`
+	Cycle     uint64    `json:"cycle"`
+	Level     uint64    `json:"level"`
+	Timestamp time.Time `json:"timestamp"`
+	Slots     uint64    `json:"slots"`
+	Baker     Address   `json:"baker"`
+	Status    string    `json:"status"`
 }

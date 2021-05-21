@@ -22,16 +22,22 @@ func OpenConnection(cfg config.Database) (*gorm.DB, error) {
 	case config.DBKindSqlite:
 		dialector = sqlite.Open(cfg.Path)
 	case config.DBKindPostgres:
-		connString := fmt.Sprintf(
-			"host=%s user=%s password=%s dbname=%s port=%d",
-			cfg.Host, cfg.User, cfg.Password, cfg.Database, cfg.Port,
-		)
+		connString := cfg.Path
+		if connString == "" {
+			connString = fmt.Sprintf(
+				"host=%s user=%s password=%s dbname=%s port=%d",
+				cfg.Host, cfg.User, cfg.Password, cfg.Database, cfg.Port,
+			)
+		}
 		dialector = postgres.Open(connString)
 	case config.DBKindMysql:
-		connString := fmt.Sprintf(
-			"%s:%s@tcp(%s:%d)/%s",
-			cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.Database,
-		)
+		connString := cfg.Path
+		if connString == "" {
+			connString = fmt.Sprintf(
+				"%s:%s@tcp(%s:%d)/%s",
+				cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.Database,
+			)
+		}
 		dialector = mysql.Open(connString)
 	default:
 		return nil, errors.Errorf("Unsupported database kind %s", cfg.Kind)

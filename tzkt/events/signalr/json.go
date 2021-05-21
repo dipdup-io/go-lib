@@ -2,6 +2,8 @@ package signalr
 
 import (
 	"bufio"
+	"bytes"
+	"io"
 
 	jsoniter "github.com/json-iterator/go"
 	"github.com/pkg/errors"
@@ -88,4 +90,53 @@ func SplitJSON(data []byte, atEOF bool) (advance int, token []byte, err error) {
 		return 0, nil, nil
 	}
 	return 0, data, bufio.ErrFinalToken
+}
+
+const (
+	chunkSize = 64 * 1024
+)
+
+// JSONReader -
+type JSONReader struct {
+	reader io.Reader
+	buffer *bytes.Buffer
+}
+
+// NewJSONReader -
+func NewJSONReader(r io.Reader) *JSONReader {
+	return &JSONReader{
+		reader: r,
+		buffer: bytes.NewBuffer(make([]byte, 0)),
+	}
+}
+
+// Scan -
+func (r *JSONReader) Scan() error {
+	data := make([]byte, chunkSize)
+	for {
+		count, err := r.reader.Read(data)
+		switch err {
+		case io.EOF:
+			return nil
+		case nil:
+			if _, err := r.buffer.Write(data[:count]); err != nil {
+				return err
+			}
+		default:
+			return err
+		}
+	}
+}
+
+// Bytes -
+func (r *JSONReader) Bytes() ([]byte, error) {
+	if r.buffer.Len() == 0 {
+		return nil, nil
+	}
+
+	data, err := r.buffer.ReadBytes(JSONSeparator)
+	if err != nil {
+		return nil, err
+	}
+	return data[:len(data)-1], nil
 }

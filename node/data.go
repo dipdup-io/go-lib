@@ -9,17 +9,18 @@ import (
 )
 
 const (
-	KindActivation      = "activate_account"
-	KindBallot          = "ballot"
-	KindDelegation      = "delegation"
-	KindDoubleBaking    = "double_baking_evidence"
-	KindDoubleEndorsing = "double_endorsement_evidence"
-	KindEndorsement     = "endorsement"
-	KindOrigination     = "origination"
-	KindProposal        = "proposal"
-	KindReveal          = "reveal"
-	KindNonceRevelation = "seed_nonce_revelation"
-	KindTransaction     = "transaction"
+	KindActivation          = "activate_account"
+	KindBallot              = "ballot"
+	KindDelegation          = "delegation"
+	KindDoubleBaking        = "double_baking_evidence"
+	KindDoubleEndorsing     = "double_endorsement_evidence"
+	KindEndorsement         = "endorsement"
+	KindEndorsementWithSlot = "endorsement_with_slot"
+	KindOrigination         = "origination"
+	KindProposal            = "proposal"
+	KindReveal              = "reveal"
+	KindNonceRevelation     = "seed_nonce_revelation"
+	KindTransaction         = "transaction"
 )
 
 // Errors
@@ -92,8 +93,8 @@ type Constants struct {
 	MaxAnonOpsPerBlock           int64            `json:"max_anon_ops_per_block"`
 	MaxOperationDataLength       int64            `json:"max_operation_data_length"`
 	MaxProposalsPerDelegate      int64            `json:"max_proposals_per_delegate"`
-	PreservedCycles              int64            `json:"preserved_cycles"`
-	BlocksPerCycle               int64            `json:"blocks_per_cycle"`
+	PreservedCycles              uint64           `json:"preserved_cycles"`
+	BlocksPerCycle               uint64           `json:"blocks_per_cycle"`
 	BlocksPerCommitment          int64            `json:"blocks_per_commitment"`
 	BlocksPerRollSnapshot        int64            `json:"blocks_per_roll_snapshot"`
 	BlocksPerVotingPeriod        int64            `json:"blocks_per_voting_period"`
@@ -156,4 +157,22 @@ type Header struct {
 	Priority         int       `json:"priority"`
 	ProofOfWorkNonce string    `json:"proof_of_work_nonce"`
 	Signature        string    `json:"signature"`
+}
+
+// EndorsementWithSlot -
+type EndorsementWithSlot struct {
+	Endorsement Endorsement `json:"endorsement"`
+	Slot        uint64      `json:"slot"`
+}
+
+// Endorsement -
+type Endorsement struct {
+	Branch    string               `json:"branch"`
+	Operation EndorsementOperation `json:"operations"`
+	Signature string               `json:"signature"`
+}
+
+// EndorsementOperation -
+type EndorsementOperation struct {
+	Level uint64 `json:"level"`
 }
