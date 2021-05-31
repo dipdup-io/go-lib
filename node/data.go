@@ -17,7 +17,7 @@ const (
 	KindEndorsement         = "endorsement"
 	KindEndorsementWithSlot = "endorsement_with_slot"
 	KindOrigination         = "origination"
-	KindProposal            = "proposal"
+	KindProposal            = "proposals"
 	KindReveal              = "reveal"
 	KindNonceRevelation     = "seed_nonce_revelation"
 	KindTransaction         = "transaction"
