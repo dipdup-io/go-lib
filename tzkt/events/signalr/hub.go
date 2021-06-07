@@ -109,11 +109,11 @@ func (hub *Hub) reconnect() error {
 	log.Warn("reconnecting...")
 
 	if err := hub.Send(newCloseMessage()); err != nil {
-		return err
+		log.Error(err)
 	}
 
 	if err := hub.conn.Close(); err != nil {
-		return err
+		log.Error(err)
 	}
 	log.Info("connection closed")
 	if err := hub.handshake(); err != nil {
@@ -141,6 +141,8 @@ func (hub *Hub) listen() {
 					case errors.Is(err, ErrTimeout):
 						if err := hub.reconnect(); err != nil {
 							log.Errorf("reconnect: %s", err.Error())
+							log.Warn("retry after 5 seconds")
+							time.Sleep(time.Second * 5)
 						}
 					case errors.Is(err, ErrEmptyResponse):
 					default:
