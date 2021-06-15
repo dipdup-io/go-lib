@@ -79,8 +79,14 @@ func (rpc *NodeRPC) Constants() (constants Constants, err error) {
 	return
 }
 
-// Head -
-func (rpc *NodeRPC) Head() (head Header, err error) {
+// Header -
+func (rpc *NodeRPC) Header() (head Header, err error) {
 	err = rpc.get("chains/main/blocks/head/header", &head)
+	return
+}
+
+// HeadMetadata -
+func (rpc *NodeRPC) HeadMetadata() (head HeadMetadata, err error) {
+	err = rpc.get("chains/main/blocks/head/metadata", &head)
 	return
 }

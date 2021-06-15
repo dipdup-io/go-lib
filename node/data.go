@@ -176,3 +176,58 @@ type Endorsement struct {
 type EndorsementOperation struct {
 	Level uint64 `json:"level"`
 }
+
+// HeadMetadata -
+type HeadMetadata struct {
+	Protocol        string `json:"protocol"`
+	NextProtocol    string `json:"next_protocol"`
+	TestChainStatus struct {
+		Status string `json:"status"`
+	} `json:"test_chain_status"`
+	MaxOperationsTTL       uint64 `json:"max_operations_ttl"`
+	MaxOperationDataLength uint64 `json:"max_operation_data_length"`
+	MaxBlockHeaderLength   uint64 `json:"max_block_header_length"`
+	MaxOperationListLength []struct {
+		MaxSize uint64 `json:"max_size"`
+		MaxOp   uint64 `json:"max_op,omitempty"`
+	} `json:"max_operation_list_length"`
+	Baker string `json:"baker"`
+	Level struct {
+		Level                uint64 `json:"level"`
+		LevelPosition        uint64 `json:"level_position"`
+		Cycle                uint64 `json:"cycle"`
+		CyclePosition        uint64 `json:"cycle_position"`
+		VotingPeriod         uint64 `json:"voting_period"`
+		VotingPeriodPosition uint64 `json:"voting_period_position"`
+		ExpectedCommitment   bool   `json:"expected_commitment"`
+	} `json:"level"`
+	LevelInfo struct {
+		Level              uint64 `json:"level"`
+		LevelPosition      uint64 `json:"level_position"`
+		Cycle              uint64 `json:"cycle"`
+		CyclePosition      uint64 `json:"cycle_position"`
+		ExpectedCommitment bool   `json:"expected_commitment"`
+	} `json:"level_info"`
+	VotingPeriodKind string `json:"voting_period_kind"`
+	VotingPeriodInfo struct {
+		VotingPeriod struct {
+			Index         uint64 `json:"index"`
+			Kind          string `json:"kind"`
+			StartPosition uint64 `json:"start_position"`
+		} `json:"voting_period"`
+		Position  int `json:"position"`
+		Remaining int `json:"remaining"`
+	} `json:"voting_period_info"`
+	NonceHash      interface{}   `json:"nonce_hash"`
+	ConsumedGas    string        `json:"consumed_gas"`
+	Deactivated    []interface{} `json:"deactivated"`
+	BalanceUpdates []struct {
+		Kind     string `json:"kind"`
+		Contract string `json:"contract,omitempty"`
+		Change   string `json:"change"`
+		Origin   string `json:"origin"`
+		Category string `json:"category,omitempty"`
+		Delegate string `json:"delegate,omitempty"`
+		Cycle    uint64 `json:"cycle,omitempty"`
+	} `json:"balance_updates"`
+}
