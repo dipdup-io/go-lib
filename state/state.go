@@ -6,10 +6,10 @@ import (
 
 // State -
 type State struct {
-	IndexName string `gorm:"primaryKey"`
-	IndexType string
-	Hash      string
-	Level     uint64
+	IndexName string `gorm:"primaryKey" json:"index_name"`
+	IndexType string `json:"index_type"`
+	Hash      string `json:"hash,omitempty"`
+	Level     uint64 `json:"level"`
 }
 
 // TableName -
