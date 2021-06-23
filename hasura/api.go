@@ -81,8 +81,6 @@ func (api *API) post(endpoint string, args map[string]string, body interface{}, 
 	}
 	defer resp.Body.Close()
 
-	decoder := json.NewDecoder(resp.Body)
-
 	if resp.StatusCode != http.StatusOK {
 		bodyBytes, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
@@ -91,7 +89,11 @@ func (api *API) post(endpoint string, args map[string]string, body interface{}, 
 		return errors.Errorf("Invalid status code: %s %s", resp.Status, string(bodyBytes))
 	}
 
-	return decoder.Decode(output)
+	if output == nil {
+		return nil
+	}
+
+	return json.NewDecoder(resp.Body).Decode(output)
 }
 
 // Health
@@ -133,4 +135,16 @@ func (api *API) ReplaceMetadata(data interface{}) error {
 		return nil
 	}
 	return errors.Errorf("Can't replace hasura's metadata: %s", resp.Message)
+}
+
+// TrackTable -
+func (api *API) TrackTable(schema, name string) error {
+	req := request{
+		Type: "track_table",
+		Args: map[string]string{
+			"schema": schema,
+			"name":   name,
+		},
+	}
+	return api.post("/v1/query", nil, req, nil)
 }

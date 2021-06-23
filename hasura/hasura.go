@@ -13,7 +13,7 @@ import (
 )
 
 // Create - creates hasura models
-func Create(hasura config.Hasura, cfg config.Database, models ...interface{}) error {
+func Create(hasura config.Hasura, cfg config.Database, views []string, models ...interface{}) error {
 	api := New(hasura.URL, hasura.Secret)
 
 	log.Info("Waiting hasura is up...")
@@ -63,7 +63,18 @@ func Create(hasura config.Hasura, cfg config.Database, models ...interface{}) er
 	metadata["tables"] = dataTables
 
 	log.Info("Replacing metadata...")
-	return api.ReplaceMetadata(metadata)
+	if err := api.ReplaceMetadata(metadata); err != nil {
+		return err
+	}
+
+	log.Info("Tracking views...")
+	for i := range views {
+		if err := api.TrackTable("public", views[i]); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // Generate - creates hasura table structure in JSON from `models`. `models` should be pointer to your table models. `cfg` is DB config from YAML.
