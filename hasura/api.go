@@ -55,6 +55,7 @@ func (api *API) get(endpoint string, args map[string]string) (*http.Response, er
 	return api.client.Do(req)
 }
 
+//nolint
 func (api *API) post(endpoint string, args map[string]string, body interface{}, output interface{}) error {
 	url, err := api.buildURL(endpoint, args)
 	if err != nil {
