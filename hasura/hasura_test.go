@@ -124,6 +124,7 @@ func Test_getColumns(t *testing.T) {
 func TestGenerate(t *testing.T) {
 	type args struct {
 		cfg    config.Database
+		hasura config.Hasura
 		models []interface{}
 	}
 	tests := []struct {
@@ -138,16 +139,20 @@ func TestGenerate(t *testing.T) {
 				cfg: config.Database{
 					Kind: "mysql",
 				},
+				hasura: config.Hasura{
+					EnableAggregations: true,
+					RowsLimit:          5,
+				},
 				models: []interface{}{
 					&testTable{}, &testTable2{}, &testTable3{}, &testTable4{},
 				},
 			},
-			want: `{"tables":[{"array_relationships":[],"object_relationships":[],"select_permissions":[{"permission":{"allow_aggregations":true,"columns":["field_1","field_2"],"filter":{}},"role":"user"}],"table":{"name":"test_table","schema":"public"}},{"array_relationships":[],"object_relationships":[],"select_permissions":[{"permission":{"allow_aggregations":true,"columns":["field_1","field_2"],"filter":{}},"role":"user"}],"table":{"name":"fake_name","schema":"public"}},{"array_relationships":[],"object_relationships":[],"select_permissions":[{"permission":{"allow_aggregations":true,"columns":["field_2"],"filter":{}},"role":"user"}],"table":{"name":"test_table_3","schema":"public"}},{"array_relationships":[],"object_relationships":[],"select_permissions":[{"permission":{"allow_aggregations":true,"columns":["field_2","field_3"],"filter":{}},"role":"user"}],"table":{"name":"test_table_4","schema":"public"}}],"version":2}`,
+			want: `{"tables":[{"array_relationships":[],"object_relationships":[],"select_permissions":[{"permission":{"limit":5,"allow_aggregations":true,"columns":["field_1","field_2"],"filter":{}},"role":"user"}],"table":{"name":"test_table","schema":"public"}},{"array_relationships":[],"object_relationships":[],"select_permissions":[{"permission":{"limit":5,"allow_aggregations":true,"columns":["field_1","field_2"],"filter":{}},"role":"user"}],"table":{"name":"fake_name","schema":"public"}},{"array_relationships":[],"object_relationships":[],"select_permissions":[{"permission":{"limit":5,"allow_aggregations":true,"columns":["field_2"],"filter":{}},"role":"user"}],"table":{"name":"test_table_3","schema":"public"}},{"array_relationships":[],"object_relationships":[],"select_permissions":[{"permission":{"limit":5,"allow_aggregations":true,"columns":["field_2","field_3"],"filter":{}},"role":"user"}],"table":{"name":"test_table_4","schema":"public"}}],"version":2}`,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Generate(tt.args.cfg, tt.args.models...)
+			got, err := Generate(tt.args.hasura, tt.args.cfg, tt.args.models...)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Generate() error = %v, wantErr %v", err, tt.wantErr)
 				return

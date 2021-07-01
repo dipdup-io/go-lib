@@ -21,7 +21,7 @@ func Create(hasura config.Hasura, cfg config.Database, views []string, models ..
 		time.Sleep(time.Second * 10)
 	}
 
-	metadata, err := Generate(cfg, models...)
+	metadata, err := Generate(hasura, cfg, models...)
 	if err != nil {
 		return err
 	}
@@ -80,11 +80,11 @@ func Create(hasura config.Hasura, cfg config.Database, views []string, models ..
 }
 
 // Generate - creates hasura table structure in JSON from `models`. `models` should be pointer to your table models. `cfg` is DB config from YAML.
-func Generate(cfg config.Database, models ...interface{}) (map[string]interface{}, error) {
+func Generate(hasura config.Hasura, cfg config.Database, models ...interface{}) (map[string]interface{}, error) {
 	tables := make([]interface{}, 0)
 	schema := getSchema(cfg)
 	for _, model := range models {
-		table, err := generateOne(schema, model)
+		table, err := generateOne(hasura, schema, model)
 		if err != nil {
 			return nil, err
 		}
@@ -108,7 +108,7 @@ func newTable(schema, name string) table {
 		Name:    name,
 	}
 }
-func generateOne(schema string, model interface{}) (table, error) {
+func generateOne(hasura config.Hasura, schema string, model interface{}) (table, error) {
 	value := reflect.ValueOf(model)
 	if value.Kind() != reflect.Ptr {
 		return table{}, errors.Errorf("Model has to be pointer")
@@ -123,10 +123,10 @@ func generateOne(schema string, model interface{}) (table, error) {
 	t.Columns = getColumns(typ)
 
 	if p, ok := t.HasuraSchema["select_permissions"]; ok {
-		t.HasuraSchema["select_permissions"] = append(p.([]interface{}), formatSelectPermissions(t.Columns...))
+		t.HasuraSchema["select_permissions"] = append(p.([]interface{}), formatSelectPermissions(hasura.RowsLimit, hasura.EnableAggregations, t.Columns...))
 	} else {
 		t.HasuraSchema["select_permissions"] = []interface{}{
-			formatSelectPermissions(t.Columns...),
+			formatSelectPermissions(hasura.RowsLimit, hasura.EnableAggregations, t.Columns...),
 		}
 	}
 	t.HasuraSchema["object_relationships"] = []interface{}{}
@@ -135,13 +135,17 @@ func generateOne(schema string, model interface{}) (table, error) {
 	return t, nil
 }
 
-func formatSelectPermissions(columns ...string) map[string]interface{} {
+func formatSelectPermissions(limit uint64, allowAggs bool, columns ...string) map[string]interface{} {
+	if limit == 0 {
+		limit = 10
+	}
 	return map[string]interface{}{
 		"role": "user",
 		"permission": map[string]interface{}{
 			"columns":            columns,
 			"filter":             map[string]interface{}{},
-			"allow_aggregations": true,
+			"allow_aggregations": allowAggs,
+			"limit":              limit,
 		},
 	}
 }

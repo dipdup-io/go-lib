@@ -53,8 +53,10 @@ type Database struct {
 
 // Hasura -
 type Hasura struct {
-	URL    string `yaml:"url"`
-	Secret string `yaml:"admin_secret"`
+	URL                string `yaml:"url"`
+	Secret             string `yaml:"admin_secret"`
+	RowsLimit          uint64 `yaml:"select_limit"`
+	EnableAggregations bool   `yaml:"allow_aggregation"`
 }
 
 // Validate -

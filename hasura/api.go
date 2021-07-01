@@ -148,3 +148,16 @@ func (api *API) TrackTable(schema, name string) error {
 	}
 	return api.post("/v1/query", nil, req, nil)
 }
+
+// CreateSelectPermissions - A select permission is used to restrict access to only the specified columns and rows.
+func (api *API) CreateSelectPermissions(table, role string, perm Permission) error {
+	req := request{
+		Type: "create_select_permission",
+		Args: map[string]interface{}{
+			"table":      table,
+			"role":       role,
+			"permission": perm,
+		},
+	}
+	return api.post("/v1/query", nil, req, nil)
+}
