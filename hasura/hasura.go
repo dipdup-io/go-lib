@@ -74,7 +74,7 @@ func Create(hasura config.Hasura, cfg config.Database, views []string, models ..
 			}
 		}
 		if err := api.DropSelectPermissions(views[i], "user"); err != nil {
-			return err
+			log.Warn(err)
 		}
 		if err := api.CreateSelectPermissions(views[i], "user", Permission{
 			Limit:     hasura.RowsLimit,
