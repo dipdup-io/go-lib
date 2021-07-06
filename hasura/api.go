@@ -162,3 +162,15 @@ func (api *API) CreateSelectPermissions(table, role string, perm Permission) err
 	}
 	return api.post("/v1/query", nil, req, nil)
 }
+
+// DropSelectPermissions -
+func (api *API) DropSelectPermissions(table, role string) error {
+	req := request{
+		Type: "drop_select_permission",
+		Args: map[string]interface{}{
+			"table": table,
+			"role":  role,
+		},
+	}
+	return api.post("/v1/query", nil, req, nil)
+}

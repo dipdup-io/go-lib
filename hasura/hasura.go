@@ -53,7 +53,6 @@ func Create(hasura config.Hasura, cfg config.Database, views []string, models ..
 		if !ok {
 			continue
 		}
-
 		name := tableData["name"]
 		if _, ok := tables[name.(string)]; !ok {
 			dataTables = append(dataTables, table)
@@ -73,6 +72,17 @@ func Create(hasura config.Hasura, cfg config.Database, views []string, models ..
 			if !strings.Contains(err.Error(), "view/table already tracked") {
 				return err
 			}
+		}
+		if err := api.DropSelectPermissions(views[i], "user"); err != nil {
+			return err
+		}
+		if err := api.CreateSelectPermissions(views[i], "user", Permission{
+			Limit:     hasura.RowsLimit,
+			AllowAggs: hasura.EnableAggregations,
+			Columns:   "*",
+			Filter:    map[string]interface{}{},
+		}); err != nil {
+			return err
 		}
 	}
 
