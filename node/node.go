@@ -90,3 +90,26 @@ func (rpc *NodeRPC) HeadMetadata() (head HeadMetadata, err error) {
 	err = rpc.get("chains/main/blocks/head/metadata", &head)
 	return
 }
+
+// ActiveDelegatesWithRolls -
+func (rpc *NodeRPC) ActiveDelegatesWithRolls() (delegates []string, err error) {
+	err = rpc.get("chains/main/blocks/head/context/raw/json/active_delegates_with_rolls", &delegates)
+	return
+}
+
+// Delegates -
+func (rpc *NodeRPC) Delegates(active *bool) (delegates []string, err error) {
+	uri := "chains/main/blocks/head/context/delegates"
+	if active != nil {
+		uri = fmt.Sprintf("%s?active=%t", uri, *active)
+	}
+	err = rpc.get(uri, &delegates)
+	return
+}
+
+// StakingBalance -
+func (rpc *NodeRPC) StakingBalance(address string) (balance string, err error) {
+	uri := fmt.Sprintf("/chains/main/blocks/head/context/delegates/%s/staking_balance", address)
+	err = rpc.get(uri, &balance)
+	return
+}
