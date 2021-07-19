@@ -231,3 +231,8 @@ type HeadMetadata struct {
 		Cycle    uint64 `json:"cycle,omitempty"`
 	} `json:"balance_updates"`
 }
+
+// IsManager -
+func IsManager(kind string) bool {
+	return kind == KindDelegation || kind == KindOrigination || kind == KindReveal || kind == KindTransaction
+}

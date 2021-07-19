@@ -21,12 +21,14 @@ const (
 
 // Operation -
 type Operation struct {
-	ID       uint64   `json:"id"`
-	Level    uint64   `json:"level"`
-	Hash     string   `json:"hash"`
-	Kind     string   `json:"type"`
-	Block    string   `json:"block"`
-	Delegate *Address `json:"delegate,omitempty"`
+	ID       uint64   `json:"id" mapstructure:"id"`
+	Level    uint64   `json:"level" mapstructure:"level"`
+	Hash     string   `json:"hash" mapstructure:"hash"`
+	Kind     string   `json:"type" mapstructure:"type"`
+	Block    string   `json:"block" mapstructure:"block"`
+	Delegate *Address `json:"delegate,omitempty" mapstructure:"delegate,omitempty"`
+	GasUsed  *uint64  `json:"gasUsed,omitempty" mapstructure:"gasUsed,omitempty"`
+	BakerFee *uint64  `json:"bakerFee,omitempty" mapstructure:"bakerFee,omitempty"`
 }
 
 // Address -
