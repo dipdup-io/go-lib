@@ -6,5 +6,5 @@ type replaceMetadataResponse struct {
 
 // ExportMetadataResponse -
 type ExportMetadataResponse struct {
-	Tables []map[string]interface{} `json:"tables"`
+	Tables []Table `json:"tables"`
 }
