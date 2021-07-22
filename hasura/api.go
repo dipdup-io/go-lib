@@ -112,7 +112,7 @@ func (api *API) Health() error {
 }
 
 // ExportMetadata -
-func (api *API) ExportMetadata(data interface{}) (ExportMetadataResponse, error) {
+func (api *API) ExportMetadata(data *Metadata) (ExportMetadataResponse, error) {
 	req := request{
 		Type: "export_metadata",
 		Args: data,
@@ -123,7 +123,7 @@ func (api *API) ExportMetadata(data interface{}) (ExportMetadataResponse, error)
 }
 
 // ReplaceMetadata -
-func (api *API) ReplaceMetadata(data interface{}) error {
+func (api *API) ReplaceMetadata(data *Metadata) error {
 	req := request{
 		Type: "replace_metadata",
 		Args: data,
@@ -170,6 +170,25 @@ func (api *API) DropSelectPermissions(table, role string) error {
 		Args: map[string]interface{}{
 			"table": table,
 			"role":  role,
+		},
+	}
+	return api.post("/v1/query", nil, req, nil)
+}
+
+// CreateRestEndpoint -
+func (api *API) CreateRestEndpoint(name, url, queryName, collectionName string) error {
+	req := request{
+		Type: "create_rest_endpoint",
+		Args: map[string]interface{}{
+			"name":    name,
+			"url":     url,
+			"methods": []string{"GET"},
+			"definition": map[string]interface{}{
+				"query": map[string]interface{}{
+					"query_name":      queryName,
+					"collection_name": collectionName,
+				},
+			},
 		},
 	}
 	return api.post("/v1/query", nil, req, nil)

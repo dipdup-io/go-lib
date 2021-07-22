@@ -1,6 +1,9 @@
 package hasura
 
 import (
+	"fmt"
+	"io/ioutil"
+	"os"
 	"reflect"
 	"strings"
 	"time"
@@ -10,6 +13,10 @@ import (
 	"github.com/pkg/errors"
 
 	log "github.com/sirupsen/logrus"
+)
+
+const (
+	allowedQueries = "allowed-queries"
 )
 
 // Create - creates hasura models
@@ -34,36 +41,32 @@ func Create(hasura config.Hasura, cfg config.Database, views []string, models ..
 
 	log.Info("Merging metadata...")
 	tables := make(map[string]struct{})
-	dataTables := metadata["tables"].([]interface{})
-	for i := range dataTables {
-		dataTable, ok := dataTables[i].(map[string]interface{})
-		if !ok {
-			continue
-		}
-		table, ok := dataTable["table"].(map[string]interface{})
-		if !ok {
-			continue
-		}
-		name := table["name"].(string)
-		tables[name] = struct{}{}
+	for i := range metadata.Tables {
+		tables[metadata.Tables[i].Schema.Name] = struct{}{}
 	}
 
 	for _, table := range export.Tables {
-		tableData, ok := table["table"].(map[string]interface{})
-		if !ok {
-			continue
-		}
-		name := tableData["name"]
-		if _, ok := tables[name.(string)]; !ok {
-			dataTables = append(dataTables, table)
+		if _, ok := tables[table.Schema.Name]; !ok {
+			metadata.Tables = append(metadata.Tables, table)
 		}
 	}
 
-	metadata["tables"] = dataTables
+	if err := createQueryCollections(api, hasura, metadata); err != nil {
+		return err
+	}
 
 	log.Info("Replacing metadata...")
 	if err := api.ReplaceMetadata(metadata); err != nil {
 		return err
+	}
+
+	if hasura.Rest == nil || *hasura.Rest {
+		log.Info("Creating REST endpoints...")
+		for _, query := range metadata.QueryCollections[0].Definition.Queries {
+			if err := api.CreateRestEndpoint(query.Name, query.Name, query.Name, allowedQueries); err != nil {
+				return err
+			}
+		}
 	}
 
 	log.Info("Tracking views...")
@@ -79,7 +82,7 @@ func Create(hasura config.Hasura, cfg config.Database, views []string, models ..
 		if err := api.CreateSelectPermissions(views[i], "user", Permission{
 			Limit:     hasura.RowsLimit,
 			AllowAggs: hasura.EnableAggregations,
-			Columns:   "*",
+			Columns:   Columns{"*"},
 			Filter:    map[string]interface{}{},
 		}); err != nil {
 			return err
@@ -90,8 +93,8 @@ func Create(hasura config.Hasura, cfg config.Database, views []string, models ..
 }
 
 // Generate - creates hasura table structure in JSON from `models`. `models` should be pointer to your table models. `cfg` is DB config from YAML.
-func Generate(hasura config.Hasura, cfg config.Database, models ...interface{}) (map[string]interface{}, error) {
-	tables := make([]interface{}, 0)
+func Generate(hasura config.Hasura, cfg config.Database, models ...interface{}) (*Metadata, error) {
+	tables := make([]Table, 0)
 	schema := getSchema(cfg)
 	for _, model := range models {
 		table, err := generateOne(hasura, schema, model)
@@ -101,14 +104,14 @@ func Generate(hasura config.Hasura, cfg config.Database, models ...interface{}) 
 		tables = append(tables, table.HasuraSchema)
 	}
 
-	return formatMetadata(tables), nil
+	return newMetadata(2, tables), nil
 }
 
 type table struct {
 	Name         string
 	Schema       string
 	Columns      []string
-	HasuraSchema map[string]interface{}
+	HasuraSchema Table
 }
 
 func newTable(schema, name string) table {
@@ -118,6 +121,7 @@ func newTable(schema, name string) table {
 		Name:    name,
 	}
 }
+
 func generateOne(hasura config.Hasura, schema string, model interface{}) (table, error) {
 	value := reflect.ValueOf(model)
 	if value.Kind() != reflect.Ptr {
@@ -129,53 +133,26 @@ func generateOne(hasura config.Hasura, schema string, model interface{}) (table,
 	}
 
 	t := newTable(schema, getTableName(value, typ))
-	t.HasuraSchema = formatTable(t.Name, t.Schema)
+	t.HasuraSchema = newMetadataTable(t.Name, t.Schema)
 	t.Columns = getColumns(typ)
 
-	if p, ok := t.HasuraSchema["select_permissions"]; ok {
-		t.HasuraSchema["select_permissions"] = append(p.([]interface{}), formatSelectPermissions(hasura.RowsLimit, hasura.EnableAggregations, t.Columns...))
-	} else {
-		t.HasuraSchema["select_permissions"] = []interface{}{
-			formatSelectPermissions(hasura.RowsLimit, hasura.EnableAggregations, t.Columns...),
-		}
-	}
-	t.HasuraSchema["object_relationships"] = []interface{}{}
-	t.HasuraSchema["array_relationships"] = []interface{}{}
+	t.HasuraSchema.SelectPermissions = append(t.HasuraSchema.SelectPermissions, formatSelectPermissions(hasura.RowsLimit, hasura.EnableAggregations, t.Columns...))
 
 	return t, nil
 }
 
-func formatSelectPermissions(limit uint64, allowAggs bool, columns ...string) map[string]interface{} {
+func formatSelectPermissions(limit uint64, allowAggs bool, columns ...string) SelectPermission {
 	if limit == 0 {
 		limit = 10
 	}
-	return map[string]interface{}{
-		"role": "user",
-		"permission": map[string]interface{}{
-			"columns":            columns,
-			"filter":             map[string]interface{}{},
-			"allow_aggregations": allowAggs,
-			"limit":              limit,
+	return SelectPermission{
+		Role: "user",
+		Permission: Permission{
+			Columns:   columns,
+			Filter:    map[string]interface{}{},
+			AllowAggs: allowAggs,
+			Limit:     limit,
 		},
-	}
-}
-
-func formatTable(name, schema string) map[string]interface{} {
-	return map[string]interface{}{
-		"table": map[string]interface{}{
-			"schema": schema,
-			"name":   name,
-		},
-		"object_relationships": []interface{}{},
-		"array_relationships":  []interface{}{},
-		"select_permissions":   []interface{}{},
-	}
-}
-
-func formatMetadata(tables []interface{}) map[string]interface{} {
-	return map[string]interface{}{
-		"version": 2,
-		"tables":  tables,
 	}
 }
 
@@ -193,7 +170,6 @@ func getTableName(value reflect.Value, typ reflect.Type) string {
 	return res[0].String()
 }
 
-// TODO: parsing schema from connection string
 func getSchema(cfg config.Database) string {
 	return "public"
 }
@@ -213,4 +189,76 @@ func getColumns(typ reflect.Type) []string {
 		}
 	}
 	return columns
+}
+
+func createQueryCollections(api *API, cfg config.Hasura, metadata *Metadata) error {
+	if metadata == nil {
+		return nil
+	}
+
+	files, err := ioutil.ReadDir("graphql")
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil
+		}
+		return err
+	}
+
+	queries := make([]Query, 0)
+	for i := range files {
+		name := files[i].Name()
+		if !strings.HasSuffix(name, ".graphql") {
+			continue
+		}
+
+		queryName := strings.TrimSuffix(name, ".graphql")
+
+		f, err := os.Open(fmt.Sprintf("graphql/%s", name))
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+
+		data, err := ioutil.ReadAll(f)
+		if err != nil {
+			return err
+		}
+
+		queries = append(queries, Query{
+			Name:  queryName,
+			Query: string(data),
+		})
+	}
+
+	if len(metadata.QueryCollections) > 0 && len(metadata.QueryCollections[0].Definition.Queries) > 0 {
+		metadata.QueryCollections[0].Definition.Queries = mergeQueries(queries, metadata.QueryCollections[0].Definition.Queries)
+	} else {
+		metadata.QueryCollections = []QueryCollection{
+			{
+				Name: allowedQueries,
+				Definition: Definition{
+					Queries: queries,
+				},
+			},
+		}
+	}
+
+	return nil
+}
+
+func mergeQueries(a []Query, b []Query) []Query {
+	for i := range a {
+		var found bool
+		for j := range b {
+			if b[j].Name == a[i].Name {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			b = append(b, a[i])
+		}
+	}
+	return b
 }
