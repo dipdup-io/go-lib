@@ -51,7 +51,7 @@ func Create(hasura config.Hasura, cfg config.Database, views []string, models ..
 		}
 	}
 
-	if err := createQueryCollections(api, hasura, metadata); err != nil {
+	if err := createQueryCollections(metadata); err != nil {
 		return err
 	}
 
@@ -191,7 +191,7 @@ func getColumns(typ reflect.Type) []string {
 	return columns
 }
 
-func createQueryCollections(api *API, cfg config.Hasura, metadata *Metadata) error {
+func createQueryCollections(metadata *Metadata) error {
 	if metadata == nil {
 		return nil
 	}
