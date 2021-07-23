@@ -64,7 +64,9 @@ func Create(hasura config.Hasura, cfg config.Database, views []string, models ..
 		log.Info("Creating REST endpoints...")
 		for _, query := range metadata.QueryCollections[0].Definition.Queries {
 			if err := api.CreateRestEndpoint(query.Name, query.Name, query.Name, allowedQueries); err != nil {
-				return err
+				if e, ok := err.(APIError); !ok || !e.AlreadyExists() {
+					return err
+				}
 			}
 		}
 	}

@@ -44,6 +44,8 @@ func OpenConnection(cfg config.Database) (*gorm.DB, error) {
 	}
 
 	return gorm.Open(dialector, &gorm.Config{
+		SkipDefaultTransaction: true,
+		PrepareStmt:            true,
 		Logger: logger.New(
 			log.New(os.Stdout, "\r\n", log.LstdFlags),
 			logger.Config{

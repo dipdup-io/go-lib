@@ -2,7 +2,6 @@ package hasura
 
 import (
 	"bytes"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path"
@@ -83,11 +82,11 @@ func (api *API) post(endpoint string, args map[string]string, body interface{}, 
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
+		var apiError APIError
+		if err := json.NewDecoder(resp.Body).Decode(&apiError); err != nil {
 			return errors.Wrap(err, "Hasura's response decoding error")
 		}
-		return errors.Errorf("Invalid status code: %s %s", resp.Status, string(bodyBytes))
+		return apiError
 	}
 
 	if output == nil {
@@ -141,10 +140,10 @@ func (api *API) ReplaceMetadata(data *Metadata) error {
 // TrackTable -
 func (api *API) TrackTable(schema, name string) error {
 	req := request{
-		Type: "track_table",
+		Type: "pg_track_table",
 		Args: map[string]string{
-			"schema": schema,
-			"name":   name,
+			"source": schema,
+			"table":  name,
 		},
 	}
 	return api.post("/v1/query", nil, req, nil)
