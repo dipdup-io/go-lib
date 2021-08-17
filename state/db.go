@@ -43,7 +43,7 @@ func OpenConnection(cfg config.Database) (*gorm.DB, error) {
 		return nil, errors.Errorf("Unsupported database kind %s", cfg.Kind)
 	}
 
-	return gorm.Open(dialector, &gorm.Config{
+	db, err := gorm.Open(dialector, &gorm.Config{
 		SkipDefaultTransaction: true,
 		PrepareStmt:            true,
 		Logger: logger.New(
@@ -54,4 +54,19 @@ func OpenConnection(cfg config.Database) (*gorm.DB, error) {
 			},
 		),
 	})
+	if err != nil {
+		return nil, err
+	}
+
+	sql, err := db.DB()
+	if err != nil {
+		return nil, err
+	}
+
+	if err = sql.Ping(); err != nil {
+		sql.Close()
+		return nil, err
+	}
+
+	return db, nil
 }
