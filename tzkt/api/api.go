@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -59,7 +60,7 @@ func (tzkt *API) json(endpoint string, args map[string]string, output interface{
 		return json.NewDecoder(resp.Body).Decode(output)
 	}
 
-	return errors.New(resp.Status)
+	return errors.New(fmt.Sprintf("%s: %s %v", resp.Status, endpoint, args))
 }
 
 func (tzkt *API) count(endpoint string) (uint64, error) {

@@ -8,12 +8,27 @@ import (
 
 	"github.com/dipdup-net/go-lib/config"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
+
+// CheckConnection
+func CheckConnection(db *gorm.DB) error {
+	sql, err := db.DB()
+	if err != nil {
+		return err
+	}
+
+	if err = sql.Ping(); err != nil {
+		return err
+	}
+
+	return nil
+}
 
 // OpenConnection -
 func OpenConnection(cfg config.Database) (*gorm.DB, error) {
@@ -58,14 +73,10 @@ func OpenConnection(cfg config.Database) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	sql, err := db.DB()
-	if err != nil {
-		return nil, err
-	}
-
-	if err = sql.Ping(); err != nil {
-		sql.Close()
-		return nil, err
+	logrus.Info("Waiting database is up and runnning")
+	for err := CheckConnection(db); err != nil; err = CheckConnection(db) {
+		logrus.Warn("%v", err)
+		time.Sleep(time.Second)
 	}
 
 	return db, nil
