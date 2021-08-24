@@ -23,9 +23,10 @@ const (
 func Create(hasura config.Hasura, cfg config.Database, views []string, models ...interface{}) error {
 	api := New(hasura.URL, hasura.Secret)
 
-	log.Info("Waiting hasura is up...")
+	log.Info("Waiting hasura is up and running")
 	for err := api.Health(); err != nil; err = api.Health() {
-		time.Sleep(time.Second * 10)
+		log.Warn(err)
+		time.Sleep(time.Second)
 	}
 
 	metadata, err := Generate(hasura, cfg, models...)
@@ -60,7 +61,7 @@ func Create(hasura config.Hasura, cfg config.Database, views []string, models ..
 		return err
 	}
 
-	if hasura.Rest == nil || *hasura.Rest {
+	if len(metadata.QueryCollections) > 0 && (hasura.Rest == nil || *hasura.Rest) {
 		log.Info("Creating REST endpoints...")
 		for _, query := range metadata.QueryCollections[0].Definition.Queries {
 			if err := api.CreateRestEndpoint(query.Name, query.Name, query.Name, allowedQueries); err != nil {

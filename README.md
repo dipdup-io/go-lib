@@ -1,9 +1,15 @@
-# go-lib
-General instruments for DipDup in golang
+# DipDup Go SDK
+
+[![Tests](https://github.com/dipdup-net/metadata/workflows/Tests/badge.svg?)](https://github.com/dipdup-net/metadata/actions?query=workflow%3ATests)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+This library partially implements DipDup framework features and can be used for building Tezos indexers and dapps when performance and effective resource utilization are important.
 
 ## Packages
 
-* `cmdline` - parser for default dipdup keys
+#### `cmdline`
+
+Command line argument parser, compatible with [DipDup CLI](https://docs.dipdup.net/command-line).
 
 ```go
 import "github.com/dipdup-net/go-lib/cmdline"
@@ -14,7 +20,9 @@ if args.Help {
 }
 ```
 
-* `config`
+#### `config`
+
+DipDup YAML [configuration](https://docs.dipdup.net/config-file-reference) parser.
 
 ```go
 import "github.com/dipdup-net/go-lib/config"
@@ -50,7 +58,9 @@ if err := config.Parse("config.yaml", &cfg); err != nil {
 }
 ```
 
-* `node` - package for accessing to tezos node
+#### `node`
+
+Simple Tezos RPC API wrapper.
 
 ```go
 import "github.com/dipdup-net/go-lib/node"
@@ -58,7 +68,9 @@ import "github.com/dipdup-net/go-lib/node"
 rpc := node.NewNodeRPC(url, node.WithTimeout(timeout))
 ```
 
-* `state` - package with DipDup state model
+#### `state`
+
+Managing DipDup index state.
 
 ```go
 import "github.com/dipdup-net/go-lib/state"
@@ -66,7 +78,7 @@ import "github.com/dipdup-net/go-lib/state"
 s := state.State{}
 ```
 
-`State` structure is 
+where `State` structure is:
 ```go
 // State -
 type State struct {
@@ -77,11 +89,10 @@ type State struct {
 }
 ```
 
-* `tzkt` - package with API and Events wrapper for TzKT.
+#### `tzkt`
 
-You can find docs on Events wrapper [here](tzkt/events/README.md).
-
-Example usage of events
+TzKT API and Events wrapper.  
+Read more about events and SignalR in the [doc](https://github.com/dipdup-net/go-lib/blob/master/tzkt/events/README.md)
 
 ```go
 package main
@@ -110,7 +121,7 @@ func main() {
 
 ```
 
-Example usage of API wrapper
+Example usage of the API wrapper:
 
 ```go
 package main

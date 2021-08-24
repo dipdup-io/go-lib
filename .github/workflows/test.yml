@@ -1,8 +1,6 @@
-on:
-  push:
-    branches:
-      - master
-name: build
+name: Tests
+on: push
+
 jobs:
   golangci:
     name: lint
