@@ -3,13 +3,13 @@ package signalr
 import "errors"
 
 var (
-	ErrUnknownMessageType = errors.New("Unknown message type")
-	ErrMessageParsing     = errors.New("Can't parse message")
-	ErrEmptyResponse      = errors.New("Empty response from server")
-	ErrHandshake          = errors.New("Handshake error")
-	ErrInvalidStatusCode  = errors.New("Invalid status code")
-	ErrNegotiate          = errors.New("Negotiate error")
-	ErrInvalidScheme      = errors.New("Invalid URL scheme. Expected https or http. Got")
-	ErrConnectionClose    = errors.New("Connection is closed")
-	ErrTimeout            = errors.New("Connection timeout")
+	ErrUnknownMessageType = errors.New("unknown message type")
+	ErrMessageParsing     = errors.New("can't parse message")
+	ErrEmptyResponse      = errors.New("empty response from server")
+	ErrHandshake          = errors.New("handshake error")
+	ErrInvalidStatusCode  = errors.New("invalid status code")
+	ErrNegotiate          = errors.New("negotiate error")
+	ErrInvalidScheme      = errors.New("invalid URL scheme. Expected https or http. Got")
+	ErrConnectionClose    = errors.New("connection is closed")
+	ErrTimeout            = errors.New("connection timeout")
 )

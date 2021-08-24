@@ -138,7 +138,7 @@ func (hub *Hub) listen() {
 			default:
 				if err := hub.readAllMessages(); err != nil {
 					switch {
-					case errors.Is(err, ErrTimeout):
+					case errors.Is(err, ErrTimeout) || errors.Is(err, &websocket.CloseError{}):
 						if err := hub.reconnect(); err != nil {
 							log.Errorf("reconnect: %s", err.Error())
 							log.Warn("retry after 5 seconds")
@@ -247,6 +247,7 @@ func (hub *Hub) getScanner() (*JSONReader, error) {
 		if e, ok := err.(net.Error); ok && e.Timeout() {
 			return nil, ErrTimeout
 		}
+
 		return nil, errors.Wrap(err, "NextReader")
 	}
 	return NewJSONReader(r), nil
