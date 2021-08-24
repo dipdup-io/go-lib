@@ -6,6 +6,7 @@ const (
 	MethodBlocks     = "SubscribeToBlocks"
 	MethodOperations = "SubscribeToOperations"
 	MethodBigMap     = "SubscribeToBigMaps"
+	MethodAccounts   = "SubscribeToAccounts"
 )
 
 // Channels
@@ -14,6 +15,7 @@ const (
 	ChannelBlocks     = "blocks"
 	ChannelOperations = "operations"
 	ChannelBigMap     = "bigmaps"
+	ChannelAccounts   = "accounts"
 )
 
 // operation kinds

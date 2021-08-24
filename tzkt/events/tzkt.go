@@ -104,6 +104,15 @@ func (tzkt *TzKT) SubscribeToBigMaps(ptr *int64, contract, path string, tags ...
 	return tzkt.subscribe(MethodBigMap, args)
 }
 
+// SubscribeToBigMaps - subscribe to accounts channel. Sends touched accounts (affected by any operation in any way)..
+func (tzkt *TzKT) SubscribeToAccounts(addresses ...string) error {
+	args := make(map[string]interface{})
+	if len(addresses) > 0 {
+		args["addresses"] = addresses
+	}
+	return tzkt.subscribe(MethodAccounts, args)
+}
+
 func (tzkt *TzKT) subscribe(channel string, args ...interface{}) error {
 	tzkt.invokationID += 1
 	msg := signalr.NewInvocation(fmt.Sprintf("%d", tzkt.invokationID), channel, args...)
