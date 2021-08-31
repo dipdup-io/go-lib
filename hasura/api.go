@@ -138,15 +138,15 @@ func (api *API) ReplaceMetadata(data *Metadata) error {
 }
 
 // TrackTable -
-func (api *API) TrackTable(source, name string) error {
+func (api *API) TrackTable(schema, name string) error {
 	req := request{
-		Type: "pg_track_table",
+		Type: "track_table",
 		Args: map[string]string{
-			"source": source,
-			"table":  name,
+			"schema": schema,
+			"name":   name,
 		},
 	}
-	return api.post("/v1/metadata", nil, req, nil)
+	return api.post("/v1/query", nil, req, nil)
 }
 
 // CreateSelectPermissions - A select permission is used to restrict access to only the specified columns and rows.

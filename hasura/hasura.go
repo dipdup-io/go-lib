@@ -74,7 +74,7 @@ func Create(hasura config.Hasura, cfg config.Database, views []string, models ..
 
 	log.Info("Tracking views...")
 	for i := range views {
-		if err := api.TrackTable(cfg.Database, views[i]); err != nil {
+		if err := api.TrackTable("public", views[i]); err != nil {
 			if !strings.Contains(err.Error(), "view/table already tracked") {
 				return err
 			}
