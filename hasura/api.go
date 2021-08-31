@@ -146,7 +146,7 @@ func (api *API) TrackTable(schema, name string) error {
 			"table":  name,
 		},
 	}
-	return api.post("/v1/query", nil, req, nil)
+	return api.post("/v1/metadata", nil, req, nil)
 }
 
 // CreateSelectPermissions - A select permission is used to restrict access to only the specified columns and rows.
