@@ -138,11 +138,11 @@ func (api *API) ReplaceMetadata(data *Metadata) error {
 }
 
 // TrackTable -
-func (api *API) TrackTable(schema, name string) error {
+func (api *API) TrackTable(source, name string) error {
 	req := request{
 		Type: "pg_track_table",
 		Args: map[string]string{
-			"source": schema,
+			"source": source,
 			"table":  name,
 		},
 	}
