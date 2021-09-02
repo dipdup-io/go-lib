@@ -140,10 +140,10 @@ func (api *API) ReplaceMetadata(data *Metadata) error {
 // TrackTable -
 func (api *API) TrackTable(schema, name string) error {
 	req := request{
-		Type: "pg_track_table",
+		Type: "track_table",
 		Args: map[string]string{
-			"source": schema,
-			"table":  name,
+			"schema": schema,
+			"name":   name,
 		},
 	}
 	return api.post("/v1/query", nil, req, nil)
