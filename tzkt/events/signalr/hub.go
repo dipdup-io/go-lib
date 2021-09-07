@@ -62,7 +62,7 @@ func (hub *Hub) Connect() error {
 }
 
 func (hub *Hub) handshake() error {
-	log.Infof("connecting to %s...", hub.url.String())
+	log.Tracef("connecting to %s...", hub.url.String())
 
 	c, _, err := websocket.DefaultDialer.Dial(hub.url.String(), nil)
 	if err != nil {
@@ -82,7 +82,7 @@ func (hub *Hub) handshake() error {
 	if resp.Error != "" {
 		return errors.Wrap(ErrHandshake, resp.Error)
 	}
-	log.Info("connected")
+	log.Trace("connected")
 
 	return nil
 }
@@ -115,7 +115,7 @@ func (hub *Hub) reconnect() error {
 	if err := hub.conn.Close(); err != nil {
 		log.Error(err)
 	}
-	log.Info("connection closed")
+	log.Trace("connection closed")
 	if err := hub.handshake(); err != nil {
 		return err
 	}

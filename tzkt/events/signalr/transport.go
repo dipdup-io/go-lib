@@ -41,7 +41,7 @@ func (t *Transport) Negotiate(version Version) (response NegotiateResponse, err 
 	q.Set("negotiateVersion", string(version))
 	u.RawQuery = q.Encode()
 
-	log.WithField("url", u.String()).Info("Send negotiate request...")
+	log.WithField("url", u.String()).Trace("Send negotiate request...")
 
 	req, err := http.NewRequest(http.MethodPost, u.String(), nil)
 	if err != nil {
