@@ -56,11 +56,14 @@ func (tzkt *API) json(endpoint string, args map[string]string, output interface{
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode == http.StatusOK {
+	switch resp.StatusCode {
+	case http.StatusOK:
 		return json.NewDecoder(resp.Body).Decode(output)
+	case http.StatusNoContent:
+		return nil
+	default:
+		return errors.New(fmt.Sprintf("%s: %s %v", resp.Status, endpoint, args))
 	}
-
-	return errors.New(fmt.Sprintf("%s: %s %v", resp.Status, endpoint, args))
 }
 
 func (tzkt *API) count(endpoint string) (uint64, error) {
