@@ -103,6 +103,15 @@ type BigMapUpdate struct {
 	Content   *BigMapUpdateContent `json:"content,omitempty"`
 }
 
+// BigMapKeyUpdate -
+type BigMapKeyUpdate struct {
+	ID        uint64             `json:"id"`
+	Level     uint64             `json:"level"`
+	Timestamp time.Time          `json:"timestamp"`
+	Action    string             `json:"action"`
+	Value     stdJSON.RawMessage `json:"value"`
+}
+
 // BigMapUpdateContent -
 type BigMapUpdateContent struct {
 	Hash  string             `json:"hash"`

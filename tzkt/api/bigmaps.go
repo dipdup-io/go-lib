@@ -38,7 +38,7 @@ func (tzkt *API) GetBigmapKey(id uint64, key string, filters map[string]string) 
 }
 
 // GetBigmapKeyUpdates -
-func (tzkt *API) GetBigmapKeyUpdates(id uint64, key string, filters map[string]string) (response []BigMapUpdate, err error) {
+func (tzkt *API) GetBigmapKeyUpdates(id uint64, key string, filters map[string]string) (response []BigMapKeyUpdate, err error) {
 	err = tzkt.json(fmt.Sprintf("/v1/bigmaps/%d/keys/%s/updates", id, key), filters, &response)
 	return
 }
