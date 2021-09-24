@@ -38,10 +38,21 @@ type MempoolResponse struct {
 
 // Applied -
 type Applied struct {
-	Hash      string    `json:"hash"`
-	Branch    string    `json:"branch"`
-	Signature string    `json:"signature"`
-	Contents  []Content `json:"contents"`
+	Hash      string             `json:"hash"`
+	Branch    string             `json:"branch"`
+	Signature string             `json:"signature"`
+	Contents  []Content          `json:"contents"`
+	Raw       stdJSON.RawMessage `json:"raw"`
+}
+
+// UnmarshalJSON -
+func (a *Applied) UnmarshalJSON(data []byte) error {
+	type buf Applied
+	if err := json.Unmarshal(data, (*buf)(a)); err != nil {
+		return err
+	}
+	a.Raw = data
+	return nil
 }
 
 // Failed -
@@ -52,6 +63,7 @@ type Failed struct {
 	Contents  []Content          `json:"contents"`
 	Signature string             `json:"signature"`
 	Error     stdJSON.RawMessage `json:"error,omitempty"`
+	Raw       stdJSON.RawMessage `json:"raw"`
 }
 
 // UnmarshalJSON -
@@ -67,7 +79,11 @@ func (f *Failed) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	type buf Failed
-	return json.Unmarshal(body[1], (*buf)(f))
+	if err := json.Unmarshal(body[1], (*buf)(f)); err != nil {
+		return err
+	}
+	f.Raw = data
+	return nil
 }
 
 // Contents -
