@@ -68,24 +68,24 @@ type Head struct {
 
 // Block -
 type Block struct {
-	Cycle         int64     `json:"cycle"`
-	Level         int64     `json:"level"`
-	Hash          string    `json:"hash"`
-	Timestamp     time.Time `json:"timestamp"`
-	Proto         int64     `json:"proto"`
-	Priority      int64     `json:"priority"`
-	Validations   int64     `json:"validations"`
-	Deposit       int64     `json:"deposit"`
-	Reward        int64     `json:"reward"`
-	Fees          int64     `json:"fees"`
-	NonceRevealed bool      `json:"nonceRevealed"`
-	Baker         Address   `json:"baker"`
-	Software      struct {
+	Cycle       int64     `json:"cycle"`
+	Level       int64     `json:"level"`
+	Hash        string    `json:"hash"`
+	Timestamp   time.Time `json:"timestamp"`
+	Proto       int64     `json:"proto"`
+	Priority    int64     `json:"priority"`
+	Validations int64     `json:"validations"`
+	Deposit     int64     `json:"deposit"`
+	Reward      int64     `json:"reward"`
+	Fees        int64     `json:"fees"`
+	LbEscapeEma int64     `json:"lbEscapeEma"`
+	Baker       Address   `json:"baker"`
+	Software    struct {
 		Version string    `json:"version"`
 		Date    time.Time `json:"date"`
 	} `json:"software"`
-	LbEscapeVote bool  `json:"lbEscapeVote"`
-	LbEscapeEma  int64 `json:"lbEscapeEma"`
+	NonceRevealed bool `json:"nonceRevealed"`
+	LbEscapeVote  bool `json:"lbEscapeVote"`
 }
 
 // Address -
