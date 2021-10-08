@@ -1,5 +1,9 @@
 package signalr
 
+import (
+	stdJSON "encoding/json"
+)
+
 // MessageType -
 type MessageType int
 
@@ -46,9 +50,9 @@ type Message struct {
 // Invocation -  a `Invocation` message
 type Invocation struct {
 	Message
-	Target    string        `json:"target"`
-	Arguments []interface{} `json:"arguments"`
-	StreamsID []string      `json:"streamIds,omitempty"`
+	Target    string               `json:"target"`
+	Arguments []stdJSON.RawMessage `json:"arguments"`
+	StreamsID []string             `json:"streamIds,omitempty"`
 }
 
 // StreamInvocation - a `StreamInvocation` message
@@ -113,12 +117,21 @@ func NewInvocation(id, target string, args ...interface{}) Invocation {
 	if args == nil {
 		args = make([]interface{}, 0)
 	}
+
+	arguments := make([]stdJSON.RawMessage, len(args))
+	for i := range args {
+		data, err := json.Marshal(args[i])
+		if err == nil {
+			arguments[i] = data
+		}
+	}
+
 	return Invocation{
 		Message: Message{
 			Type: Type{MessageTypeInvocation},
 			ID:   id,
 		},
 		Target:    target,
-		Arguments: args,
+		Arguments: arguments,
 	}
 }

@@ -110,12 +110,61 @@ func main() {
 	}
 	defer tzkt.Close()
 
+	if err := tzkt.SubscribeToHead(); err != nil {
+		panic(err)
+	}
+
 	if err := tzkt.SubscribeToBlocks(); err != nil {
-		log.Panic(err)
+		panic(err)
+	}
+
+	if err := tzkt.SubscribeToAccounts("KT1K4EwTpbvYN9agJdjpyJm4ZZdhpUNKB3F6"); err != nil {
+		panic(err)
+	}
+
+	if err := tzkt.SubscribeToBigMaps(nil, "KT1K4EwTpbvYN9agJdjpyJm4ZZdhpUNKB3F6", ""); err != nil {
+		panic(err)
+	}
+
+	if err := tzkt.SubscribeToOperations("KT1K4EwTpbvYN9agJdjpyJm4ZZdhpUNKB3F6", events.KindTransaction); err != nil {
+		panic(err)
 	}
 
 	for msg := range tzkt.Listen() {
-		log.Println(msg)
+		switch msg.Type {
+		case events.MessageTypeData:
+
+			switch msg.Channel {
+			case events.ChannelAccounts:
+				items := msg.Body.([]events.Account)
+				for _, item := range items {
+					log.Println(item)
+				}
+			case events.ChannelBigMap:
+				items := msg.Body.([]events.BigMapUpdate)
+				for _, item := range items {
+					log.Println(item)
+				}
+			case events.ChannelBlocks:
+				items := msg.Body.([]events.Block)
+				for _, item := range items {
+					log.Println(item)
+				}
+			case events.ChannelHead:
+				head := msg.Body.(events.Head)
+				log.Println(head)
+			case events.ChannelOperations:
+				items := msg.Body.([]interface{})
+				for _, item := range items {
+					log.Println(item.(*events.Transaction))
+				}
+			}
+
+		case events.MessageTypeReorg:
+			log.Print("reorg")
+		case events.MessageTypeState:
+			log.Print("initialized")
+		}
 	}
 }
 

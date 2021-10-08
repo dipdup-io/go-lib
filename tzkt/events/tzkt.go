@@ -1,11 +1,13 @@
 package events
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"sync"
 
 	"github.com/dipdup-net/go-lib/tzkt/events/signalr"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -134,37 +136,34 @@ func (tzkt *TzKT) listen() {
 				switch typ := msg.(type) {
 				case signalr.Invocation:
 					if len(typ.Arguments) == 0 {
-						log.Warnf("Empty arguments of invokation: %v", typ)
+						log.Warnf("Empty arguments of invocation: %v", typ)
 						continue
-					}
-					args, ok := typ.Arguments[0].(map[string]interface{})
-					if !ok {
-						log.Warnf("Invalid arguments type: %v", typ)
-						continue
-					}
-					msgType, ok := args["type"]
-					if !ok {
-						log.Warnf("Empty tzkt message type: %v", args)
-						continue
-					}
-					msgState, ok := args["state"]
-					if !ok {
-						log.Warnf("Empty tzkt message state: %v", args)
-						continue
-					}
-					data, ok := args["data"]
-					if !ok {
-						data = nil
 					}
 
-					tzkt.msgs <- Message{
-						Channel: typ.Target,
-						Type:    MessageType(msgType.(float64)),
-						State:   uint64(msgState.(float64)),
-						Body:    data,
+					var packet Packet
+					if err := json.Unmarshal(typ.Arguments[0], &packet); err != nil {
+						log.WithError(err).Error("invalid invocation argument")
+						continue
 					}
+
+					message := Message{
+						Channel: typ.Target,
+						Type:    packet.Type,
+						State:   packet.State,
+					}
+
+					if packet.Data != nil {
+						data, err := parseData(typ.Target, packet.Data)
+						if err != nil {
+							log.WithError(err).Error("error during parsing data")
+							continue
+						}
+						message.Body = data
+					}
+
+					tzkt.msgs <- message
 				case signalr.Completion:
-					// log.Print("subscribed")
+					log.Trace("subscribed")
 				}
 			}
 		}
@@ -178,4 +177,48 @@ func (tzkt *TzKT) onReconnect() error {
 		}
 	}
 	return nil
+}
+
+func parseData(channel string, data []byte) (interface{}, error) {
+	switch channel {
+	case ChannelAccounts:
+		var acc []Account
+		err := json.Unmarshal(data, &acc)
+		return acc, err
+	case ChannelBigMap:
+		var updates []BigMapUpdate
+		err := json.Unmarshal(data, &updates)
+		return updates, err
+	case ChannelBlocks:
+		var block []Block
+		err := json.Unmarshal(data, &block)
+		return block, err
+	case ChannelHead:
+		var head Head
+		err := json.Unmarshal(data, &head)
+		return head, err
+	case ChannelOperations:
+		return parseOperations(data)
+	default:
+		return nil, errors.Errorf("unknown channel: %s", channel)
+	}
+}
+
+func parseOperations(data []byte) (interface{}, error) {
+	var operations []Operation
+	if err := json.Unmarshal(data, &operations); err != nil {
+		return nil, err
+	}
+	result := make([]interface{}, 0)
+	for i := range operations {
+		switch operations[i].Type {
+		case KindTransaction:
+			result = append(result, &Transaction{})
+		default:
+			result = append(result, make(map[string]interface{}))
+		}
+	}
+
+	err := json.Unmarshal(data, &result)
+	return result, err
 }
