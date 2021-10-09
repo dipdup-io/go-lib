@@ -147,6 +147,7 @@ type Transaction struct {
 
 	Sender        Address         `json:"sender"`
 	Target        Address         `json:"target"`
+	Initiator     Address         `json:"initiator"`
 	Amount        decimal.Decimal `json:"amount"`
 	Parameter     Parameter       `json:"parameter"`
 	Timestamp     time.Time       `json:"timestamp"`
