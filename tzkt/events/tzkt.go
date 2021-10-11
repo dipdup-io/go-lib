@@ -212,6 +212,12 @@ func parseOperations(data []byte) (interface{}, error) {
 	result := make([]interface{}, 0)
 	for i := range operations {
 		switch operations[i].Type {
+		case KindDelegation:
+			result = append(result, &Delegation{})
+		case KindOrigination:
+			result = append(result, &Origination{})
+		case KindReveal:
+			result = append(result, &Reveal{})
 		case KindTransaction:
 			result = append(result, &Transaction{})
 		default:

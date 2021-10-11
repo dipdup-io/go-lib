@@ -47,16 +47,16 @@ type Head struct {
 	Chain        string          `json:"chain"`
 	ChainID      string          `json:"chainId"`
 	Cycle        int64           `json:"cycle"`
-	Level        int64           `json:"level"`
+	Level        uint64          `json:"level"`
 	Hash         string          `json:"hash"`
 	Protocol     string          `json:"protocol"`
 	Timestamp    time.Time       `json:"timestamp"`
 	VotingEpoch  int64           `json:"votingEpoch"`
 	VotingPeriod int64           `json:"votingPeriod"`
-	KnownLevel   int64           `json:"knownLevel"`
+	KnownLevel   uint64          `json:"knownLevel"`
 	LastSync     time.Time       `json:"lastSync"`
 	Synced       bool            `json:"synced"`
-	QuoteLevel   int64           `json:"quoteLevel"`
+	QuoteLevel   uint64          `json:"quoteLevel"`
 	QuoteBtc     decimal.Decimal `json:"quoteBtc"`
 	QuoteEur     decimal.Decimal `json:"quoteEur"`
 	QuoteUsd     decimal.Decimal `json:"quoteUsd"`
@@ -68,8 +68,8 @@ type Head struct {
 
 // Block -
 type Block struct {
-	Cycle       int64     `json:"cycle"`
-	Level       int64     `json:"level"`
+	Cycle       uint64    `json:"cycle"`
+	Level       uint64    `json:"level"`
 	Hash        string    `json:"hash"`
 	Timestamp   time.Time `json:"timestamp"`
 	Proto       int64     `json:"proto"`
@@ -79,7 +79,7 @@ type Block struct {
 	Reward      int64     `json:"reward"`
 	Fees        int64     `json:"fees"`
 	LbEscapeEma int64     `json:"lbEscapeEma"`
-	Baker       Address   `json:"baker"`
+	Baker       Alias     `json:"baker"`
 	Software    struct {
 		Version string    `json:"version"`
 		Date    time.Time `json:"date"`
@@ -88,8 +88,8 @@ type Block struct {
 	LbEscapeVote  bool `json:"lbEscapeVote"`
 }
 
-// Address -
-type Address struct {
+// Alias -
+type Alias struct {
 	Alias   string `json:"alias"`
 	Address string `json:"address"`
 }
@@ -102,7 +102,7 @@ type Account struct {
 	Tzips             []string  `json:"tzips"`
 	Alias             string    `json:"alias"`
 	Balance           int64     `json:"balance"`
-	Creator           Address   `json:"creator"`
+	Creator           Alias     `json:"creator"`
 	NumContracts      int64     `json:"numContracts"`
 	NumDelegations    int64     `json:"numDelegations"`
 	NumOriginations   int64     `json:"numOriginations"`
@@ -119,11 +119,11 @@ type Account struct {
 
 // BigMapUpdate -
 type BigMapUpdate struct {
-	ID        int64     `json:"id"`
-	Level     int64     `json:"level"`
+	ID        uint64    `json:"id"`
+	Level     uint64    `json:"level"`
 	Timestamp time.Time `json:"timestamp"`
 	Bigmap    int64     `json:"bigmap"`
-	Contract  Address   `json:"contract"`
+	Contract  Alias     `json:"contract"`
 	Path      string    `json:"path"`
 	Action    string    `json:"action"`
 	Content   *Content  `json:"content,omitempty"`
@@ -145,22 +145,22 @@ type Operation struct {
 type Transaction struct {
 	Operation
 
-	Sender        Address         `json:"sender"`
-	Target        Address         `json:"target"`
-	Initiator     Address         `json:"initiator"`
+	Sender        Alias           `json:"sender"`
+	Target        Alias           `json:"target"`
+	Initiator     Alias           `json:"initiator"`
 	Amount        decimal.Decimal `json:"amount"`
-	Parameter     Parameter       `json:"parameter"`
+	Parameter     *Parameter      `json:"parameter"`
 	Timestamp     time.Time       `json:"timestamp"`
-	ID            int64           `json:"id"`
-	Level         int64           `json:"level"`
-	Counter       int64           `json:"counter"`
-	GasLimit      int64           `json:"gasLimit"`
-	GasUsed       int64           `json:"gasUsed"`
-	StorageLimit  int64           `json:"storageLimit"`
-	StorageUsed   int64           `json:"storageUsed"`
-	BakerFee      int64           `json:"bakerFee"`
-	StorageFee    int64           `json:"storageFee"`
-	AllocationFee int64           `json:"allocationFee"`
+	ID            uint64          `json:"id"`
+	Level         uint64          `json:"level"`
+	Counter       uint64          `json:"counter"`
+	GasLimit      uint64          `json:"gasLimit"`
+	GasUsed       uint64          `json:"gasUsed"`
+	StorageLimit  uint64          `json:"storageLimit"`
+	StorageUsed   uint64          `json:"storageUsed"`
+	BakerFee      uint64          `json:"bakerFee"`
+	StorageFee    uint64          `json:"storageFee"`
+	AllocationFee uint64          `json:"allocationFee"`
 	Status        string          `json:"status"`
 	Parameters    string          `json:"parameters"`
 	Block         string          `json:"block"`
@@ -172,4 +172,99 @@ type Transaction struct {
 type Parameter struct {
 	Entrypoint string             `json:"entrypoint"`
 	Value      stdJSON.RawMessage `json:"value"`
+}
+
+// Origination -
+type Origination struct {
+	Operation
+
+	ID                 uint64              `json:"id"`
+	Level              uint64              `json:"level"`
+	Timestamp          time.Time           `json:"timestamp"`
+	Block              string              `json:"block"`
+	Hash               string              `json:"hash"`
+	Counter            uint64              `json:"counter"`
+	Initiator          *Alias              `json:"initiator"`
+	Sender             *Alias              `json:"sender"`
+	Nonce              *uint64             `json:"nonce"`
+	GasLimit           uint64              `json:"gasLimit"`
+	GasUsed            uint64              `json:"gasUsed"`
+	StorageLimit       uint64              `json:"storageLimit"`
+	StorageUsed        uint64              `json:"storageUsed"`
+	BakerFee           uint64              `json:"bakerFee"`
+	StorageFee         uint64              `json:"storageFee"`
+	AllocationFee      uint64              `json:"allocationFee"`
+	ContractBalance    uint64              `json:"contractBalance"`
+	ContractManager    *Alias              `json:"contractManager"`
+	ContractDelegate   *Alias              `json:"contractDelegate"`
+	Code               stdJSON.RawMessage  `json:"code"`
+	Storage            stdJSON.RawMessage  `json:"storage"`
+	Diffs              stdJSON.RawMessage  `json:"diffs"`
+	Status             string              `json:"status"`
+	Errors             stdJSON.RawMessage  `json:"errors,omitempty"`
+	OriginatedContract *OriginatedContract `json:"originatedContract,omitempty"`
+	Quote              *QuoteShort         `json:"quote,omitempty"`
+}
+
+// Reveal -
+type Reveal struct {
+	Operation
+
+	ID        uint64             `json:"id"`
+	Level     uint64             `json:"level"`
+	Timestamp time.Time          `json:"timestamp"`
+	Block     string             `json:"block"`
+	Hash      string             `json:"hash"`
+	Sender    *Alias             `json:"sender"`
+	Counter   uint64             `json:"counter"`
+	GasLimit  uint64             `json:"gasLimit"`
+	GasUsed   uint64             `json:"gasUsed"`
+	BakerFee  uint64             `json:"bakerFee"`
+	Status    string             `json:"status"`
+	Errors    stdJSON.RawMessage `json:"errors,omitempty"`
+	Quote     *QuoteShort        `json:"quote,omitempty"`
+}
+
+// Delegation -
+type Delegation struct {
+	Operation
+
+	ID           uint64             `json:"id"`
+	Level        uint64             `json:"level"`
+	Timestamp    time.Time          `json:"timestamp"`
+	Block        string             `json:"block"`
+	Hash         string             `json:"hash"`
+	Counter      uint64             `json:"counter"`
+	Initiator    *Account           `json:"initiator"`
+	Sender       *Account           `json:"sender"`
+	Nonce        uint64             `json:"nonce"`
+	GasLimit     uint64             `json:"gasLimit"`
+	GasUsed      uint64             `json:"gasUsed"`
+	BakerFee     uint64             `json:"bakerFee"`
+	Amount       uint64             `json:"amount"`
+	PrevDelegate *Account           `json:"prevDelegate"`
+	NewDelegate  *Account           `json:"newDelegate"`
+	Status       string             `json:"status"`
+	Errors       stdJSON.RawMessage `json:"errors,omitempty"`
+	Quote        *QuoteShort        `json:"quote,omitempty"`
+}
+
+// OriginatedContract -
+type OriginatedContract struct {
+	Kind     string `json:"kind"`
+	Alias    string `json:"alias,omitempty"`
+	Address  string `json:"address,omitempty"`
+	TypeHash int64  `json:"typeHash"`
+	CodeHash int64  `json:"codeHash"`
+}
+
+// QuoteShort -
+type QuoteShort struct {
+	BTC decimal.Decimal `json:"btc,omitempty"`
+	EUR decimal.Decimal `json:"eur,omitempty"`
+	USD decimal.Decimal `json:"usd,omitempty"`
+	CNY decimal.Decimal `json:"cny,omitempty"`
+	JPY decimal.Decimal `json:"jpy,omitempty"`
+	KRW decimal.Decimal `json:"krw,omitempty"`
+	ETH decimal.Decimal `json:"eth,omitempty"`
 }
