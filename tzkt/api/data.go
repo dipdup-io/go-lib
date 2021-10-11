@@ -6,17 +6,18 @@ import (
 )
 
 const (
-	KindTransaction     = "transaction"
-	KindOrigination     = "origination"
-	KindEndorsement     = "endorsement"
-	KindBallot          = "ballot"
-	KindProposal        = "proposal"
-	KindDoubleBaking    = "double_baking"
-	KindDoubleEndorsing = "double_endorsing"
-	KindActivation      = "activation"
-	KindNonceRevelation = "nonce_revelation"
-	KindDelegation      = "delegation"
-	KindReveal          = "reveal"
+	KindTransaction            = "transaction"
+	KindOrigination            = "origination"
+	KindEndorsement            = "endorsement"
+	KindBallot                 = "ballot"
+	KindProposal               = "proposal"
+	KindDoubleBaking           = "double_baking"
+	KindDoubleEndorsing        = "double_endorsing"
+	KindActivation             = "activation"
+	KindNonceRevelation        = "nonce_revelation"
+	KindDelegation             = "delegation"
+	KindReveal                 = "reveal"
+	KindRegisterGlobalConstant = "register_constant"
 )
 
 // Operation -
