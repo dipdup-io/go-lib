@@ -9,18 +9,19 @@ import (
 )
 
 const (
-	KindActivation          = "activate_account"
-	KindBallot              = "ballot"
-	KindDelegation          = "delegation"
-	KindDoubleBaking        = "double_baking_evidence"
-	KindDoubleEndorsing     = "double_endorsement_evidence"
-	KindEndorsement         = "endorsement"
-	KindEndorsementWithSlot = "endorsement_with_slot"
-	KindOrigination         = "origination"
-	KindProposal            = "proposals"
-	KindReveal              = "reveal"
-	KindNonceRevelation     = "seed_nonce_revelation"
-	KindTransaction         = "transaction"
+	KindActivation             = "activate_account"
+	KindBallot                 = "ballot"
+	KindDelegation             = "delegation"
+	KindDoubleBaking           = "double_baking_evidence"
+	KindDoubleEndorsing        = "double_endorsement_evidence"
+	KindEndorsement            = "endorsement"
+	KindEndorsementWithSlot    = "endorsement_with_slot"
+	KindOrigination            = "origination"
+	KindProposal               = "proposals"
+	KindReveal                 = "reveal"
+	KindNonceRevelation        = "seed_nonce_revelation"
+	KindTransaction            = "transaction"
+	KindRegisterGlobalConstant = "register_global_constant"
 )
 
 // Errors
