@@ -65,3 +65,9 @@ func (tzkt *API) GetReveals(filters map[string]string) (operations []Operation, 
 	err = tzkt.json("/v1/operations/reveals", filters, &operations)
 	return
 }
+
+// GetRegisterConstants -
+func (tzkt *API) GetRegisterConstants(filters map[string]string) (operations []Operation, err error) {
+	err = tzkt.json("/v1/operations/register_constants", filters, &operations)
+	return
+}
