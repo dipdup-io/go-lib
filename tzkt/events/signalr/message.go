@@ -67,7 +67,7 @@ type StreamItem struct {
 // Completion -  a `Completion` message
 type Completion struct {
 	Message
-	Result string `json:"result,omitempty"`
+	Result uint64 `json:"result,omitempty"`
 	Error  string `json:"string,omitempty"`
 }
 

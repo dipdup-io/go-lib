@@ -22,7 +22,7 @@ if args.Help {
 
 #### `config`
 
-DipDup YAML [configuration](https://docs.dipdup.net/config-file-reference) parser.
+DipDup YAML [configuration](https://docs.dipdup.net/config-file-reference) parser. You can validate config by `validate` tag from [validator package](https://github.com/go-playground/validator).
 
 ```go
 import "github.com/dipdup-net/go-lib/config"
@@ -30,12 +30,7 @@ import "github.com/dipdup-net/go-lib/config"
 type MyConfig struct {
 	config.Config `yaml:",inline"`
     // Custom field here
-    Fields Fields `yaml:"fields"`
-}
-
-// Validate - required by Configurable interface
-func (c *MyConfig) Validate() error {
-    return c.Fields.Validate() // if needed
+    Fields Fields `yaml:"fields" validate:"required"`
 }
 
 // Substitute - required by Configurable interface
@@ -45,11 +40,6 @@ func (c *MyConfig) Substitute() error {
 
 type Fields struct {
     First string `yaml:"first"`
-}
-
-// Validate -
-func (f *Fields) Validate() error {
-    return nil
 }
 
 var cfg MyConfig
@@ -86,6 +76,7 @@ type State struct {
 	IndexType string
 	Hash      string
 	Level     uint64
+	UpdatedAt int    `gorm:"autoUpdateTime"`
 }
 ```
 
@@ -164,6 +155,8 @@ func main() {
 			log.Print("reorg")
 		case events.MessageTypeState:
 			log.Print("initialized")
+		case events.MessageTypeSubscribed:
+			log.Println("subscribed", msg)
 		}
 	}
 }

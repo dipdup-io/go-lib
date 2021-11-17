@@ -16,6 +16,7 @@ const (
 	MessageTypeState MessageType = iota
 	MessageTypeData
 	MessageTypeReorg
+	MessageTypeSubscribed
 )
 
 // Message - message struct

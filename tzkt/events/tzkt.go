@@ -30,7 +30,7 @@ func NewTzKT(url string) *TzKT {
 	}
 	return &TzKT{
 		s:             signalr.NewSignalR(url),
-		msgs:          make(chan Message),
+		msgs:          make(chan Message, 1024),
 		stop:          make(chan struct{}),
 		subscriptions: make([]signalr.Invocation, 0),
 	}
@@ -163,7 +163,17 @@ func (tzkt *TzKT) listen() {
 
 					tzkt.msgs <- message
 				case signalr.Completion:
-					log.Trace("subscribed")
+					for i := range tzkt.subscriptions {
+						if tzkt.subscriptions[i].ID != typ.ID {
+							continue
+						}
+						tzkt.msgs <- Message{
+							Channel: tzkt.subscriptions[i].Target,
+							Type:    MessageTypeSubscribed,
+							State:   typ.Result,
+						}
+						break
+					}
 				}
 			}
 		}
