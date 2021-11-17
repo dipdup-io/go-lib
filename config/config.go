@@ -40,7 +40,7 @@ type Database struct {
 	Path       string `yaml:"path" validate:"required_if=Kind sqlite"`
 	Kind       string `yaml:"kind" validate:"required,oneof=sqlite postgres mysql"`
 	Host       string `yaml:"host" validate:"required_unless=Kind sqlite"`
-	Port       int    `yaml:"port" validate:"required_unless=Kind sqlite,gt=0,lt=65535"`
+	Port       int    `yaml:"port" validate:"required_unless=Kind sqlite,gt=-1,lt=65535"`
 	User       string `yaml:"user" validate:"required_unless=Kind sqlite"`
 	Password   string `yaml:"password" validate:"required_unless=Kind sqlite"`
 	Database   string `yaml:"database" validate:"required_unless=Kind sqlite"`
