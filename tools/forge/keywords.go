@@ -163,3 +163,28 @@ const (
 const (
 	PrimArray = "_array"
 )
+
+var (
+	operationTags = map[string]string{
+		"endorsement":                 "0",
+		"proposals":                   "5",
+		"ballot":                      "6",
+		"seed_nonce_revelation":       "1",
+		"double_endorsement_evidence": "2",
+		"double_baking_evidence":      "3",
+		"activate_account":            "4",
+		"reveal":                      "107",
+		"transaction":                 "108",
+		"origination":                 "109",
+		"delegation":                  "110",
+		"register_global_constant":    "111",
+	}
+
+	entrypointTags = map[string]byte{
+		"default":         0,
+		"root":            1,
+		"do":              2,
+		"set_delegate":    3,
+		"remove_delegate": 4,
+	}
+)

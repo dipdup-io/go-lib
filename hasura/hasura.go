@@ -26,7 +26,7 @@ func Create(hasura config.Hasura, cfg config.Database, views []string, models ..
 	log.Info("Waiting hasura is up and running")
 	for err := api.Health(); err != nil; err = api.Health() {
 		log.Warn(err)
-		time.Sleep(time.Second)
+		time.Sleep(time.Second * 5)
 	}
 
 	metadata, err := Generate(hasura, cfg, models...)

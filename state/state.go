@@ -10,6 +10,7 @@ type State struct {
 	IndexType string `json:"index_type"`
 	Hash      string `json:"hash,omitempty"`
 	Level     uint64 `json:"level"`
+	UpdatedAt int    `gorm:"autoUpdateTime"`
 }
 
 // TableName -

@@ -8,22 +8,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-const (
-	KindActivation             = "activate_account"
-	KindBallot                 = "ballot"
-	KindDelegation             = "delegation"
-	KindDoubleBaking           = "double_baking_evidence"
-	KindDoubleEndorsing        = "double_endorsement_evidence"
-	KindEndorsement            = "endorsement"
-	KindEndorsementWithSlot    = "endorsement_with_slot"
-	KindOrigination            = "origination"
-	KindProposal               = "proposals"
-	KindReveal                 = "reveal"
-	KindNonceRevelation        = "seed_nonce_revelation"
-	KindTransaction            = "transaction"
-	KindRegisterGlobalConstant = "register_global_constant"
-)
-
 // Errors
 var (
 	ErrUnknownKind = errors.New("Unknown operation kind")
@@ -176,24 +160,6 @@ type Header struct {
 	Signature        string    `json:"signature"`
 }
 
-// EndorsementWithSlot -
-type EndorsementWithSlot struct {
-	Endorsement Endorsement `json:"endorsement"`
-	Slot        uint64      `json:"slot"`
-}
-
-// Endorsement -
-type Endorsement struct {
-	Branch    string               `json:"branch"`
-	Operation EndorsementOperation `json:"operations"`
-	Signature string               `json:"signature"`
-}
-
-// EndorsementOperation -
-type EndorsementOperation struct {
-	Level uint64 `json:"level"`
-}
-
 // HeadMetadata -
 type HeadMetadata struct {
 	Protocol        string `json:"protocol"`
@@ -235,21 +201,20 @@ type HeadMetadata struct {
 		Position  int `json:"position"`
 		Remaining int `json:"remaining"`
 	} `json:"voting_period_info"`
-	NonceHash      interface{}   `json:"nonce_hash"`
-	ConsumedGas    string        `json:"consumed_gas"`
-	Deactivated    []interface{} `json:"deactivated"`
-	BalanceUpdates []struct {
-		Kind     string `json:"kind"`
-		Contract string `json:"contract,omitempty"`
-		Change   string `json:"change"`
-		Origin   string `json:"origin"`
-		Category string `json:"category,omitempty"`
-		Delegate string `json:"delegate,omitempty"`
-		Cycle    uint64 `json:"cycle,omitempty"`
-	} `json:"balance_updates"`
+	NonceHash      interface{}     `json:"nonce_hash"`
+	ConsumedGas    string          `json:"consumed_gas"`
+	Deactivated    []interface{}   `json:"deactivated"`
+	BalanceUpdates []BalanceUpdate `json:"balance_updates"`
 }
 
 // IsManager -
 func IsManager(kind string) bool {
 	return kind == KindDelegation || kind == KindOrigination || kind == KindReveal || kind == KindTransaction
+}
+
+// InjectOperationRequest -
+type InjectOperationRequest struct {
+	Operation string
+	ChainID   string
+	Async     bool
 }

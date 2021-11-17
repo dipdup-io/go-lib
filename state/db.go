@@ -76,7 +76,7 @@ func OpenConnection(cfg config.Database) (*gorm.DB, error) {
 	logrus.Info("Waiting database is up and runnning")
 	for err := CheckConnection(db); err != nil; err = CheckConnection(db) {
 		logrus.Warn(err)
-		time.Sleep(time.Second)
+		time.Sleep(time.Second * 5)
 	}
 
 	return db, nil
