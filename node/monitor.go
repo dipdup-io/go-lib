@@ -19,7 +19,6 @@ const (
 	filterRefused       = "refused"
 	filterBranchRefused = "branch_refused"
 	filterBranchDelayed = "branch_delayed"
-	filterUnprocessed   = "unprocessed"
 )
 
 // Monitor -
@@ -40,8 +39,8 @@ type Monitor struct {
 }
 
 // NewMonitor -
-func NewMonitor(url string) Monitor {
-	return Monitor{
+func NewMonitor(url string) *Monitor {
+	return &Monitor{
 		url:           strings.TrimSuffix(url, "/"),
 		applied:       make(chan []*Applied, 4096),
 		refused:       make(chan []*Applied, 4096),
@@ -51,7 +50,7 @@ func NewMonitor(url string) Monitor {
 }
 
 // SubscribeOnMempoolApplied -
-func (monitor Monitor) SubscribeOnMempoolApplied(ctx context.Context) {
+func (monitor *Monitor) SubscribeOnMempoolApplied(ctx context.Context) {
 	if monitor.subscribedOnApplied {
 		return
 	}
@@ -62,7 +61,7 @@ func (monitor Monitor) SubscribeOnMempoolApplied(ctx context.Context) {
 }
 
 // SubscribeOnMempoolRefused -
-func (monitor Monitor) SubscribeOnMempoolRefused(ctx context.Context) {
+func (monitor *Monitor) SubscribeOnMempoolRefused(ctx context.Context) {
 	if monitor.subscribedOnRefused {
 		return
 	}
@@ -73,7 +72,7 @@ func (monitor Monitor) SubscribeOnMempoolRefused(ctx context.Context) {
 }
 
 // SubscribeOnMempoolBranchRefused -
-func (monitor Monitor) SubscribeOnMempoolBranchRefused(ctx context.Context) {
+func (monitor *Monitor) SubscribeOnMempoolBranchRefused(ctx context.Context) {
 	if monitor.subscribedOnBranchRefused {
 		return
 	}
@@ -84,7 +83,7 @@ func (monitor Monitor) SubscribeOnMempoolBranchRefused(ctx context.Context) {
 }
 
 // SubscribeOnMempoolBranchDelayed -
-func (monitor Monitor) SubscribeOnMempoolBranchDelayed(ctx context.Context) {
+func (monitor *Monitor) SubscribeOnMempoolBranchDelayed(ctx context.Context) {
 	if monitor.subscribedOnBranchDelayed {
 		return
 	}
@@ -94,7 +93,7 @@ func (monitor Monitor) SubscribeOnMempoolBranchDelayed(ctx context.Context) {
 	go monitor.pollingMempool(ctx, filterBranchDelayed)
 }
 
-func (monitor Monitor) Close() error {
+func (monitor *Monitor) Close() error {
 	monitor.wg.Wait()
 
 	close(monitor.applied)
@@ -105,26 +104,26 @@ func (monitor Monitor) Close() error {
 }
 
 // Applied -
-func (monitor Monitor) Applied() <-chan []*Applied {
+func (monitor *Monitor) Applied() <-chan []*Applied {
 	return monitor.applied
 }
 
 // BranchRefused -
-func (monitor Monitor) BranchRefused() <-chan []*Applied {
+func (monitor *Monitor) BranchRefused() <-chan []*Applied {
 	return monitor.branchRefused
 }
 
 // BranchDelayed -
-func (monitor Monitor) BranchDelayed() <-chan []*Applied {
+func (monitor *Monitor) BranchDelayed() <-chan []*Applied {
 	return monitor.branchDelayed
 }
 
 // Refused -
-func (monitor Monitor) Refused() <-chan []*Applied {
+func (monitor *Monitor) Refused() <-chan []*Applied {
 	return monitor.refused
 }
 
-func (monitor Monitor) pollingMempool(ctx context.Context, filter string) {
+func (monitor *Monitor) pollingMempool(ctx context.Context, filter string) {
 	defer monitor.wg.Done()
 
 	if filter == "" {
@@ -151,7 +150,7 @@ func (monitor Monitor) pollingMempool(ctx context.Context, filter string) {
 	}
 }
 
-func (monitor Monitor) selectChannel(filter string) (interface{}, error) {
+func (monitor *Monitor) selectChannel(filter string) (interface{}, error) {
 	switch filter {
 	case filterApplied:
 		return monitor.applied, nil
@@ -166,7 +165,7 @@ func (monitor Monitor) selectChannel(filter string) (interface{}, error) {
 	}
 }
 
-func (monitor Monitor) longPolling(ctx context.Context, url string, ch interface{}) error {
+func (monitor *Monitor) longPolling(ctx context.Context, url string, ch interface{}) error {
 	link := fmt.Sprintf("%s/%s", monitor.url, url)
 	req, err := http.NewRequest(http.MethodGet, link, nil)
 	if err != nil {
@@ -183,7 +182,7 @@ func (monitor Monitor) longPolling(ctx context.Context, url string, ch interface
 	return monitor.parseLongPollingResponse(ctx, resp, ch)
 }
 
-func (monitor Monitor) parseLongPollingResponse(ctx context.Context, resp *http.Response, ch interface{}) error {
+func (monitor *Monitor) parseLongPollingResponse(ctx context.Context, resp *http.Response, ch interface{}) error {
 	if resp == nil {
 		return errors.New("nil response on mempool long polling request")
 	}
