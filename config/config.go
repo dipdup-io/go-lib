@@ -15,7 +15,8 @@ type Config struct {
 	Database    Database              `yaml:"database" validate:"required"`
 	DataSources map[string]DataSource `yaml:"datasources"`
 	Contracts   map[string]Contract   `yaml:"contracts"`
-	Hasura      Hasura                `yaml:"hasura"`
+	Hasura      Hasura                `yaml:"hasura" validate:"omitempty"`
+	Prometheus  Prometheus            `yaml:"prometheus" validate:"omitempty"`
 }
 
 // Substitute -
@@ -54,6 +55,11 @@ type Hasura struct {
 	RowsLimit          uint64 `yaml:"select_limit" validate:"gt=0,lt=1000"`
 	EnableAggregations bool   `yaml:"allow_aggregation"`
 	Rest               *bool  `yaml:"rest"`
+}
+
+// Prometheus -
+type Prometheus struct {
+	URL string `yaml:"url" validate:"required"`
 }
 
 // Load - load default config from `filename`

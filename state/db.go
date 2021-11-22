@@ -1,6 +1,7 @@
 package state
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -31,7 +32,7 @@ func CheckConnection(db *gorm.DB) error {
 }
 
 // OpenConnection -
-func OpenConnection(cfg config.Database) (*gorm.DB, error) {
+func OpenConnection(ctx context.Context, cfg config.Database) (*gorm.DB, error) {
 	var dialector gorm.Dialector
 	switch cfg.Kind {
 	case config.DBKindSqlite:
@@ -73,11 +74,28 @@ func OpenConnection(cfg config.Database) (*gorm.DB, error) {
 		return nil, err
 	}
 
-	logrus.Info("Waiting database is up and runnning")
-	for err := CheckConnection(db); err != nil; err = CheckConnection(db) {
-		logrus.Warn(err)
-		time.Sleep(time.Second * 5)
-	}
+	checkHealth(ctx, db)
 
 	return db, nil
+}
+
+func checkHealth(ctx context.Context, db *gorm.DB) {
+	logrus.Info("Waiting database is up and runnning")
+	if err := CheckConnection(db); err == nil {
+		return
+	}
+
+	ticker := time.NewTicker(5 * time.Second)
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			if err := CheckConnection(db); err != nil {
+				logrus.Warn(err)
+				continue
+			}
+			return
+		}
+	}
 }

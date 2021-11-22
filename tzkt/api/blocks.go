@@ -1,15 +1,18 @@
 package api
 
-import "fmt"
+import (
+	"context"
+	"fmt"
+)
 
 // GetBlock -
-func (tzkt *API) GetBlock(level uint64) (b Block, err error) {
-	err = tzkt.json(fmt.Sprintf("/v1/blocks/%d", level), nil, &b)
+func (tzkt *API) GetBlock(ctx context.Context, level uint64) (b Block, err error) {
+	err = tzkt.json(ctx, fmt.Sprintf("/v1/blocks/%d", level), nil, &b)
 	return
 }
 
 // GetBlocks -
-func (tzkt *API) GetBlocks(filters map[string]string) (b []Block, err error) {
-	err = tzkt.json("/v1/blocks", filters, &b)
+func (tzkt *API) GetBlocks(ctx context.Context, filters map[string]string) (b []Block, err error) {
+	err = tzkt.json(ctx, "/v1/blocks", filters, &b)
 	return
 }

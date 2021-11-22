@@ -9,7 +9,6 @@ import (
 	"net/url"
 	"path"
 	"strings"
-	"time"
 
 	jsoniter "github.com/json-iterator/go"
 	"github.com/pkg/errors"
@@ -20,21 +19,13 @@ var json = jsoniter.ConfigCompatibleWithStandardLibrary
 // NodeRPC -
 type NodeRPC struct {
 	baseURL string
-
-	timeout time.Duration
 }
 
 // NewNodeRPC -
-func NewNodeRPC(baseURL string, opts ...NodeOption) *NodeRPC {
-	node := &NodeRPC{
+func NewNodeRPC(baseURL string) *NodeRPC {
+	return &NodeRPC{
 		baseURL: strings.TrimSuffix(baseURL, "/"),
 	}
-
-	for i := range opts {
-		opts[i](node)
-	}
-
-	return node
 }
 
 // URL -
@@ -46,14 +37,21 @@ func (rpc *NodeRPC) parseResponse(resp *http.Response, response interface{}) err
 	if resp.StatusCode != http.StatusOK {
 		data, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			return errors.Wrap(ErrInvalidResponse, resp.Status)
+			return RequestError{
+				Code: resp.StatusCode,
+				Body: resp.Status,
+				Err:  err,
+			}
 		}
-		return errors.Wrap(ErrInvalidResponse, string(data))
+		return RequestError{
+			Code: resp.StatusCode,
+			Body: string(data),
+		}
 	}
 	return json.NewDecoder(resp.Body).Decode(response)
 }
 
-func (rpc *NodeRPC) makeRequest(method, uri string, queryArgs url.Values, body interface{}) (*http.Response, error) {
+func (rpc *NodeRPC) makeRequest(method, uri string, queryArgs url.Values, body interface{}, opts RequestOpts) (*http.Response, error) {
 	link, err := url.Parse(rpc.baseURL)
 	if err != nil {
 		return nil, err
@@ -73,19 +71,16 @@ func (rpc *NodeRPC) makeRequest(method, uri string, queryArgs url.Values, body i
 		}
 	}
 
-	req, err := http.NewRequest(method, link.String(), bodyReader)
+	req, err := http.NewRequestWithContext(opts.ctx, method, link.String(), bodyReader)
 	if err != nil {
 		return nil, errors.Errorf("makeGetRequest.NewRequest: %v", err)
 	}
-	client := http.Client{
-		Timeout: rpc.timeout,
-	}
-	return client.Do(req)
+	return http.DefaultClient.Do(req)
 }
 
 //nolint
-func (rpc *NodeRPC) get(uri string, queryArgs url.Values, response interface{}) error {
-	resp, err := rpc.makeRequest(http.MethodGet, uri, queryArgs, nil)
+func (rpc *NodeRPC) get(uri string, queryArgs url.Values, opts RequestOpts, response interface{}) error {
+	resp, err := rpc.makeRequest(http.MethodGet, uri, queryArgs, nil, opts)
 	if err != nil {
 		return err
 	}
@@ -95,8 +90,8 @@ func (rpc *NodeRPC) get(uri string, queryArgs url.Values, response interface{}) 
 }
 
 //nolint
-func (rpc *NodeRPC) post(uri string, queryArgs url.Values, body, response interface{}) error {
-	resp, err := rpc.makeRequest(http.MethodPost, uri, queryArgs, body)
+func (rpc *NodeRPC) post(uri string, queryArgs url.Values, body interface{}, opts RequestOpts, response interface{}) error {
+	resp, err := rpc.makeRequest(http.MethodPost, uri, queryArgs, body, opts)
 	if err != nil {
 		return err
 	}
@@ -106,42 +101,47 @@ func (rpc *NodeRPC) post(uri string, queryArgs url.Values, body, response interf
 }
 
 // PendingOperations -
-func (rpc *NodeRPC) PendingOperations() (res MempoolResponse, err error) {
-	err = rpc.get("chains/main/mempool/pending_operations", nil, &res)
+func (rpc *NodeRPC) PendingOperations(opts ...RequestOption) (res MempoolResponse, err error) {
+	options := newRequestOpts(opts...)
+	err = rpc.get("chains/main/mempool/pending_operations", nil, options, &res)
 	return
 }
 
 // Constants -
-func (rpc *NodeRPC) Constants() (constants Constants, err error) {
-	err = rpc.get("chains/main/blocks/head/context/constants", nil, &constants)
+func (rpc *NodeRPC) Constants(opts ...RequestOption) (constants Constants, err error) {
+	options := newRequestOpts(opts...)
+	err = rpc.get("chains/main/blocks/head/context/constants", nil, options, &constants)
 	return
 }
 
 // ActiveDelegatesWithRolls -
-func (rpc *NodeRPC) ActiveDelegatesWithRolls() (delegates []string, err error) {
-	err = rpc.get("chains/main/blocks/head/context/raw/json/active_delegates_with_rolls", nil, &delegates)
+func (rpc *NodeRPC) ActiveDelegatesWithRolls(opts ...RequestOption) (delegates []string, err error) {
+	options := newRequestOpts(opts...)
+	err = rpc.get("chains/main/blocks/head/context/raw/json/active_delegates_with_rolls", nil, options, &delegates)
 	return
 }
 
 // Delegates -
-func (rpc *NodeRPC) Delegates(active *bool) (delegates []string, err error) {
+func (rpc *NodeRPC) Delegates(active *bool, opts ...RequestOption) (delegates []string, err error) {
 	queryArgs := make(url.Values)
 	if active != nil && *active {
 		queryArgs.Add("active", "true")
 	}
-	err = rpc.get("chains/main/blocks/head/context/delegates", queryArgs, &delegates)
+	options := newRequestOpts(opts...)
+	err = rpc.get("chains/main/blocks/head/context/delegates", queryArgs, options, &delegates)
 	return
 }
 
 // StakingBalance -
-func (rpc *NodeRPC) StakingBalance(address string) (balance string, err error) {
+func (rpc *NodeRPC) StakingBalance(address string, opts ...RequestOption) (balance string, err error) {
+	options := newRequestOpts(opts...)
 	uri := fmt.Sprintf("chains/main/blocks/head/context/delegates/%s/staking_balance", address)
-	err = rpc.get(uri, nil, &balance)
+	err = rpc.get(uri, nil, options, &balance)
 	return
 }
 
 // InjectOperaiton -
-func (rpc *NodeRPC) InjectOperaiton(request InjectOperationRequest) (hash string, err error) {
+func (rpc *NodeRPC) InjectOperaiton(request InjectOperationRequest, opts ...RequestOption) (hash string, err error) {
 	queryArgs := make(url.Values)
 	if request.Async {
 		queryArgs.Add("async", "true")
@@ -149,37 +149,43 @@ func (rpc *NodeRPC) InjectOperaiton(request InjectOperationRequest) (hash string
 	if request.ChainID != "" {
 		queryArgs.Add("chain", request.ChainID)
 	}
-	err = rpc.post("injection/operation", queryArgs, request.Operation, &hash)
+	options := newRequestOpts(opts...)
+	err = rpc.post("injection/operation", queryArgs, request.Operation, options, &hash)
 	return
 }
 
 // Counter -
-func (rpc *NodeRPC) Counter(contract string, block string) (counter string, err error) {
+func (rpc *NodeRPC) Counter(contract string, block string, opts ...RequestOption) (counter string, err error) {
+	options := newRequestOpts(opts...)
 	uri := fmt.Sprintf("chains/main/blocks/%s/context/contracts/%s/counter", block, contract)
-	err = rpc.get(uri, nil, &counter)
+	err = rpc.get(uri, nil, options, &counter)
 	return
 }
 
 // Header -
-func (rpc *NodeRPC) Header(block string) (head Header, err error) {
-	err = rpc.get(fmt.Sprintf("chains/main/blocks/%s/header", block), nil, &head)
+func (rpc *NodeRPC) Header(block string, opts ...RequestOption) (head Header, err error) {
+	options := newRequestOpts(opts...)
+	err = rpc.get(fmt.Sprintf("chains/main/blocks/%s/header", block), nil, options, &head)
 	return
 }
 
 // HeadMetadata -
-func (rpc *NodeRPC) HeadMetadata(block string) (head HeadMetadata, err error) {
-	err = rpc.get(fmt.Sprintf("chains/main/blocks/%s/metadata", block), nil, &head)
+func (rpc *NodeRPC) HeadMetadata(block string, opts ...RequestOption) (head HeadMetadata, err error) {
+	options := newRequestOpts(opts...)
+	err = rpc.get(fmt.Sprintf("chains/main/blocks/%s/metadata", block), nil, options, &head)
 	return
 }
 
 // Operations -
-func (rpc *NodeRPC) Operations(block string) (operations [][]Operation, err error) {
-	err = rpc.get(fmt.Sprintf("chains/main/blocks/%s/operations", block), nil, &operations)
+func (rpc *NodeRPC) Operations(block string, opts ...RequestOption) (operations [][]Operation, err error) {
+	options := newRequestOpts(opts...)
+	err = rpc.get(fmt.Sprintf("chains/main/blocks/%s/operations", block), nil, options, &operations)
 	return
 }
 
 // ManagerOperations -
-func (rpc *NodeRPC) ManagerOperations(block string) (operations []Operation, err error) {
-	err = rpc.get(fmt.Sprintf("chains/main/blocks/%s/operations/3", block), nil, &operations)
+func (rpc *NodeRPC) ManagerOperations(block string, opts ...RequestOption) (operations []Operation, err error) {
+	options := newRequestOpts(opts...)
+	err = rpc.get(fmt.Sprintf("chains/main/blocks/%s/operations/3", block), nil, options, &operations)
 	return
 }

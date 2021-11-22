@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -28,7 +29,7 @@ func New(baseURL string) *API {
 	}
 }
 
-func (tzkt *API) get(endpoint string, args map[string]string) (*http.Response, error) {
+func (tzkt *API) get(ctx context.Context, endpoint string, args map[string]string) (*http.Response, error) {
 	u, err := url.Parse(tzkt.url)
 	if err != nil {
 		return nil, err
@@ -41,7 +42,7 @@ func (tzkt *API) get(endpoint string, args map[string]string) (*http.Response, e
 	}
 	u.RawQuery = values.Encode()
 
-	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -49,8 +50,8 @@ func (tzkt *API) get(endpoint string, args map[string]string) (*http.Response, e
 	return tzkt.client.Do(req)
 }
 
-func (tzkt *API) json(endpoint string, args map[string]string, output interface{}) error {
-	resp, err := tzkt.get(endpoint, args)
+func (tzkt *API) json(ctx context.Context, endpoint string, args map[string]string, output interface{}) error {
+	resp, err := tzkt.get(ctx, endpoint, args)
 	if err != nil {
 		return err
 	}
@@ -66,8 +67,8 @@ func (tzkt *API) json(endpoint string, args map[string]string, output interface{
 	}
 }
 
-func (tzkt *API) count(endpoint string) (uint64, error) {
-	resp, err := tzkt.get(endpoint, nil)
+func (tzkt *API) count(ctx context.Context, endpoint string) (uint64, error) {
+	resp, err := tzkt.get(ctx, endpoint, nil)
 	if err != nil {
 		return 0, err
 	}
@@ -82,7 +83,7 @@ func (tzkt *API) count(endpoint string) (uint64, error) {
 }
 
 // GetHead -
-func (tzkt *API) GetHead() (head Head, err error) {
-	err = tzkt.json("/v1/head", nil, &head)
+func (tzkt *API) GetHead(ctx context.Context) (head Head, err error) {
+	err = tzkt.json(ctx, "/v1/head", nil, &head)
 	return
 }

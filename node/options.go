@@ -1,17 +1,29 @@
 package node
 
-import "time"
+import (
+	"context"
+)
 
-// NodeOption -
-type NodeOption func(*NodeRPC)
+// RequestOpts -
+type RequestOpts struct {
+	ctx context.Context
+}
 
-// WithTimeout -
-func WithTimeout(seconds uint64) NodeOption {
-	return func(m *NodeRPC) {
-		if seconds > 0 {
-			m.timeout = time.Duration(seconds) * time.Second
-		} else {
-			m.timeout = 10 * time.Second
-		}
+func newRequestOpts(opts ...RequestOption) RequestOpts {
+	req := RequestOpts{context.Background()}
+
+	for i := range opts {
+		opts[i](&req)
+	}
+	return req
+}
+
+// RequestOption -
+type RequestOption func(*RequestOpts)
+
+// WithContext -
+func WithContext(ctx context.Context) RequestOption {
+	return func(opts *RequestOpts) {
+		opts.ctx = ctx
 	}
 }

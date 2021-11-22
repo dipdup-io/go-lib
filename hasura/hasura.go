@@ -1,6 +1,7 @@
 package hasura
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -19,15 +20,31 @@ const (
 	allowedQueries = "allowed-queries"
 )
 
+func checkHealth(ctx context.Context, api *API) {
+	log.Info("Waiting hasura is up and running")
+	if err := api.Health(ctx); err != nil {
+		return
+	}
+	ticker := time.NewTicker(5 * time.Second)
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			if err := api.Health(ctx); err != nil {
+				log.Warn(err)
+				continue
+			}
+			return
+		}
+	}
+}
+
 // Create - creates hasura models
-func Create(hasura config.Hasura, cfg config.Database, views []string, models ...interface{}) error {
+func Create(ctx context.Context, hasura config.Hasura, cfg config.Database, views []string, models ...interface{}) error {
 	api := New(hasura.URL, hasura.Secret)
 
-	log.Info("Waiting hasura is up and running")
-	for err := api.Health(); err != nil; err = api.Health() {
-		log.Warn(err)
-		time.Sleep(time.Second * 5)
-	}
+	checkHealth(ctx, api)
 
 	metadata, err := Generate(hasura, cfg, models...)
 	if err != nil {
@@ -35,7 +52,7 @@ func Create(hasura config.Hasura, cfg config.Database, views []string, models ..
 	}
 
 	log.Info("Fetching existing metadata...")
-	export, err := api.ExportMetadata(metadata)
+	export, err := api.ExportMetadata(ctx, metadata)
 	if err != nil {
 		return err
 	}
@@ -57,14 +74,14 @@ func Create(hasura config.Hasura, cfg config.Database, views []string, models ..
 	}
 
 	log.Info("Replacing metadata...")
-	if err := api.ReplaceMetadata(metadata); err != nil {
+	if err := api.ReplaceMetadata(ctx, metadata); err != nil {
 		return err
 	}
 
 	if len(metadata.QueryCollections) > 0 && (hasura.Rest == nil || *hasura.Rest) {
 		log.Info("Creating REST endpoints...")
 		for _, query := range metadata.QueryCollections[0].Definition.Queries {
-			if err := api.CreateRestEndpoint(query.Name, query.Name, query.Name, allowedQueries); err != nil {
+			if err := api.CreateRestEndpoint(ctx, query.Name, query.Name, query.Name, allowedQueries); err != nil {
 				if e, ok := err.(APIError); !ok || !e.AlreadyExists() {
 					return err
 				}
@@ -74,15 +91,15 @@ func Create(hasura config.Hasura, cfg config.Database, views []string, models ..
 
 	log.Info("Tracking views...")
 	for i := range views {
-		if err := api.TrackTable("public", views[i]); err != nil {
+		if err := api.TrackTable(ctx, "public", views[i]); err != nil {
 			if !strings.Contains(err.Error(), "view/table already tracked") {
 				return err
 			}
 		}
-		if err := api.DropSelectPermissions(views[i], "user"); err != nil {
+		if err := api.DropSelectPermissions(ctx, views[i], "user"); err != nil {
 			log.Warn(err)
 		}
-		if err := api.CreateSelectPermissions(views[i], "user", Permission{
+		if err := api.CreateSelectPermissions(ctx, views[i], "user", Permission{
 			Limit:     hasura.RowsLimit,
 			AllowAggs: hasura.EnableAggregations,
 			Columns:   Columns{"*"},
