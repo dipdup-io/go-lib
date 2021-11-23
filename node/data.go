@@ -42,11 +42,11 @@ func (a *Applied) UnmarshalJSON(data []byte) error {
 
 // Failed -
 type Failed struct {
-	Hash      string
+	Hash      string             `json:"hash,omitempty"`
 	Protocol  string             `json:"protocol"`
 	Branch    string             `json:"branch"`
 	Contents  []Content          `json:"contents"`
-	Signature string             `json:"signature"`
+	Signature string             `json:"signature,omitempty"`
 	Error     stdJSON.RawMessage `json:"error,omitempty"`
 	Raw       stdJSON.RawMessage `json:"raw"`
 }
@@ -65,6 +65,19 @@ func (f *Failed) UnmarshalJSON(data []byte) error {
 	}
 	type buf Failed
 	if err := json.Unmarshal(body[1], (*buf)(f)); err != nil {
+		return err
+	}
+	f.Raw = data
+	return nil
+}
+
+// FailedMonitor -
+type FailedMonitor Failed
+
+// UnmarshalJSON -
+func (f *FailedMonitor) UnmarshalJSON(data []byte) error {
+	type buf FailedMonitor
+	if err := json.Unmarshal(data, (*buf)(f)); err != nil {
 		return err
 	}
 	f.Raw = data
