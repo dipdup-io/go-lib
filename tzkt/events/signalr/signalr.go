@@ -58,3 +58,8 @@ func (s *SignalR) Send(msg interface{}) error {
 func (s *SignalR) SetOnReconnect(onReconnect func() error) {
 	s.hub.onReconnect = onReconnect
 }
+
+// IsConnected -
+func (s *SignalR) IsConnected() bool {
+	return s.hub != nil && s.hub.conn != nil
+}

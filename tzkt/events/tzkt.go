@@ -31,7 +31,7 @@ func NewTzKT(url string) *TzKT {
 	return &TzKT{
 		s:             signalr.NewSignalR(url),
 		msgs:          make(chan Message, 1024),
-		stop:          make(chan struct{}),
+		stop:          make(chan struct{}, 1),
 		subscriptions: make([]signalr.Invocation, 0),
 	}
 }
@@ -57,6 +57,11 @@ func (tzkt *TzKT) Close() error {
 	close(tzkt.msgs)
 	close(tzkt.stop)
 	return nil
+}
+
+// IsConnected - reports whether the connection to TzKT events is established
+func (tzkt *TzKT) IsConnected() bool {
+	return tzkt.s != nil && tzkt.s.IsConnected()
 }
 
 // Listen - listen channel with all received messages

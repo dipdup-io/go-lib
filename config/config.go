@@ -15,8 +15,8 @@ type Config struct {
 	Database    Database              `yaml:"database" validate:"required"`
 	DataSources map[string]DataSource `yaml:"datasources"`
 	Contracts   map[string]Contract   `yaml:"contracts"`
-	Hasura      Hasura                `yaml:"hasura" validate:"omitempty"`
-	Prometheus  Prometheus            `yaml:"prometheus" validate:"omitempty"`
+	Hasura      *Hasura               `yaml:"hasura" validate:"omitempty"`
+	Prometheus  *Prometheus           `yaml:"prometheus" validate:"omitempty"`
 }
 
 // Substitute -
