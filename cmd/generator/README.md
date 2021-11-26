@@ -1,4 +1,4 @@
-# Golng code generator for TzKT API
+# Golang code generator for TzKT API
 
 Application generates Golang code for TzKT contract types. It requests JSON schema from TzKT API for your contract and generates code for processing TzKT API or events entities.
 
@@ -27,46 +27,58 @@ Application creates directory according to contract name pointed in `n` command-
 ## Usage of generated code
 
 ```go
-ctx, cancel := context.WithCancel(context.Background())
-atx := atomex.New("https://api.tzkt.io")
-if err := atx.Subscribe(ctx); err != nil {
-    log.Panic(err)
-}
+package main
 
-initiates, err := atx.GetInitiate(ctx, atomex.Page{
-    Limit: 2,
-})
-if err != nil {
-    log.Panic(err)
-}
-log.Println(initiates)
+import (
+    "context"
+    "<YOUR_OUTPUT_DIRECTORY/atomex>"
+    "log"
+    "os"
+    "signals"
+)
 
-storage, err := atx.GetStorage(ctx)
-if err != nil {
-	log.Panic(err)
-}
-log.Println(storage)
+func main() {
+    ctx, cancel := context.WithCancel(context.Background())
+    atx := atomex.New("https://api.tzkt.io")
+    if err := atx.Subscribe(ctx); err != nil {
+        log.Panic(err)
+    }
 
-signals := make(chan os.Signal, 1)
-signal.Notify(signals, os.Interrupt)
+    initiates, err := atx.GetInitiate(ctx, atomex.Page{
+        Limit: 2,
+    })
+    if err != nil {
+        log.Panic(err)
+    }
+    log.Println(initiates)
 
-for {
-    select {
-    case <-signals:
-        cancel()
-        if err := atx.Close(); err != nil {
-            log.Panic(err)
+    storage, err := atx.GetStorage(ctx)
+    if err != nil {
+        log.Panic(err)
+    }
+    log.Println(storage)
+
+    signals := make(chan os.Signal, 1)
+    signal.Notify(signals, os.Interrupt)
+
+    for {
+        select {
+        case <-signals:
+            cancel()
+            if err := atx.Close(); err != nil {
+                log.Panic(err)
+            }
+            close(signals)
+            return
+        case initiate := <-atx.InitiateEvents():
+            log.Println(initiate)
+        case add := <-atx.AddEvents():
+            log.Println(add)
+        case redeem := <-atx.RedeemEvents():
+            log.Println(redeem)
+        case refund := <-atx.RefundEvents():
+            log.Println(refund)
         }
-        close(signals)
-        return
-    case initiate := <-atx.InitiateEvents():
-        log.Println(initiate)
-    case add := <-atx.AddEvents():
-        log.Println(add)
-    case redeem := <-atx.RedeemEvents():
-        log.Println(redeem)
-    case refund := <-atx.RefundEvents():
-        log.Println(refund)
     }
 }
 ```
