@@ -3,10 +3,11 @@ module github.com/dipdup-net/go-lib
 go 1.15
 
 require (
+	github.com/dave/jennifer v1.4.1
 	github.com/ebellocchia/go-base58 v0.1.0
 	github.com/go-playground/validator/v10 v10.9.0
 	github.com/gorilla/websocket v1.4.2
-	github.com/iancoleman/strcase v0.1.3
+	github.com/iancoleman/strcase v0.2.0
 	github.com/json-iterator/go v1.1.12
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.11.0

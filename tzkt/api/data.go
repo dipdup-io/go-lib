@@ -187,3 +187,54 @@ type Right struct {
 	Baker     Address   `json:"baker"`
 	Status    string    `json:"status"`
 }
+
+// ContractJSONSchema -
+type ContractJSONSchema struct {
+	Storage     JSONSchema             `json:"storageSchema"`
+	Entrypoints []EntrypointJSONSchema `json:"entrypoints"`
+	BigMaps     []BigMapJSONSchema     `json:"bigMaps"`
+}
+
+// JSONSchema -
+type JSONSchema struct {
+	Schema               string                `json:"$schema,omitempty"`
+	Type                 string                `json:"type,omitempty"`
+	Comment              string                `json:"$comment,omitempty"`
+	Required             []string              `json:"required,omitempty"`
+	Properties           map[string]JSONSchema `json:"properties,omitempty"`
+	OneOf                []JSONSchema          `json:"oneOf"`
+	AdditionalProperties AdditionalProperties  `json:"additionalProperties,omitempty"`
+	PropertyNames        *JSONSchema           `json:"propertyNames,omitempty"`
+	Items                *JSONSchema           `json:"items,omitempty"`
+}
+
+// EntrypointJSONSchema -
+type EntrypointJSONSchema struct {
+	Name      string     `json:"name"`
+	Parameter JSONSchema `json:"parameterSchema"`
+}
+
+// BigMapJSONSchema -
+type BigMapJSONSchema struct {
+	Name  string     `json:"name"`
+	Path  string     `json:"path"`
+	Key   JSONSchema `json:"keySchema"`
+	Value JSONSchema `json:"valueSchema"`
+}
+
+// AdditionalProperties -
+type AdditionalProperties struct {
+	Value *JSONSchema `json:"-"`
+}
+
+// UnmarshalJSON -
+func (props *AdditionalProperties) UnmarshalJSON(data []byte) error {
+	var flag bool
+	if err := json.Unmarshal(data, &flag); err == nil {
+		props.Value = nil
+		return nil
+	}
+
+	props.Value = &JSONSchema{}
+	return json.Unmarshal(data, props.Value)
+}

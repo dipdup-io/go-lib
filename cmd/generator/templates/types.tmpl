@@ -1,0 +1,98 @@
+// DO NOT EDIT!!!
+package {{.PackageName}}
+
+import (
+	"encoding/hex"
+	"encoding/json"
+	"strconv"
+	"time"
+)
+
+// Unit -
+type Unit struct{}
+
+// Bytes -
+type Bytes []byte
+
+// UnmarshalJSON -
+func (b *Bytes) UnmarshalJSON(data []byte) error {
+	var str string
+	if err := json.Unmarshal(data, &str); err != nil {
+		return err
+	}
+	byt, err := hex.DecodeString(str)
+	if err != nil {
+		return err
+	}
+	*b = make([]byte, 0)
+	*b = append(*b, byt...)
+	return nil
+}
+
+// MarshalJSON -
+func (b Bytes) MarshalJSON() ([]byte, error) {
+	str := hex.EncodeToString(b)
+	return []byte(str), nil
+}
+
+// Timestamp -
+type Timestamp struct {
+	val time.Time
+}
+
+// Value -
+func (t Timestamp) Value() time.Time {
+	return t.val
+}
+
+// UnmarshalJSON -
+func (t *Timestamp) UnmarshalJSON(data []byte) error {
+	var str string
+	if err := json.Unmarshal(data, &str); err != nil {
+		return err
+	}
+	ts, err := strconv.ParseInt(str, 10, 64)
+	if err == nil {
+		t.val = time.Unix(ts, 0)
+		return nil
+	}
+
+	t.val, err = time.Parse(time.RFC3339, str)
+	return err
+}
+
+// MarshalJSON -
+func (t Timestamp) MarshalJSON() ([]byte, error) {
+	str := strconv.FormatInt(t.val.Unix(), 10)
+	return []byte(str), nil
+}
+
+// Address -
+type Address string
+
+// Contract -
+type Contract string
+
+// SaplingTransaction -
+type SaplingTransaction string
+
+// SaplingState -
+type SaplingState struct {
+	State int64
+	Array []interface{}
+}
+
+// UnmarshalJSON -
+func (ss *SaplingState) UnmarshalJSON(data []byte) error {
+	if err := json.Unmarshal(data, &ss.State); err != nil {
+		return err
+	}
+
+	return json.Unmarshal(data, &ss.Array)
+}
+
+// MarshalJSON -
+func (ss SaplingState) MarshalJSON() ([]byte, error) {
+	str := strconv.FormatInt(ss.State, 10)
+	return []byte(str), nil
+}

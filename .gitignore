@@ -18,4 +18,3 @@ vendor/
 .env*
 *.db
 config.yaml
-main.go

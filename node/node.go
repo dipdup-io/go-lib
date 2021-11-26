@@ -189,3 +189,10 @@ func (rpc *NodeRPC) ManagerOperations(block string, opts ...RequestOption) (oper
 	err = rpc.get(fmt.Sprintf("chains/main/blocks/%s/operations/3", block), nil, options, &operations)
 	return
 }
+
+// ContractStorage -
+func (rpc *NodeRPC) ContractStorage(block, contract string, output interface{}, opts ...RequestOption) (err error) {
+	options := newRequestOpts(opts...)
+	err = rpc.get(fmt.Sprintf("chains/main/blocks/%s/context/contracts/%s/storage", block, contract), nil, options, &output)
+	return
+}

@@ -1,0 +1,176 @@
+// DO NOT EDIT!!!
+package {{.PackageName}}
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"log"
+	"strconv"
+	"sync"
+
+	"github.com/dipdup-net/go-lib/tzkt/api"
+	"github.com/dipdup-net/go-lib/tzkt/events"
+)
+
+
+// {{.TypeName}} - struct which implementing contract interaction
+type {{.TypeName}} struct {
+	tzktAPI *api.API
+	tzktEvents *events.TzKT
+
+{{- range $key, $value := .EntrypointTypes }}
+	{{ $value.Var }} chan {{ $value.Type }}
+{{- end }}
+	wg sync.WaitGroup
+}
+
+// New - constructor of contract entity
+func New(baseURL string) *{{.TypeName}}  {
+	return &{{.TypeName}} {
+		tzktAPI: api.New(baseURL),
+		tzktEvents: events.NewTzKT(fmt.Sprintf("%s/v1/events", baseURL)),
+		{{- range $key, $value := .EntrypointTypes }}
+		{{ $value.Var }}: make(chan {{ $value.Type }}, 1024),
+		{{- end }}
+	}
+}
+
+// Subscribe - subscribe on all contract's transaction
+func (contract *{{.TypeName}}) Subscribe(ctx context.Context) error {
+	if err := contract.tzktEvents.Connect(); err != nil {
+		return err
+	}
+
+	contract.wg.Add(1)
+	go contract.listen(ctx)
+
+	return contract.tzktEvents.SubscribeToOperations("{{ .Contract }}", api.KindTransaction)
+}
+
+// Close - close all contract's connections
+func (contract *{{.TypeName}}) Close() error {
+	contract.wg.Wait()
+
+	if err := contract.tzktEvents.Close(); err != nil {
+		return err
+	}
+
+	{{- range $key, $value := .EntrypointTypes }}
+	close(contract.{{ $value.Var }})
+	{{- end }}
+	return nil
+}
+
+{{ range $key, $value := .EntrypointTypes }}
+// {{$value.Type}}Events - listen `{{$key}}` events channel
+func (contract *{{$.TypeName}}) {{$value.Type}}Events() <-chan {{$value.Type}} {
+	return contract.{{$value.Var}}
+}
+{{ end }}
+
+func (contract *{{.TypeName}}) listen(ctx context.Context) {
+	defer contract.wg.Done()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case msg := <- contract.tzktEvents.Listen():
+			switch msg.Type {
+			case events.MessageTypeData:
+
+				switch msg.Channel {
+				case events.ChannelOperations:
+					items := msg.Body.([]interface{})
+					for _, item := range items {
+						tx, ok := item.(*events.Transaction)
+						if !ok {
+							continue
+						}
+						if tx.Parameter == nil {
+							continue
+						}
+
+						switch tx.Parameter.Entrypoint {
+						{{- range $key, $value := .EntrypointTypes }}
+						case "{{ $key }}":
+							var data {{ $value.Type }}
+							if err := json.Unmarshal(tx.Parameter.Value, &data); err != nil {
+								log.Println(err)
+								continue
+							}
+							contract.{{ $value.Var }} <- data
+						{{- end }}
+						}
+					}
+				}
+
+			case events.MessageTypeReorg:
+			case events.MessageTypeState:
+			case events.MessageTypeSubscribed:
+			}
+		}
+	}
+}
+
+{{ range $key, $value := .EntrypointTypes }}   
+// Get{{ $value.Type }} - get `{{$key}}` transactions
+func (contract *{{$.TypeName}}) Get{{ $value.Type }}(ctx context.Context, page Page) ([]{{ $value.Type }}, error) {
+	operations, err := getTransactions(ctx, contract.tzktAPI, "{{ $key }}", "{{$.Contract}}", page)
+	if err != nil {
+		return nil, err
+	}
+	values := make([]{{ $value.Type }}, 0)
+	for i := range operations {
+		if operations[i].Parameters == nil {
+			continue
+		}
+		var value {{ $value.Type }}
+		if err := json.Unmarshal(operations[i].Parameters.Value, &value); err != nil {
+			return nil, err
+		}
+		values = append(values, value)
+	}
+	return values, nil
+}
+{{ end }}
+// Page -
+type Page struct {
+	Limit  uint64
+	Offset uint64
+}
+
+func getLimits(p Page) Page {
+	var newPage Page
+	if p.Limit == 0 || p.Limit > 10000 {
+		newPage.Limit = 100
+	} else {
+		newPage.Limit = p.Limit
+	}
+
+	if p.Offset == 0 || p.Offset > 10000 {
+		newPage.Offset = 100
+	} else {
+		newPage.Offset = p.Offset
+	}
+
+	return newPage
+}
+
+func getTransactions(ctx context.Context, tzktAPI *api.API, entrypoint, contract string, page Page) ([]api.Operation, error) {
+	limits := getLimits(page)
+	return tzktAPI.GetTransactions(ctx, map[string]string{
+		"entrypoint": entrypoint,
+		"target":     contract,
+		"limit":      strconv.FormatUint(limits.Limit, 10),
+		"offset":     strconv.FormatUint(limits.Offset, 10),
+	})
+}
+
+// GetStorage - get `{{.Contract}}` current storage
+func (contract *{{.TypeName}}) GetStorage(ctx context.Context) (Storage, error) {
+	var storage Storage
+	err := contract.tzktAPI.GetContractStorage(ctx, "{{.Contract}}", &storage)
+	return storage, err
+}
