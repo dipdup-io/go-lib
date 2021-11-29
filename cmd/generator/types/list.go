@@ -20,7 +20,7 @@ func (List) AsField(name, path string, schema api.JSONSchema, isRequired bool, r
 		tags["validate"] = TagRequired
 	}
 
-	return jen.Id(fieldName(name)).Op("[]").Add(jen.Id(result.GetName(name))).Tag(tags), nil
+	return jen.Id(fieldName("List", name)).Op("[]").Add(jen.Id(result.GetName("List", name))).Tag(tags), nil
 }
 
 // AsCode -
@@ -43,7 +43,7 @@ func (l List) AsType(name, path string, schema api.JSONSchema, result *ContractT
 
 func (List) createList(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
 	var code Code
-	code.Name = result.GetName(name)
+	code.Name = result.GetName("List", name)
 
 	if schema.Items != nil {
 		typ, err := selectType(*schema.Items)

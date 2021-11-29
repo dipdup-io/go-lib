@@ -26,7 +26,7 @@ func (s Set) AsField(name, path string, schema api.JSONSchema, isRequired bool, 
 		return code.Statement, err
 	}
 
-	return jen.Id(fieldName(name)).Add(code.Statement).Tag(tags), nil
+	return jen.Id(fieldName("Set", name)).Add(code.Statement).Tag(tags), nil
 }
 
 // AsCode -
@@ -50,7 +50,7 @@ func (s Set) AsType(name, path string, schema api.JSONSchema, result *ContractTy
 
 func (Set) createType(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
 	var code Code
-	code.Name = result.GetName(name)
+	code.Name = result.GetName("Set", name)
 
 	if schema.Items == nil {
 		return code, errors.Errorf("nil items in set: %s", code.Name)

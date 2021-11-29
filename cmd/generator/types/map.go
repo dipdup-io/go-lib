@@ -50,7 +50,7 @@ func (m Map) AsType(name, path string, schema api.JSONSchema, result *ContractTy
 
 func (Map) createType(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
 	var code Code
-	code.Name = result.GetName(name)
+	code.Name = result.GetName("Map", name)
 
 	if schema.PropertyNames == nil {
 		return code, errors.Errorf("nil property names in map: %s", code.Name)

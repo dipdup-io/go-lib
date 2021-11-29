@@ -22,7 +22,7 @@ func (Or) AsField(name, path string, schema api.JSONSchema, isRequired bool, res
 		tags["validate"] = TagRequired
 	}
 
-	return jen.Id(fieldName(name)).Add(jen.Id(result.GetName(name))).Tag(tags), nil
+	return jen.Id(fieldName("Or", name)).Add(jen.Id(result.GetName("Or", name))).Tag(tags), nil
 }
 
 // AsCode -
@@ -57,7 +57,7 @@ func (obj Or) createOr(name, path string, schema api.JSONSchema, result *Contrac
 		return Code{}, err
 	}
 
-	typName := result.GetName(name)
+	typName := result.GetName("Or", name)
 
 	unmarshalJSON := obj.getUnmarshalJSON(typName)
 	marshalJSON := obj.getMarshalJSON(typName)

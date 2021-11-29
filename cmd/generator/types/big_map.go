@@ -19,7 +19,7 @@ func GenerateBigMap(bigMap api.BigMapJSONSchema, result *ContractTypeResult) err
 		return err
 	}
 
-	typeName := result.GetName(bigMap.Name)
+	typeName := result.GetName("BigMap", bigMap.Name)
 	result.File.Comment(typeName).Line().Type().Id(typeName).Struct(
 		jen.Id("Key").Add(jen.Id(keyTypeName)),
 		jen.Id("Value").Add(jen.Id(valueTypeName)),
@@ -52,7 +52,11 @@ func GenerateBigMap(bigMap api.BigMapJSONSchema, result *ContractTypeResult) err
 		),
 	)
 
-	result.bigMaps[getPath("storage", bigMap.Path)] = typeName
+	result.BigMaps[getPath("storage", bigMap.Path)] = BigMapData{
+		KeyType:   keyTypeName,
+		ValueType: valueTypeName,
+		Type:      typeName,
+	}
 
 	return nil
 }
@@ -70,25 +74,28 @@ func (BigMap) AsField(name, path string, schema api.JSONSchema, isRequired bool,
 		tags["validate"] = TagRequired
 	}
 
-	typName, ok := result.bigMaps[getPath(path, name)]
+	var typName string
+	bmData, ok := result.BigMaps[getPath(path, name)]
 	if !ok {
-		typName = result.GetName(name)
+		typName = result.GetName("BigMap", name)
+	} else {
+		typName = bmData.Type
 	}
 
-	return jen.Id(fieldName(name)).Add(jen.Id(typName)).Tag(tags), nil
+	return jen.Id(fieldName("BigMap", name)).Add(jen.Id(typName)).Tag(tags), nil
 }
 
 // AsCode -
 func (BigMap) AsCode(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
 	return Code{
 		Statement: nil,
-		Name:      result.GetName(name),
+		Name:      result.GetName("BigMap", name),
 	}, nil
 }
 
 // AsType -
 func (BigMap) AsType(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
-	typName := result.GetName(name)
+	typName := result.GetName("BigMap", name)
 	return Code{
 		Statement: jen.Id(typName),
 		Name:      typName,

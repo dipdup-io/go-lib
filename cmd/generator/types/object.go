@@ -18,7 +18,7 @@ func (Object) AsField(name, path string, schema api.JSONSchema, isRequired bool,
 		tags["validate"] = TagRequired
 	}
 
-	return jen.Id(fieldName(name)).Add(jen.Id("Unit")).Tag(tags), nil
+	return jen.Id(fieldName("Object", name)).Add(jen.Id("Unit")).Tag(tags), nil
 }
 
 // AsCode -
@@ -82,13 +82,13 @@ func (Object) create(name, path string, schema api.JSONSchema, result *ContractT
 					tags["validate"] = TagRequired
 				}
 
-				fields = append(fields, jen.Id(fieldName(propName)).Op(code.Name).Tag(tags))
+				fields = append(fields, jen.Id(fieldName(props.Comment, propName)).Op(code.Name).Tag(tags))
 			}
 		}
 	}
 
 	return Code{
 		Statement: jen.Struct(fields...).Line().Add(statements...).Line(),
-		Name:      result.GetName(name),
+		Name:      result.GetName("Object", name),
 	}, nil
 }

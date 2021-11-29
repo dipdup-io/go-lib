@@ -84,6 +84,8 @@ func main() {
             log.Println(redeem)
         case refund := <-atx.RefundEvents():
             log.Println(refund)
+        case update := <-atx.BigMap0Updates():
+            log.Println(update)
         }
     }
 }

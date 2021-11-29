@@ -17,6 +17,7 @@ type templateContext struct {
 	PackageName     string
 	TypeName        string
 	EntrypointTypes map[string]types.EntrypointData
+	BigMaps         map[string]types.BigMapData
 	Contract        string
 }
 
@@ -64,6 +65,7 @@ func generateContractObject(name, contract, dest string, result types.ContractTy
 		TypeName:        className,
 		Contract:        contract,
 		EntrypointTypes: result.Entrypoints,
+		BigMaps:         result.BigMaps,
 	})
 }
 
@@ -89,7 +91,12 @@ func generateDefaultTypes(packageName, dest string) error {
 }
 
 func generateFromTemplate(templateFileName, dest string, ctx interface{}) error {
-	tmpl, err := template.ParseFS(templates, "template/*")
+	tmpl, err := template.New("").Funcs(template.FuncMap{
+		"ToLower": strings.ToLower,
+		"TrimStorage": func(x string) string {
+			return strings.TrimPrefix(x, "storage.")
+		},
+	}).ParseFS(templates, "template/*")
 	if err != nil {
 		return err
 	}

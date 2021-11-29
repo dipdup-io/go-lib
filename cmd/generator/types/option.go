@@ -21,7 +21,7 @@ func (Option) AsField(name, path string, schema api.JSONSchema, isRequired bool,
 		tags["validate"] = TagRequired
 	}
 
-	return jen.Id(fieldName(name)).Op("[]").Add(jen.Id(result.GetName(name))).Tag(tags), nil
+	return jen.Id(fieldName("Option", name)).Op("[]").Add(jen.Id(result.GetName("Option", name))).Tag(tags), nil
 }
 
 // AsCode -
@@ -45,7 +45,7 @@ func (opt Option) AsType(name, path string, schema api.JSONSchema, result *Contr
 
 func (Option) createOption(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
 	var code Code
-	code.Name = result.GetName(name)
+	code.Name = result.GetName("Option", name)
 
 	if len(schema.OneOf) != 2 {
 		return code, errors.Errorf("invalid oneOf field for option: %s", code.Name)

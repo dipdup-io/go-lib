@@ -24,10 +24,12 @@ type {{ $value.Type }}Tx struct {
 type {{.TypeName}} struct {
 	tzktAPI *api.API
 	tzktEvents *events.TzKT
-
-{{- range $key, $value := .EntrypointTypes }}
+{{ range $key, $value := .EntrypointTypes }}
 	{{ $value.Var }} chan {{ $value.Type }}Tx
 {{- end }}
+{{- range $key, $value := .BigMaps }}
+	{{ $value.Type | ToLower }} chan {{ $value.Type }}
+{{ end }}
 	wg sync.WaitGroup
 }
 
@@ -38,6 +40,9 @@ func New(baseURL string) *{{.TypeName}}  {
 		tzktEvents: events.NewTzKT(fmt.Sprintf("%s/v1/events", baseURL)),
 		{{- range $key, $value := .EntrypointTypes }}
 		{{ $value.Var }}: make(chan {{ $value.Type }}Tx, 1024),
+		{{- end }}
+		{{- range $key, $value := .BigMaps }}
+		{{ $value.Type | ToLower }}: make(chan {{ $value.Type }}, 1024),
 		{{- end }}
 	}
 }
@@ -50,6 +55,10 @@ func (contract *{{.TypeName}}) Subscribe(ctx context.Context) error {
 
 	contract.wg.Add(1)
 	go contract.listen(ctx)
+
+	if err := contract.tzktEvents.SubscribeToBigMaps(nil, "{{ .Contract }}", ""); err != nil {
+		return err
+	}
 
 	return contract.tzktEvents.SubscribeToOperations("{{ .Contract }}", api.KindTransaction)
 }
@@ -74,6 +83,12 @@ func (contract *{{$.TypeName}}) {{$value.Type}}Events() <-chan {{ $value.Type }}
 	return contract.{{$value.Var}}
 }
 {{ end }}
+{{ range $key, $value := .BigMaps }}
+// {{$value.Type}}Updates - listen `{{$value.Type}}` updates channel
+func (contract *{{$.TypeName}}) {{$value.Type}}Updates() <-chan {{ $value.Type }} {
+	return contract.{{$value.Type | ToLower }}
+}
+{{ end }}
 
 func (contract *{{.TypeName}}) listen(ctx context.Context) {
 	defer contract.wg.Done()
@@ -87,6 +102,31 @@ func (contract *{{.TypeName}}) listen(ctx context.Context) {
 			case events.MessageTypeData:
 
 				switch msg.Channel {
+				case events.ChannelBigMap:
+					items := msg.Body.([]events.BigMapUpdate)
+					for i := range items {
+						switch items[i].Path {
+						{{- range $key, $value := .BigMaps }}
+						case "{{$key | TrimStorage}}":
+							var key {{$value.KeyType}}
+							if err := json.Unmarshal([]byte(items[i].Content.Key), &key); err != nil {
+								log.Println(err)
+								continue
+							}
+
+							var value {{$value.ValueType}}
+							if err := json.Unmarshal(items[i].Content.Value, &value); err != nil {
+								log.Println(err)
+								continue
+							}
+							contract.{{$value.Type | ToLower }} <- {{$value.Type}}{
+								Key: key,
+								Value: value,
+							}
+						{{- end }}
+						}
+					}
+
 				case events.ChannelOperations:
 					items := msg.Body.([]interface{})
 					for _, item := range items {

@@ -18,12 +18,12 @@ func (Bool) AsField(name, path string, schema api.JSONSchema, isRequired bool, r
 		tags["validate"] = TagRequired
 	}
 
-	return jen.Id(fieldName(name)).Bool().Tag(tags), nil
+	return jen.Id(fieldName("Bool", name)).Bool().Tag(tags), nil
 }
 
 // AsCode -
 func (Bool) AsCode(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
-	typ := result.GetName(name)
+	typ := result.GetName("Bool", name)
 	return Code{
 		Statement: jen.Comment(typ).Line().Type().Id(typ).Bool().Line(),
 		Name:      typ,
@@ -34,6 +34,6 @@ func (Bool) AsCode(name, path string, schema api.JSONSchema, result *ContractTyp
 func (Bool) AsType(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
 	return Code{
 		Statement: jen.Bool(),
-		Name:      result.GetName(name),
+		Name:      result.GetName("Bool", name),
 	}, nil
 }

@@ -18,12 +18,12 @@ func (Bytes) AsField(name, path string, schema api.JSONSchema, isRequired bool, 
 		tags["validate"] = TagRequired
 	}
 
-	return jen.Id(fieldName(name)).Add(jen.Id("Bytes")).Tag(tags), nil
+	return jen.Id(fieldName("Bytes", name)).Add(jen.Id("Bytes")).Tag(tags), nil
 }
 
 // AsCode -
 func (Bytes) AsCode(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
-	typName := result.GetName(name)
+	typName := result.GetName("Bytes", name)
 	return Code{
 		Statement: jen.Comment(typName).Line().Type().Id(typName).Add(jen.Id("Bytes")).Line(),
 		Name:      typName,
@@ -34,6 +34,6 @@ func (Bytes) AsCode(name, path string, schema api.JSONSchema, result *ContractTy
 func (Bytes) AsType(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
 	return Code{
 		Statement: jen.Add(jen.Id("Bytes")),
-		Name:      result.GetName(name),
+		Name:      result.GetName("Bytes", name),
 	}, nil
 }

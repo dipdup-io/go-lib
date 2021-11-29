@@ -11,7 +11,7 @@
             "mode": "debug",
             "program": "${workspaceFolder}/cmd/generator",
             "args": [
-                "-n", "atomex", "-c", "KT1VG2WtYdSWz5E7chTeAdDPZNy2MpP8pTfL"
+                "-n", "atomex", "-c", "KT1KHdx4EC7WNVeeTGMr8utCSRczgu2EPCzX", "-u", "https://api.granadanet.tzkt.io"
             ]
         }
     ]

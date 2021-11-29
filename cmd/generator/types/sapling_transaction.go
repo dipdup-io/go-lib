@@ -18,12 +18,12 @@ func (SaplingTransaction) AsField(name, path string, schema api.JSONSchema, isRe
 		tags["validate"] = TagRequired
 	}
 
-	return jen.Id(fieldName(name)).Add(jen.Id("SaplingTransaction")).Tag(tags), nil
+	return jen.Id(fieldName("SaplingTransaction", name)).Add(jen.Id("SaplingTransaction")).Tag(tags), nil
 }
 
 // AsCode -
 func (SaplingTransaction) AsCode(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
-	typName := result.GetName(name)
+	typName := result.GetName("SaplingTransaction", name)
 	return Code{
 		Statement: jen.Comment(typName).Line().Type().Id(typName).Add(jen.Id("SaplingTransaction")).Line(),
 		Name:      typName,

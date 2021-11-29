@@ -20,12 +20,12 @@ func (Int) AsField(name, path string, schema api.JSONSchema, isRequired bool, re
 		tags["validate"] = TagRequired
 	}
 
-	return jen.Id(fieldName(name)).Int64().Tag(tags), nil
+	return jen.Id(fieldName("Int", name)).Int64().Tag(tags), nil
 }
 
 // AsCode -
 func (Int) AsCode(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
-	typ := result.GetName(name)
+	typ := result.GetName("Int", name)
 	return Code{
 		Statement: jen.Comment(typ).Line().Type().Id(typ).Int64().Line(),
 		Name:      typ,
@@ -36,6 +36,6 @@ func (Int) AsCode(name, path string, schema api.JSONSchema, result *ContractType
 func (Int) AsType(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
 	return Code{
 		Statement: jen.Int64(),
-		Name:      result.GetName(name),
+		Name:      result.GetName("Int", name),
 	}, nil
 }

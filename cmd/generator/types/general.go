@@ -3,6 +3,7 @@ package types
 import (
 	"fmt"
 	"go/token"
+	"strconv"
 
 	"github.com/dave/jennifer/jen"
 	"github.com/dipdup-net/go-lib/tzkt/api"
@@ -51,24 +52,24 @@ func Generate(name string, schema api.JSONSchema, result *ContractTypeResult) (s
 type ContractTypeResult struct {
 	File        *jen.File
 	Entrypoints map[string]EntrypointData
+	BigMaps     map[string]BigMapData
 	PackageName string
 
 	names   map[string]struct{}
-	bigMaps map[string]string
 	counter int64
 }
 
 // GetName -
-func (result *ContractTypeResult) GetName(name string) string {
+func (result *ContractTypeResult) GetName(typ, name string) string {
 	if reserved, ok := reservedNames[name]; ok {
 		name = reserved
 	}
-	name = strcase.ToCamel(name)
+	name = fieldName(typ, name)
 
 	if _, exists := result.names[name]; exists {
 		result.counter++
 		name = fmt.Sprintf("%s%d", name, result.counter)
-		name = result.GetName(name)
+		name = result.GetName(typ, name)
 	}
 
 	result.names[name] = struct{}{}
@@ -81,15 +82,22 @@ type EntrypointData struct {
 	Var  string
 }
 
+// BigMapData -
+type BigMapData struct {
+	Type      string
+	KeyType   string
+	ValueType string
+}
+
 // GenerateContractTypes -
 func GenerateContractTypes(schema api.ContractJSONSchema, packageName string) (ContractTypeResult, error) {
 	result := ContractTypeResult{
 		File:        jen.NewFile(packageName),
 		Entrypoints: make(map[string]EntrypointData),
+		BigMaps:     make(map[string]BigMapData),
 		PackageName: packageName,
 
-		names:   make(map[string]struct{}),
-		bigMaps: make(map[string]string),
+		names: make(map[string]struct{}),
 	}
 
 	result.File.PackageComment("DO NOT EDIT!!!")
@@ -206,7 +214,10 @@ func isSimpleType(comment string) bool {
 	return false
 }
 
-func fieldName(name string) string {
+func fieldName(typ, name string) string {
+	if _, err := strconv.ParseInt(name, 10, 64); err == nil {
+		name = fmt.Sprintf("%s%s", typ, name)
+	}
 	return strcase.ToCamel(name)
 }
 
