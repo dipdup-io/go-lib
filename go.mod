@@ -15,7 +15,7 @@ require (
 	github.com/shopspring/decimal v0.0.0-20200227202807-02e2044944cc
 	github.com/sirupsen/logrus v1.7.0
 	github.com/stretchr/testify v1.7.0
-	github.com/tidwall/gjson v1.8.1
+	github.com/tidwall/gjson v1.9.3
 	github.com/yhirose/go-peg v0.0.0-20210119023502-a1af152bac31
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 	golang.org/x/sys v0.0.0-20211031064116-611d5d643895 // indirect
