@@ -4,6 +4,12 @@ Application generates Golang code for TzKT contract types. It requests JSON sche
 
 ## Usage
 
+To install binary
+
+```bash
+go get github.com/dipdup-net/go-lib/cmd/generator
+```
+
 ```bash
 generator -n my_contract -c KT1...
 ```
