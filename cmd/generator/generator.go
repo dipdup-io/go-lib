@@ -59,7 +59,7 @@ func Generate(schema api.ContractJSONSchema, name, contract, dest string) error 
 
 func generateContractObject(name, contract, dest string, result types.ContractTypeResult) error {
 	className := strcase.ToCamel(name)
-	return generateFromTemplate(result.PackageName, "contract", dest, templateContext{
+	return generateFromTemplate("contract", dest, templateContext{
 		PackageName:     result.PackageName,
 		TypeName:        className,
 		Contract:        contract,
@@ -85,10 +85,10 @@ func generateContractTypes(schema api.ContractJSONSchema, packageName, dest stri
 }
 
 func generateDefaultTypes(packageName, dest string) error {
-	return generateFromTemplate(packageName, "types", dest, templateContext{PackageName: packageName})
+	return generateFromTemplate("types", dest, templateContext{PackageName: packageName})
 }
 
-func generateFromTemplate(packageName, templateFileName, dest string, ctx interface{}) error {
+func generateFromTemplate(templateFileName, dest string, ctx interface{}) error {
 	tmpl, err := template.ParseFS(templates, "template/*")
 	if err != nil {
 		return err
