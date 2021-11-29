@@ -15,7 +15,7 @@ type args struct {
 	Contract string `validate:"required_with=URL,len=36"`
 	URL      string `validate:"url,required_with=Contract"`
 	Name     string `validate:"omitempty"`
-	Output   string `validate:"dir,omitempty"`
+	Output   string `validate:"omitempty,dir"`
 	File     string `validate:"required_without=URL"`
 }
 
@@ -24,7 +24,7 @@ func main() {
 
 	flag.StringVar(&args.Contract, "c", "", "Contract address `KT1...`")
 	flag.StringVar(&args.URL, "u", "https://api.tzkt.io/", "TzKT base URL")
-	flag.StringVar(&args.Name, "n", "contract", "Contract name")
+	flag.StringVar(&args.Name, "n", "my_contract", "Contract name")
 	flag.StringVar(&args.Output, "o", "", "Output directory")
 	flag.StringVar(&args.File, "f", "", "Path to JSON schema file")
 

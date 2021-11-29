@@ -1,9 +1,8 @@
 package main
 
 import (
-	"bufio"
+	"embed"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -14,16 +13,17 @@ import (
 	"github.com/iancoleman/strcase"
 )
 
-type typesTemplateContext struct {
-	PackageName string
-}
-
-type contractTemplateContext struct {
+type templateContext struct {
 	PackageName     string
 	TypeName        string
 	EntrypointTypes map[string]types.EntrypointData
 	Contract        string
 }
+
+var (
+	//go:embed template/*.tmpl
+	templates embed.FS
+)
 
 // Generate -
 func Generate(schema api.ContractJSONSchema, name, contract, dest string) error {
@@ -59,7 +59,7 @@ func Generate(schema api.ContractJSONSchema, name, contract, dest string) error 
 
 func generateContractObject(name, contract, dest string, result types.ContractTypeResult) error {
 	className := strcase.ToCamel(name)
-	return generateFromTemplate(result.PackageName, "contract.tmpl", dest, contractTemplateContext{
+	return generateFromTemplate(result.PackageName, "contract", dest, templateContext{
 		PackageName:     result.PackageName,
 		TypeName:        className,
 		Contract:        contract,
@@ -85,29 +85,22 @@ func generateContractTypes(schema api.ContractJSONSchema, packageName, dest stri
 }
 
 func generateDefaultTypes(packageName, dest string) error {
-	return generateFromTemplate(packageName, "types.tmpl", dest, typesTemplateContext{packageName})
+	return generateFromTemplate(packageName, "types", dest, templateContext{PackageName: packageName})
 }
 
 func generateFromTemplate(packageName, templateFileName, dest string, ctx interface{}) error {
-	fileName := fmt.Sprintf("%s.go", strings.TrimSuffix(templateFileName, ".tmpl"))
-	buf, err := ioutil.ReadFile(filepath.Join("./templates", templateFileName))
+	tmpl, err := template.ParseFS(templates, "template/*")
 	if err != nil {
 		return err
 	}
-	tmpl, err := template.New(packageName).Parse(string(buf))
-	if err != nil {
-		return err
-	}
-	targetFile := filepath.Join(dest, fileName)
+	targetFile := filepath.Join(dest, fmt.Sprintf("%s.go", templateFileName))
 	templateFile, err := os.OpenFile(targetFile, os.O_WRONLY|os.O_CREATE, 0755)
 	if err != nil {
 		return err
 	}
-	w := bufio.NewWriter(templateFile)
-	if err := tmpl.Execute(w, ctx); err != nil {
+	if err := tmpl.ExecuteTemplate(templateFile, fmt.Sprintf("%s.tmpl", templateFileName), ctx); err != nil {
 		return err
 	}
-	w.Flush()
 
 	return templateFile.Close()
 }

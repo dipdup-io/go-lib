@@ -13,14 +13,20 @@ import (
 	"github.com/dipdup-net/go-lib/tzkt/events"
 )
 
-
+{{ range $key, $value := .EntrypointTypes }}
+// {{ $value.Type }}Tx - `{{$key}}` transaction entity
+type {{ $value.Type }}Tx struct {
+	*events.Transaction
+	{{ $value.Type }} {{ $value.Type }}
+}
+{{ end }}
 // {{.TypeName}} - struct which implementing contract interaction
 type {{.TypeName}} struct {
 	tzktAPI *api.API
 	tzktEvents *events.TzKT
 
 {{- range $key, $value := .EntrypointTypes }}
-	{{ $value.Var }} chan {{ $value.Type }}
+	{{ $value.Var }} chan {{ $value.Type }}Tx
 {{- end }}
 	wg sync.WaitGroup
 }
@@ -31,7 +37,7 @@ func New(baseURL string) *{{.TypeName}}  {
 		tzktAPI: api.New(baseURL),
 		tzktEvents: events.NewTzKT(fmt.Sprintf("%s/v1/events", baseURL)),
 		{{- range $key, $value := .EntrypointTypes }}
-		{{ $value.Var }}: make(chan {{ $value.Type }}, 1024),
+		{{ $value.Var }}: make(chan {{ $value.Type }}Tx, 1024),
 		{{- end }}
 	}
 }
@@ -64,7 +70,7 @@ func (contract *{{.TypeName}}) Close() error {
 
 {{ range $key, $value := .EntrypointTypes }}
 // {{$value.Type}}Events - listen `{{$key}}` events channel
-func (contract *{{$.TypeName}}) {{$value.Type}}Events() <-chan {{$value.Type}} {
+func (contract *{{$.TypeName}}) {{$value.Type}}Events() <-chan {{ $value.Type }}Tx {
 	return contract.{{$value.Var}}
 }
 {{ end }}
@@ -100,7 +106,9 @@ func (contract *{{.TypeName}}) listen(ctx context.Context) {
 								log.Println(err)
 								continue
 							}
-							contract.{{ $value.Var }} <- data
+							contract.{{ $value.Var }} <- {{ $value.Type }}Tx{
+								tx, data,
+							}
 						{{- end }}
 						}
 					}

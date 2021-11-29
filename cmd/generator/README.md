@@ -17,7 +17,7 @@ generator -n my_contract -c KT1...
 Args:
 
 * `c` - contract address. For example, `KT1WxV6DDSFogKDg9DeAZZZr1HnVvKadpd3S`. Required if `f` is not set.
-* `n` - your contract name. Optional. Default: `contract`.
+* `n` - your contract name. Optional. Default: `my_contract`.
 * `u` - base TzKT API URL. Optional. Default: `https://api.tzkt.io/`.
 * `o` - output directory. Optional. Default: current directory.
 * `f` - path to JSON schema file. Required if `c` is not set.
