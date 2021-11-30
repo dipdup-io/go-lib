@@ -20,15 +20,25 @@ type {{ $value.Type }}Tx struct {
 	{{ $value.Type }} {{ $value.Type }}
 }
 {{ end }}
+{{ range $key, $value := .BigMaps }}
+// {{ $value.Type }}Update - `{{$value.Type}}` update entity
+type {{ $value.Type }}Update struct {
+	{{ $value.Type }} {{ $value.Type }}
+	Level uint64
+	Contract string
+	Action string
+}
+{{ end }}
 // {{.TypeName}} - struct which implementing contract interaction
 type {{.TypeName}} struct {
 	tzktAPI *api.API
 	tzktEvents *events.TzKT
+	address string
 {{ range $key, $value := .EntrypointTypes }}
 	{{ $value.Var }} chan {{ $value.Type }}Tx
 {{- end }}
 {{- range $key, $value := .BigMaps }}
-	{{ $value.Type | ToLower }} chan {{ $value.Type }}
+	{{ $value.Type | ToLower }} chan {{ $value.Type }}Update
 {{ end }}
 	wg sync.WaitGroup
 }
@@ -38,13 +48,19 @@ func New(baseURL string) *{{.TypeName}}  {
 	return &{{.TypeName}} {
 		tzktAPI: api.New(baseURL),
 		tzktEvents: events.NewTzKT(fmt.Sprintf("%s/v1/events", baseURL)),
+		address: "{{ .Contract }}",
 		{{- range $key, $value := .EntrypointTypes }}
 		{{ $value.Var }}: make(chan {{ $value.Type }}Tx, 1024),
 		{{- end }}
 		{{- range $key, $value := .BigMaps }}
-		{{ $value.Type | ToLower }}: make(chan {{ $value.Type }}, 1024),
+		{{ $value.Type | ToLower }}: make(chan {{ $value.Type }}Update, 1024),
 		{{- end }}
 	}
+}
+
+// ChangeAddress - replaces using contract address. Default: value from generating arguments.
+func (contract *{{.TypeName}}) ChangeAddress(address string) {
+	contract.address = address
 }
 
 // Subscribe - subscribe on all contract's transaction
@@ -56,11 +72,11 @@ func (contract *{{.TypeName}}) Subscribe(ctx context.Context) error {
 	contract.wg.Add(1)
 	go contract.listen(ctx)
 
-	if err := contract.tzktEvents.SubscribeToBigMaps(nil, "{{ .Contract }}", ""); err != nil {
+	if err := contract.tzktEvents.SubscribeToBigMaps(nil, contract.address, ""); err != nil {
 		return err
 	}
 
-	return contract.tzktEvents.SubscribeToOperations("{{ .Contract }}", api.KindTransaction)
+	return contract.tzktEvents.SubscribeToOperations(contract.address, api.KindTransaction)
 }
 
 // Close - close all contract's connections
@@ -85,7 +101,7 @@ func (contract *{{$.TypeName}}) {{$value.Type}}Events() <-chan {{ $value.Type }}
 {{ end }}
 {{ range $key, $value := .BigMaps }}
 // {{$value.Type}}Updates - listen `{{$value.Type}}` updates channel
-func (contract *{{$.TypeName}}) {{$value.Type}}Updates() <-chan {{ $value.Type }} {
+func (contract *{{$.TypeName}}) {{$value.Type}}Updates() <-chan {{ $value.Type }}Update {
 	return contract.{{$value.Type | ToLower }}
 }
 {{ end }}
@@ -119,9 +135,14 @@ func (contract *{{.TypeName}}) listen(ctx context.Context) {
 								log.Println(err)
 								continue
 							}
-							contract.{{$value.Type | ToLower }} <- {{$value.Type}}{
-								Key: key,
-								Value: value,
+							contract.{{$value.Type | ToLower }} <- {{ $value.Type }}Update{
+								{{ $value.Type }}: {{ $value.Type }}{
+									Key: key,
+									Value: value,
+								},
+								Level: items[i].Level,
+								Action: items[i].Action,
+								Contract: contract.address,								
 							}
 						{{- end }}
 						}
@@ -165,7 +186,7 @@ func (contract *{{.TypeName}}) listen(ctx context.Context) {
 {{ range $key, $value := .EntrypointTypes }}   
 // Get{{ $value.Type }} - get `{{$key}}` transactions
 func (contract *{{$.TypeName}}) Get{{ $value.Type }}(ctx context.Context, page Page) ([]{{ $value.Type }}, error) {
-	operations, err := getTransactions(ctx, contract.tzktAPI, "{{ $key }}", "{{$.Contract}}", page)
+	operations, err := getTransactions(ctx, contract.tzktAPI, "{{ $key }}", contract.address, page)
 	if err != nil {
 		return nil, err
 	}
@@ -219,6 +240,14 @@ func getTransactions(ctx context.Context, tzktAPI *api.API, entrypoint, contract
 // GetStorage - get `{{.Contract}}` current storage
 func (contract *{{.TypeName}}) GetStorage(ctx context.Context) (Storage, error) {
 	var storage Storage
-	err := contract.tzktAPI.GetContractStorage(ctx, "{{.Contract}}", &storage)
+	err := contract.tzktAPI.GetContractStorage(ctx, contract.address, &storage)
 	return storage, err
 }
+
+
+{{ range $key, $value := .EntrypointTypes }}   
+// Build{{ $value.Type }}Parameters - build `{{$key}}` parameters
+func (contract *{{$.TypeName}}) Build{{ $value.Type }}Parameters(ctx context.Context, params {{ $value.Type }}) ([]byte, error) {
+	return contract.tzktAPI.BuildContractParameters(ctx, contract.address, "{{$key}}", params)
+}
+{{ end }}

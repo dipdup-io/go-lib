@@ -1,8 +1,6 @@
 package types
 
 import (
-	"fmt"
-
 	"github.com/dave/jennifer/jen"
 	"github.com/dipdup-net/go-lib/tzkt/api"
 )
@@ -13,21 +11,21 @@ type Int struct{}
 // AsField -
 func (Int) AsField(name, path string, schema api.JSONSchema, isRequired bool, result *ContractTypeResult) (jen.Code, error) {
 	tags := map[string]string{
-		"json": fmt.Sprintf("%s,string", name),
+		"json": name,
 	}
 
 	if isRequired {
 		tags["validate"] = TagRequired
 	}
 
-	return jen.Id(fieldName("Int", name)).Int64().Tag(tags), nil
+	return jen.Id(fieldName(schema.Comment, name)).Add(jen.Id("Int")).Tag(tags), nil
 }
 
 // AsCode -
 func (Int) AsCode(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
-	typ := result.GetName("Int", name)
+	typ := result.GetName(schema.Comment, name)
 	return Code{
-		Statement: jen.Comment(typ).Line().Type().Id(typ).Int64().Line(),
+		Statement: jen.Comment(typ).Line().Type().Id(typ).Add(jen.Id("Int")).Line(),
 		Name:      typ,
 	}, nil
 }
@@ -35,7 +33,7 @@ func (Int) AsCode(name, path string, schema api.JSONSchema, result *ContractType
 // AsType -
 func (Int) AsType(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
 	return Code{
-		Statement: jen.Int64(),
-		Name:      result.GetName("Int", name),
+		Statement: jen.Add(jen.Id("Int")),
+		Name:      result.GetName(schema.Comment, name),
 	}, nil
 }

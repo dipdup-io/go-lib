@@ -159,16 +159,12 @@ func selectType(schema api.JSONSchema) (Type, error) {
 			return new(Bytes), nil
 		case "contract":
 			return new(Contract), nil
-		case "mutez":
-			return new(Mutez), nil
-		case "int":
+		case "int", "mutez", "nat":
 			return new(Int), nil
 		case "key_hash":
 			return new(KeyHash), nil
 		case "lambda":
 			return new(Lambda), nil
-		case "nat":
-			return new(Nat), nil
 		case "sapling_transaction":
 			return new(SaplingTransaction), nil
 		case TypeString, "signature", "key", "never", "chain_id", "bls12_381_fr", "ticket", "operation":

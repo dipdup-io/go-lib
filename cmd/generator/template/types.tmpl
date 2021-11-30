@@ -4,6 +4,8 @@ package {{.PackageName}}
 import (
 	"encoding/hex"
 	"encoding/json"
+	"errors"
+	"math/big"
 	"strconv"
 	"time"
 )
@@ -32,12 +34,17 @@ func (b *Bytes) UnmarshalJSON(data []byte) error {
 // MarshalJSON -
 func (b Bytes) MarshalJSON() ([]byte, error) {
 	str := hex.EncodeToString(b)
-	return []byte(str), nil
+	return []byte(strconv.Quote(str)), nil
 }
 
 // Timestamp -
 type Timestamp struct {
 	val time.Time
+}
+
+// NewTimestamp -
+func NewTimestamp(t time.Time) Timestamp {
+	return Timestamp{t}
 }
 
 // Value -
@@ -95,4 +102,30 @@ func (ss *SaplingState) UnmarshalJSON(data []byte) error {
 func (ss SaplingState) MarshalJSON() ([]byte, error) {
 	str := strconv.FormatInt(ss.State, 10)
 	return []byte(str), nil
+}
+
+// Int -
+type Int struct{ *big.Int }
+
+// NewInt -
+func NewInt(val int64) Int {
+	return Int{
+		big.NewInt(val),
+	}
+}
+
+// UnmarshalJSON -
+func (i *Int) UnmarshalJSON(data []byte) error {
+	if i.Int == nil {
+		return errors.New("nil Int value")
+	}
+	return i.Int.UnmarshalJSON(data)
+}
+
+// MarshalJSON -
+func (i Int) MarshalJSON() ([]byte, error) {
+	if i.Int == nil {
+		return nil, errors.New("nil Int value")
+	}
+	return i.Int.MarshalJSON()
 }
