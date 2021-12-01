@@ -162,7 +162,7 @@ func (monitor *Monitor) process(ctx context.Context, filter, url string) error {
 
 func (monitor *Monitor) longPollingApplied(ctx context.Context, url string, ch chan []*Applied) error {
 	link := fmt.Sprintf("%s/%s", monitor.url, url)
-	req, err := http.NewRequest(http.MethodGet, link, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, link, nil)
 	if err != nil {
 		return err
 	}
@@ -209,7 +209,7 @@ func (monitor *Monitor) parseLongPollingAppliedResponse(ctx context.Context, res
 
 func (monitor *Monitor) longPollingFailed(ctx context.Context, url string, ch chan []*FailedMonitor) error {
 	link := fmt.Sprintf("%s/%s", monitor.url, url)
-	req, err := http.NewRequest(http.MethodGet, link, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, link, nil)
 	if err != nil {
 		return err
 	}
