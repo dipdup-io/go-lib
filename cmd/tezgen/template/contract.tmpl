@@ -16,6 +16,13 @@ import (
 
 var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
+// entrypoint names
+const (
+{{- range $key, $value := .EntrypointTypes }}   
+	Entrypoint{{$value.Type}} = "{{$key}}"
+{{- end}}
+)
+
 {{ range $key, $value := .EntrypointTypes }}
 // {{ $value.Type }}Tx - `{{$key}}` transaction entity
 type {{ $value.Type }}Tx struct {
