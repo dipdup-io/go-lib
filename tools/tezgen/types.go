@@ -1,14 +1,16 @@
-// DO NOT EDIT!!!
-package {{.PackageName}}
+package tezgen
 
 import (
 	"encoding/hex"
-	"encoding/json"
 	"errors"
 	"math/big"
 	"strconv"
 	"time"
+
+	jsoniter "github.com/json-iterator/go"
 )
+
+var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 // Unit -
 type Unit struct{}
@@ -28,6 +30,7 @@ func (b *Bytes) UnmarshalJSON(data []byte) error {
 	}
 	*b = make([]byte, 0)
 	*b = append(*b, byt...)
+
 	return nil
 }
 

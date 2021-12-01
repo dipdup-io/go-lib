@@ -3,15 +3,18 @@ package {{.PackageName}}
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"strconv"
 	"sync"
 
+	jsoniter "github.com/json-iterator/go"
+
 	"github.com/dipdup-net/go-lib/tzkt/api"
 	"github.com/dipdup-net/go-lib/tzkt/events"
 )
+
+var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
 {{ range $key, $value := .EntrypointTypes }}
 // {{ $value.Type }}Tx - `{{$key}}` transaction entity
@@ -243,8 +246,6 @@ func (contract *{{.TypeName}}) GetStorage(ctx context.Context) (Storage, error) 
 	err := contract.tzktAPI.GetContractStorage(ctx, contract.address, &storage)
 	return storage, err
 }
-
-
 {{ range $key, $value := .EntrypointTypes }}   
 // Build{{ $value.Type }}Parameters - build `{{$key}}` parameters
 func (contract *{{$.TypeName}}) Build{{ $value.Type }}Parameters(ctx context.Context, params {{ $value.Type }}) ([]byte, error) {

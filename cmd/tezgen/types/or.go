@@ -108,7 +108,7 @@ func (obj Or) getUnmarshalJSON(typName string) jen.Code {
 		jen.Id("data").Op("[]").Byte(),
 	).Error().Block(
 		jen.If(
-			jen.Err().Op(":=").Qual("encoding/json", "Unmarshal").
+			jen.Err().Op(":=").Id("json.Unmarshal").
 				Call(
 					jen.Id("data"),
 					jen.Id("or.Left"),
@@ -119,7 +119,7 @@ func (obj Or) getUnmarshalJSON(typName string) jen.Code {
 		),
 
 		jen.Return(
-			jen.Qual("encoding/json", "Unmarshal").
+			jen.Id("json.Unmarshal").
 				Call(
 					jen.Id("data"),
 					jen.Id("or.Right"),
@@ -139,7 +139,7 @@ func (obj Or) getMarshalJSON(typName string) jen.Code {
 		jen.If(
 			jen.Id("or.Left").Op("!=").Nil().Block(
 				jen.Return(
-					jen.Qual("encoding/json", "Marshal").
+					jen.Id("json.Marshal").
 						Call(
 							jen.Id("or.Left"),
 						),
@@ -149,7 +149,7 @@ func (obj Or) getMarshalJSON(typName string) jen.Code {
 		jen.If(
 			jen.Id("or.Right").Op("!=").Nil().Block(
 				jen.Return(
-					jen.Qual("encoding/json", "Marshal").
+					jen.Id("json.Marshal").
 						Call(
 							jen.Id("or.Right"),
 						),

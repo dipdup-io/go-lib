@@ -18,22 +18,28 @@ func (Int) AsField(name, path string, schema api.JSONSchema, isRequired bool, re
 		tags["validate"] = TagRequired
 	}
 
-	return jen.Id(fieldName(schema.Comment, name)).Add(jen.Id("Int")).Tag(tags), nil
+	return jen.Id(fieldName(schema.Comment, name)).Add(
+		jen.Qual("github.com/dipdup-net/go-lib/tools/tezgen", "Int"),
+	).Tag(tags), nil
 }
 
 // AsCode -
 func (Int) AsCode(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
 	typ := result.GetName(schema.Comment, name)
 	return Code{
-		Statement: jen.Comment(typ).Line().Type().Id(typ).Add(jen.Id("Int")).Line(),
-		Name:      typ,
+		Statement: jen.Comment(typ).Line().Type().Id(typ).Add(
+			jen.Qual("github.com/dipdup-net/go-lib/tools/tezgen", "Int"),
+		).Line(),
+		Name: typ,
 	}, nil
 }
 
 // AsType -
 func (Int) AsType(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
 	return Code{
-		Statement: jen.Add(jen.Id("Int")),
-		Name:      result.GetName(schema.Comment, name),
+		Statement: jen.Add(
+			jen.Qual("github.com/dipdup-net/go-lib/tools/tezgen", "Int"),
+		),
+		Name: result.GetName(schema.Comment, name),
 	}, nil
 }

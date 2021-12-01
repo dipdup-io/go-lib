@@ -7,11 +7,11 @@ Application generates Golang code for TzKT contract types. It requests JSON sche
 To install binary
 
 ```bash
-go get github.com/dipdup-net/go-lib/cmd/generator
+go install github.com/dipdup-net/go-lib/cmd/tezgen
 ```
 
 ```bash
-generator -n my_contract -c KT1...
+tezgen -n my_contract -c KT1...
 ```
 
 Args:
@@ -24,9 +24,8 @@ Args:
 
 ## Output
 
-Application creates directory according to contract name pointed in `n` command-line arg. It creates 3 files in the directory:
+Application creates directory according to contract name pointed in `n` command-line arg. It creates 2files in the directory:
 
-* `types.go` - default Tezos types
 * `contract_types.go` - custom contract types
 * `contract.go` - contract TzKT handler
 

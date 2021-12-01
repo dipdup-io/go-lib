@@ -45,7 +45,7 @@ func GenerateBigMap(bigMap api.BigMapJSONSchema, result *ContractTypeResult) err
 			Id("parts").Op(":=").Index().Interface().Values(
 			jen.Id("b.Key"), jen.Id("b.Value"),
 		).Line().Return(
-			jen.Qual("encoding/json", "Unmarshal").Call(
+			jen.Id("json.Unmarshal").Call(
 				jen.Id("data"),
 				jen.Op("&").Id("parts"),
 			),

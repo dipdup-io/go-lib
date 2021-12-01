@@ -101,7 +101,7 @@ func GenerateContractTypes(schema api.ContractJSONSchema, packageName string) (C
 	}
 
 	result.File.PackageComment("DO NOT EDIT!!!")
-	result.File.ImportName("encoding/json", "json")
+	result.File.ImportName("github.com/dipdup-net/go-lib/tools/tezgen", "tezgen")
 
 	if err := generateForContract(schema, &result); err != nil {
 		return result, err

@@ -8,7 +8,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/dipdup-net/go-lib/cmd/generator/types"
+	"github.com/dipdup-net/go-lib/cmd/tezgen/types"
 	"github.com/dipdup-net/go-lib/tzkt/api"
 	"github.com/iancoleman/strcase"
 )
@@ -41,10 +41,6 @@ func Generate(schema api.ContractJSONSchema, name, contract, dest string) error 
 	}
 
 	packageName := strings.ToLower(strcase.ToLowerCamel(name))
-
-	if err := generateDefaultTypes(packageName, destDir); err != nil {
-		return err
-	}
 
 	result, err := generateContractTypes(schema, packageName, destDir)
 	if err != nil {
@@ -84,10 +80,6 @@ func generateContractTypes(schema api.ContractJSONSchema, packageName, dest stri
 	}
 	defer f.Close()
 	return result, nil
-}
-
-func generateDefaultTypes(packageName, dest string) error {
-	return generateFromTemplate("types", dest, templateContext{PackageName: packageName})
 }
 
 func generateFromTemplate(templateFileName, dest string, ctx interface{}) error {
