@@ -1,22 +1,66 @@
 package config
 
 import (
+	"bytes"
+	"io/ioutil"
 	"os"
-	"regexp"
+
+	"golang.org/x/text/transform"
 )
 
-var defaultEnv = regexp.MustCompile(`\${(?P<name>[\w\.]{1,}):-(?P<value>[\w\.:/]*)}`)
+func expandVariables(data []byte) ([]byte, error) {
+	return ioutil.ReadAll(transform.NewReader(bytes.NewBuffer(data), newExpandTransformer()))
+}
 
-func expandEnv(data string) string {
-	vars := defaultEnv.FindAllStringSubmatch(data, -1)
-	data = defaultEnv.ReplaceAllString(data, `${$name}`)
+// expandTransformer implements transform.Transformer
+type expandTransformer struct {
+	transform.NopResetter
+}
 
-	for i := range vars {
-		if _, ok := os.LookupEnv(vars[i][1]); !ok {
-			os.Setenv(vars[i][1], vars[i][2])
+func newExpandTransformer() *expandTransformer {
+	return &expandTransformer{}
+}
+
+// Transform -
+func (t *expandTransformer) Transform(dst, src []byte, atEOF bool) (int, int, error) {
+	var buf bytes.Buffer
+	var index int
+
+	startIndex := bytes.Index(src, []byte{'$', '{'})
+	for startIndex != -1 {
+		if _, err := buf.Write(src[index : startIndex+index]); err != nil {
+			return 0, 0, err
 		}
+		var name, def string
+
+		endIndex := bytes.Index(src[startIndex+index:], []byte{'}'})
+		separatorIndex := bytes.Index(src[startIndex+index:startIndex+index+endIndex], []byte{':', '-'})
+		if separatorIndex == -1 {
+			name = string(src[startIndex+index+2 : startIndex+index+endIndex])
+		} else {
+			name = string(src[startIndex+index+2 : startIndex+index+separatorIndex])
+			def = string(src[startIndex+index+separatorIndex+2 : startIndex+index+endIndex])
+		}
+
+		if envVal, ok := os.LookupEnv(name); ok {
+			def = envVal
+		}
+
+		if def == "" {
+			def = `""`
+		}
+
+		if _, err := buf.Write([]byte(def)); err != nil {
+			return 0, 0, err
+		}
+
+		index += startIndex + endIndex + 1
+		startIndex = bytes.Index(src[index:], []byte{'$', '{'})
 	}
 
-	data = os.ExpandEnv(data)
-	return data
+	if _, err := buf.Write(src[index:]); err != nil {
+		return 0, 0, err
+	}
+
+	return copy(dst, buf.Bytes()), len(src), nil
 }

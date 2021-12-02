@@ -1,8 +1,10 @@
 package config
 
 import (
-	"fmt"
-	"io/ioutil"
+	"bufio"
+	"bytes"
+	"io"
+	"os"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
@@ -64,19 +66,12 @@ type Prometheus struct {
 
 // Load - load default config from `filename`
 func Load(filename string) (*Config, error) {
-	if filename == "" {
-		return nil, errors.Errorf("you have to provide configuration filename")
-	}
-
-	src, err := ioutil.ReadFile(filename)
+	buf, err := readFile(filename)
 	if err != nil {
-		return nil, errors.Wrapf(err, "reading file %s", filename)
+		return nil, err
 	}
-
-	expanded := expandEnv(string(src))
-
 	var c Config
-	if err := yaml.Unmarshal([]byte(expanded), &c); err != nil {
+	if err := yaml.NewDecoder(buf).Decode(&c); err != nil {
 		return nil, err
 	}
 
@@ -89,18 +84,12 @@ func Load(filename string) (*Config, error) {
 
 // Parse -
 func Parse(filename string, output Configurable) error {
-	if filename == "" {
-		return fmt.Errorf("you have to provide configuration filename")
-	}
-
-	src, err := ioutil.ReadFile(filename)
+	buf, err := readFile(filename)
 	if err != nil {
-		return fmt.Errorf("reading file %s error: %w", filename, err)
+		return err
 	}
 
-	expanded := expandEnv(string(src))
-
-	if err := yaml.Unmarshal([]byte(expanded), output); err != nil {
+	if err := yaml.NewDecoder(buf).Decode(output); err != nil {
 		return err
 	}
 
@@ -108,4 +97,38 @@ func Parse(filename string, output Configurable) error {
 		return err
 	}
 	return validator.New().Struct(output)
+}
+
+func readFile(filename string) (*bytes.Buffer, error) {
+	if filename == "" {
+		return nil, errors.Errorf("you have to provide configuration filename")
+	}
+
+	f, err := os.Open(filename)
+	if err != nil {
+		return nil, errors.Wrapf(err, "reading file %s", filename)
+	}
+	defer f.Close()
+
+	reader := bufio.NewReader(f)
+	buffer := bytes.NewBuffer(make([]byte, 0))
+	part := make([]byte, 1024)
+
+	for {
+		count, err := reader.Read(part)
+		if err != nil {
+			if err == io.EOF {
+				return buffer, nil
+			} else {
+				return nil, err
+			}
+		}
+		expanded, err := expandVariables(part[:count])
+		if err != nil {
+			return nil, err
+		}
+		if _, err := buffer.Write(expanded); err != nil {
+			return nil, err
+		}
+	}
 }
