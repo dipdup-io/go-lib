@@ -2,6 +2,7 @@ package forge
 
 import (
 	"bytes"
+	"encoding/binary"
 
 	"github.com/dipdup-net/go-lib/node"
 	"github.com/dipdup-net/go-lib/tools/types"
@@ -26,7 +27,9 @@ func Endorsement(endorsement node.Endorsement, branch string) ([]byte, error) {
 	if _, err := buf.Write(tag); err != nil {
 		return nil, err
 	}
-	level, err := ForgeInt(types.NewBigInt(int64(endorsement.Level)))
+
+	level := make([]byte, 4)
+	binary.BigEndian.PutUint32(level, uint32(endorsement.Level))
 	if err != nil {
 		return nil, err
 	}

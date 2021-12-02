@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/dipdup-net/go-lib/tools/types"
+	"github.com/ebellocchia/go-base58"
 	"github.com/pkg/errors"
 )
 
@@ -99,7 +100,11 @@ func ForgeBool(value bool) []byte {
 
 // ForgeString -
 func ForgeString(value string) ([]byte, error) {
-	return nil, nil
+	decoded, err := base58.New(base58.AlphabetBitcoin).Decode(value)
+	if err != nil {
+		return nil, err
+	}
+	return decoded[2 : len(decoded)-4], nil
 }
 
 func reverse(arr []string) []string {
