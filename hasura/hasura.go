@@ -213,12 +213,12 @@ func getColumns(typ reflect.Type) []string {
 				if !strings.HasPrefix(tag, "-") {
 					columns = append(columns, strcase.ToSnake(field.Name))
 				}
-			}
-
-			if tag := field.Tag.Get("pg"); tag != "" {
+			} else if tag := field.Tag.Get("pg"); tag != "" {
 				if !strings.HasPrefix(tag, "-") && field.Name != "tableName" {
 					columns = append(columns, strcase.ToSnake(field.Name))
 				}
+			} else {
+				columns = append(columns, strcase.ToSnake(field.Name))
 			}
 		} else {
 			cols := getColumns(field.Type)
