@@ -187,24 +187,22 @@ func (monitor *Monitor) parseLongPollingAppliedResponse(ctx context.Context, res
 
 	decoder := json.NewDecoder(resp.Body)
 
-	for {
+	for decoder.More() {
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
 		default:
-			for decoder.More() {
-				value := make([]*Applied, 0)
-				if err := decoder.Decode(&value); err != nil {
-					if err == io.EOF || err == io.ErrUnexpectedEOF {
-						return nil
-					}
-					return err
+			value := make([]*Applied, 0)
+			if err := decoder.Decode(&value); err != nil {
+				if err == io.EOF || err == io.ErrUnexpectedEOF {
+					return nil
 				}
-				ch <- value
+				return err
 			}
-			time.Sleep(time.Millisecond) // sleeping for CPU usage decreasing
+			ch <- value
 		}
 	}
+	return nil
 }
 
 func (monitor *Monitor) longPollingFailed(ctx context.Context, url string, ch chan []*FailedMonitor) error {
@@ -234,22 +232,20 @@ func (monitor *Monitor) parseLongPollingFailedResponse(ctx context.Context, resp
 
 	decoder := json.NewDecoder(resp.Body)
 
-	for {
+	for decoder.More() {
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
 		default:
-			for decoder.More() {
-				value := make([]*FailedMonitor, 0)
-				if err := decoder.Decode(&value); err != nil {
-					if err == io.EOF || err == io.ErrUnexpectedEOF {
-						return nil
-					}
-					return err
+			value := make([]*FailedMonitor, 0)
+			if err := decoder.Decode(&value); err != nil {
+				if err == io.EOF || err == io.ErrUnexpectedEOF {
+					return nil
 				}
-				ch <- value
+				return err
 			}
-			time.Sleep(time.Millisecond) // sleeping for CPU usage decreasing
+			ch <- value
 		}
 	}
+	return nil
 }

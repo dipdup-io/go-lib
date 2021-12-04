@@ -181,6 +181,13 @@ func formatSelectPermissions(limit uint64, allowAggs bool, columns ...string) Se
 
 func getTableName(value reflect.Value, typ reflect.Type) string {
 	if _, ok := typ.MethodByName("TableName"); !ok {
+		if field, exists := typ.FieldByName("tableName"); exists {
+			if tag := field.Tag.Get("pg"); tag != "" {
+				if values := strings.Split(tag, ","); len(values) > 0 {
+					return values[0]
+				}
+			}
+		}
 		return strcase.ToSnake(typ.Name())
 	}
 	res := value.MethodByName("TableName").Call([]reflect.Value{})
@@ -202,9 +209,16 @@ func getColumns(typ reflect.Type) []string {
 	for i := 0; i < typ.NumField(); i++ {
 		field := typ.Field(i)
 		if !field.Anonymous {
-			tag := field.Tag.Get("gorm")
-			if !strings.HasPrefix(tag, "-") {
-				columns = append(columns, strcase.ToSnake(field.Name))
+			if tag := field.Tag.Get("gorm"); tag != "" {
+				if !strings.HasPrefix(tag, "-") {
+					columns = append(columns, strcase.ToSnake(field.Name))
+				}
+			}
+
+			if tag := field.Tag.Get("pg"); tag != "" {
+				if !strings.HasPrefix(tag, "-") && field.Name != "tableName" {
+					columns = append(columns, strcase.ToSnake(field.Name))
+				}
 			}
 		} else {
 			cols := getColumns(field.Type)

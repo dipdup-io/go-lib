@@ -1,10 +1,8 @@
 package config
 
 import (
-	"bufio"
 	"bytes"
-	"io"
-	"os"
+	"io/ioutil"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
@@ -104,31 +102,13 @@ func readFile(filename string) (*bytes.Buffer, error) {
 		return nil, errors.Errorf("you have to provide configuration filename")
 	}
 
-	f, err := os.Open(filename)
+	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, errors.Wrapf(err, "reading file %s", filename)
 	}
-	defer f.Close()
-
-	reader := bufio.NewReader(f)
-	buffer := bytes.NewBuffer(make([]byte, 0))
-	part := make([]byte, 1024)
-
-	for {
-		count, err := reader.Read(part)
-		if err != nil {
-			if err == io.EOF {
-				return buffer, nil
-			} else {
-				return nil, err
-			}
-		}
-		expanded, err := expandVariables(part[:count])
-		if err != nil {
-			return nil, err
-		}
-		if _, err := buffer.Write(expanded); err != nil {
-			return nil, err
-		}
+	expanded, err := expandVariables(data)
+	if err != nil {
+		return nil, err
 	}
+	return bytes.NewBuffer(expanded), nil
 }
