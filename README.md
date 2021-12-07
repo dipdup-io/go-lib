@@ -56,6 +56,22 @@ Simple Tezos RPC API wrapper.
 import "github.com/dipdup-net/go-lib/node"
 
 rpc := node.NewNodeRPC(url, node.WithTimeout(timeout))
+
+ctx, cancel := context.WithCancel(context.Background())
+defer cancel()
+
+// example with context
+constants, err := rpc.Constants(node.WithContext(ctx))
+if err != nil {
+	panic(err)
+}
+
+// example without context
+constants, err := rpc.Constants()
+if err != nil {
+	panic(err)
+}
+
 ```
 
 ### `database`
@@ -105,7 +121,7 @@ There are 2 default implementations of `Database` interface:
 
 There is method `Wait` which waiting until database connection will be established.
 
-Exaple of usage:
+Example of usage:
 
 ```go
 ctx, cancel := context.WithCancel(context.Background())
@@ -115,6 +131,7 @@ db := database.NewPgGo()
 if err := db.Connect(ctx, cfg); err != nil {
 	panic(err)
 }
+defer db.Close()
 
 database.Wait(ctx, db, 5*time.Second)
 
@@ -212,21 +229,13 @@ func main() {
 Example usage of the API wrapper:
 
 ```go
-package main
+ctx, cancel := context.WithCancel(context.Background())
+defer cancel()
 
-import (
-	"log"
+tzkt := api.New("url here")
 
-	"github.com/dipdup-net/go-lib/tzkt/api"
-)
-
-func main() {
-    tzkt := api.New("url here")
-    
-    head, err := tzkt.GetHead()
-    if err != nil {
-        log.Panic(err)
-    }
-    log.Println(head)
+head, err := tzkt.GetHead(ctx)
+if err != nil {
+	log.Panic(err)
 }
 ```
