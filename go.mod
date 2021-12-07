@@ -5,6 +5,7 @@ go 1.16
 require (
 	github.com/dave/jennifer v1.4.1
 	github.com/ebellocchia/go-base58 v0.1.0
+	github.com/go-pg/pg/v10 v10.10.6
 	github.com/go-playground/validator/v10 v10.9.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/iancoleman/strcase v0.2.0

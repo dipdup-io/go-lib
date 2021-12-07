@@ -7,7 +7,7 @@ This library partially implements DipDup framework features and can be used for 
 
 ## Packages
 
-#### `cmdline`
+### `cmdline`
 
 Command line argument parser, compatible with [DipDup CLI](https://docs.dipdup.net/command-line).
 
@@ -20,7 +20,7 @@ if args.Help {
 }
 ```
 
-#### `config`
+### `config`
 
 DipDup YAML [configuration](https://docs.dipdup.net/config-file-reference) parser. You can validate config by `validate` tag from [validator package](https://github.com/go-playground/validator).
 
@@ -48,7 +48,7 @@ if err := config.Parse("config.yaml", &cfg); err != nil {
 }
 ```
 
-#### `node`
+### `node`
 
 Simple Tezos RPC API wrapper.
 
@@ -58,29 +58,75 @@ import "github.com/dipdup-net/go-lib/node"
 rpc := node.NewNodeRPC(url, node.WithTimeout(timeout))
 ```
 
-#### `state`
+### `database`
 
-Managing DipDup index state.
+Managing DipDup database connection. Default interface contains custom method `Connect` and extends 3 interfaces `driver.Pinger`,  `StateRepository` and `io.Closer`.
+
 
 ```go
-import "github.com/dipdup-net/go-lib/state"
+// Database -
+type Database interface {
+	Connect(ctx context.Context, cfg config.Database) error
 
-s := state.State{}
+	StateRepository
+	
+	driver.Pinger
+	io.Closer
+}
+
+// StateRepository -
+type StateRepository interface {
+	State(name string) (State, error)
+	UpdateState(state State) error
+	CreateState(state State) error
+	DeleteState(state State) error
+}
 ```
 
 where `State` structure is:
+
 ```go
 // State -
 type State struct {
-	IndexName string `gorm:"primaryKey"`
-	IndexType string
-	Hash      string
-	Level     uint64
+	//nolint
+	tableName struct{} `gorm:"-" pg:"dipdup_state" json:"-"`
+
+	IndexName string `gorm:"primaryKey" pg:",pk" json:"index_name"`
+	IndexType string `json:"index_type"`
+	Hash      string `json:"hash,omitempty"`
+	Level     uint64 `json:"level"`
 	UpdatedAt int    `gorm:"autoUpdateTime"`
 }
 ```
 
-#### `tzkt`
+There are 2 default implementations of `Database` interface:
+* `Gorm` - database connection via [gorm](https://gorm.io/)
+* `PgGo` - database connection via [pg-go](https://pg.uptrace.dev/)
+
+There is method `Wait` which waiting until database connection will be established.
+
+Exaple of usage:
+
+```go
+ctx, cancel := context.WithCancel(context.Background())
+defer cancel()
+
+db := database.NewPgGo()
+if err := db.Connect(ctx, cfg); err != nil {
+	panic(err)
+}
+
+database.Wait(ctx, db, 5*time.Second)
+
+var yourModel struct{}
+conn := db.DB()
+if err := conn.WithContext(ctx).Model(&yourModel).Limit(10).Select(); err != nil {
+	panic(err)
+}
+```
+
+
+### `tzkt`
 
 TzKT API and Events wrapper.  
 Read more about events and SignalR in the [doc](https://github.com/dipdup-net/go-lib/blob/master/tzkt/events/README.md)
