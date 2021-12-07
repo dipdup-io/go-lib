@@ -13,7 +13,7 @@ import (
 	"github.com/iancoleman/strcase"
 	"github.com/pkg/errors"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 const (
@@ -21,7 +21,7 @@ const (
 )
 
 func checkHealth(ctx context.Context, api *API) {
-	log.Info("Waiting hasura is up and running")
+	log.Info().Msg("Waiting hasura is up and running")
 	if err := api.Health(ctx); err != nil {
 		return
 	}
@@ -32,7 +32,7 @@ func checkHealth(ctx context.Context, api *API) {
 			return
 		case <-ticker.C:
 			if err := api.Health(ctx); err != nil {
-				log.Warn(err)
+				log.Warn().Err(err).Msg("")
 				continue
 			}
 			return
@@ -54,13 +54,13 @@ func Create(ctx context.Context, hasura *config.Hasura, cfg config.Database, vie
 		return err
 	}
 
-	log.Info("Fetching existing metadata...")
+	log.Info().Msg("Fetching existing metadata...")
 	export, err := api.ExportMetadata(ctx, metadata)
 	if err != nil {
 		return err
 	}
 
-	log.Info("Merging metadata...")
+	log.Info().Msg("Merging metadata...")
 	tables := make(map[string]struct{})
 	for i := range metadata.Tables {
 		tables[metadata.Tables[i].Schema.Name] = struct{}{}
@@ -76,13 +76,13 @@ func Create(ctx context.Context, hasura *config.Hasura, cfg config.Database, vie
 		return err
 	}
 
-	log.Info("Replacing metadata...")
+	log.Info().Msg("Replacing metadata...")
 	if err := api.ReplaceMetadata(ctx, metadata); err != nil {
 		return err
 	}
 
 	if len(metadata.QueryCollections) > 0 && (hasura.Rest == nil || *hasura.Rest) {
-		log.Info("Creating REST endpoints...")
+		log.Info().Msg("Creating REST endpoints...")
 		for _, query := range metadata.QueryCollections[0].Definition.Queries {
 			if err := api.CreateRestEndpoint(ctx, query.Name, query.Name, query.Name, allowedQueries); err != nil {
 				if e, ok := err.(APIError); !ok || !e.AlreadyExists() {
@@ -92,7 +92,7 @@ func Create(ctx context.Context, hasura *config.Hasura, cfg config.Database, vie
 		}
 	}
 
-	log.Info("Tracking views...")
+	log.Info().Msg("Tracking views...")
 	for i := range views {
 		if err := api.TrackTable(ctx, "public", views[i]); err != nil {
 			if !strings.Contains(err.Error(), "view/table already tracked") {
@@ -100,7 +100,7 @@ func Create(ctx context.Context, hasura *config.Hasura, cfg config.Database, vie
 			}
 		}
 		if err := api.DropSelectPermissions(ctx, views[i], "user"); err != nil {
-			log.Warn(err)
+			log.Warn().Err(err).Msg("")
 		}
 		if err := api.CreateSelectPermissions(ctx, views[i], "user", Permission{
 			Limit:     hasura.RowsLimit,

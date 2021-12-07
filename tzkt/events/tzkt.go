@@ -8,7 +8,7 @@ import (
 
 	"github.com/dipdup-net/go-lib/tzkt/events/signalr"
 	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 // TzKT - struct that used for connection to TzKT events server
@@ -141,13 +141,13 @@ func (tzkt *TzKT) listen() {
 				switch typ := msg.(type) {
 				case signalr.Invocation:
 					if len(typ.Arguments) == 0 {
-						log.Warnf("Empty arguments of invocation: %v", typ)
+						log.Warn().Msgf("empty arguments of invocation: %v", typ)
 						continue
 					}
 
 					var packet Packet
 					if err := json.Unmarshal(typ.Arguments[0], &packet); err != nil {
-						log.WithError(err).Error("invalid invocation argument")
+						log.Err(err).Msg("invalid invocation argument")
 						continue
 					}
 
@@ -160,7 +160,7 @@ func (tzkt *TzKT) listen() {
 					if packet.Data != nil {
 						data, err := parseData(typ.Target, packet.Data)
 						if err != nil {
-							log.WithError(err).Error("error during parsing data")
+							log.Err(err).Msg("error during parsing data")
 							continue
 						}
 						message.Body = data

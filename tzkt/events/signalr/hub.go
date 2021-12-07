@@ -8,7 +8,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 var (
@@ -62,7 +62,7 @@ func (hub *Hub) Connect() error {
 }
 
 func (hub *Hub) handshake() error {
-	log.Tracef("connecting to %s...", hub.url.String())
+	log.Trace().Msgf("connecting to %s...", hub.url.String())
 
 	c, _, err := websocket.DefaultDialer.Dial(hub.url.String(), nil)
 	if err != nil {
@@ -82,7 +82,7 @@ func (hub *Hub) handshake() error {
 	if resp.Error != "" {
 		return errors.Wrap(ErrHandshake, resp.Error)
 	}
-	log.Trace("connected")
+	log.Trace().Msg("connected")
 
 	return nil
 }
@@ -106,16 +106,16 @@ func (hub *Hub) Close() error {
 }
 
 func (hub *Hub) reconnect() error {
-	log.Warn("reconnecting...")
+	log.Warn().Msg("reconnecting...")
 
 	if err := hub.Send(newCloseMessage()); err != nil {
-		log.Error(err)
+		log.Err(err).Msg("send")
 	}
 
 	if err := hub.conn.Close(); err != nil {
-		log.Error(err)
+		log.Err(err).Msg("close")
 	}
-	log.Trace("connection closed")
+	log.Trace().Msg("connection closed")
 	if err := hub.handshake(); err != nil {
 		return err
 	}
@@ -140,13 +140,13 @@ func (hub *Hub) listen() {
 					switch {
 					case errors.Is(err, ErrTimeout) || websocket.IsCloseError(err, websocket.CloseAbnormalClosure):
 						if err := hub.reconnect(); err != nil {
-							log.Errorf("reconnect: %s", err.Error())
-							log.Warn("retry after 5 seconds")
+							log.Err(err).Msg("reconnect")
+							log.Warn().Msg("retry after 5 seconds")
 							time.Sleep(time.Second * 5)
 						}
 					case errors.Is(err, ErrEmptyResponse):
 					default:
-						log.Errorf("readAllMessages: %s", err.Error())
+						log.Err(err).Msg("readAllMessages")
 					}
 				}
 			}
@@ -198,7 +198,7 @@ func (hub *Hub) readAllMessages() error {
 		return err
 	}
 	if scanner == nil {
-		log.Warn("No messages during read timeout")
+		log.Warn().Msg("no messages during read timeout")
 		return ErrEmptyResponse
 	}
 	if err := scanner.Scan(); err != nil {
@@ -233,7 +233,7 @@ func (hub *Hub) readAllMessages() error {
 
 func (hub *Hub) closeMessageHandler(msg CloseMessage) error {
 	if msg.Error != "" {
-		log.Error(msg.Error)
+		log.Error().Msg(msg.Error)
 	}
 	if !msg.AllowReconnect {
 		return ErrConnectionClose

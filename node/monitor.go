@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 const (
@@ -137,7 +137,7 @@ func (monitor *Monitor) pollingMempool(ctx context.Context, filter string) {
 			return
 		default:
 			if err := monitor.process(ctx, filter, url); err != nil {
-				log.Error(err)
+				log.Err(err).Msg("")
 				continue
 			}
 

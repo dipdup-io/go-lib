@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"net/url"
 
-	log "github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 
 	"github.com/pkg/errors"
 )
@@ -41,7 +41,7 @@ func (t *Transport) Negotiate(version Version) (response NegotiateResponse, err 
 	q.Set("negotiateVersion", string(version))
 	u.RawQuery = q.Encode()
 
-	log.WithField("url", u.String()).Trace("Send negotiate request...")
+	log.Trace().Str("url", u.String()).Msg("send negotiate request...")
 
 	req, err := http.NewRequest(http.MethodPost, u.String(), nil)
 	if err != nil {

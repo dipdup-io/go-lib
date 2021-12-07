@@ -8,7 +8,7 @@ import (
 
 	"github.com/dipdup-net/go-lib/config"
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 )
 
 // Database -
@@ -29,7 +29,7 @@ var (
 
 // Wait -
 func Wait(ctx context.Context, db driver.Pinger, checkPeriod time.Duration) {
-	logrus.Info("Waiting database is up and runnning")
+	log.Info().Msg("Waiting database is up and runnning")
 	if err := db.Ping(ctx); err == nil {
 		return
 	}
@@ -41,7 +41,7 @@ func Wait(ctx context.Context, db driver.Pinger, checkPeriod time.Duration) {
 			return
 		case <-ticker.C:
 			if err := db.Ping(ctx); err == nil {
-				logrus.Warn(err)
+				log.Warn().Err(err).Msg("")
 				continue
 			}
 			return
