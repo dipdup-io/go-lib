@@ -75,12 +75,12 @@ func (db *PgGo) CreateState(s State) error {
 
 // UpdateState -
 func (db *PgGo) UpdateState(s State) error {
-	_, err := db.conn.Model(&s).WherePK().Update()
+	_, err := db.conn.Model(&s).Where("index_name = ?", s.IndexName).Update()
 	return err
 }
 
 // DeleteState -
 func (db *PgGo) DeleteState(s State) error {
-	_, err := db.conn.Model(&s).WherePK().Delete()
+	_, err := db.conn.Model(&s).Where("index_name = ?", s.IndexName).Delete()
 	return err
 }
