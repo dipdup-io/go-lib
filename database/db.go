@@ -40,8 +40,8 @@ func Wait(ctx context.Context, db driver.Pinger, checkPeriod time.Duration) {
 		case <-ctx.Done():
 			return
 		case <-ticker.C:
-			if err := db.Ping(ctx); err == nil {
-				log.Warn().Err(err).Msg("")
+			if err := db.Ping(ctx); err != nil {
+				log.Warn().Err(err).Msg("waiting...")
 				continue
 			}
 			return
