@@ -52,7 +52,7 @@ type Database struct {
 type Hasura struct {
 	URL                string `yaml:"url" validate:"required,url"`
 	Secret             string `yaml:"admin_secret" validate:"required"`
-	RowsLimit          uint64 `yaml:"select_limit" validate:"gt=0,lt=1000"`
+	RowsLimit          uint64 `yaml:"select_limit" validate:"gt=0"`
 	EnableAggregations bool   `yaml:"allow_aggregation"`
 	Rest               *bool  `yaml:"rest"`
 }
