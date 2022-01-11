@@ -22,7 +22,8 @@ const (
 
 // Monitor -
 type Monitor struct {
-	url string
+	url    string
+	client *http.Client
 
 	applied       chan []*Applied
 	refused       chan []*FailedMonitor
@@ -39,12 +40,21 @@ type Monitor struct {
 
 // NewMonitor -
 func NewMonitor(url string) *Monitor {
+	t := http.DefaultTransport.(*http.Transport).Clone()
+	t.MaxIdleConns = 100
+	t.MaxConnsPerHost = 100
+	t.MaxIdleConnsPerHost = 100
+
 	return &Monitor{
 		url:           strings.TrimSuffix(url, "/"),
 		applied:       make(chan []*Applied, 4096),
 		refused:       make(chan []*FailedMonitor, 4096),
 		branchDelayed: make(chan []*FailedMonitor, 4096),
 		branchRefused: make(chan []*FailedMonitor, 4096),
+		client: &http.Client{
+			Transport: t,
+			Timeout:   time.Minute,
+		},
 	}
 }
 
@@ -211,11 +221,8 @@ func (monitor *Monitor) longPollingFailed(ctx context.Context, url string, ch ch
 	if err != nil {
 		return err
 	}
-	client := http.Client{
-		Timeout: time.Minute,
-	}
 
-	resp, err := client.Do(req)
+	resp, err := monitor.client.Do(req)
 	if err != nil {
 		return err
 	}
