@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"path"
 	"strconv"
+	"time"
 
 	jsoniter "github.com/json-iterator/go"
 	"github.com/pkg/errors"
@@ -24,9 +25,17 @@ type API struct {
 
 // New -
 func New(baseURL string) *API {
+	t := http.DefaultTransport.(*http.Transport).Clone()
+	t.MaxIdleConns = 100
+	t.MaxConnsPerHost = 100
+	t.MaxIdleConnsPerHost = 100
+
 	return &API{
-		url:    baseURL,
-		client: http.DefaultClient,
+		url: baseURL,
+		client: &http.Client{
+			Timeout:   time.Minute,
+			Transport: t,
+		},
 	}
 }
 

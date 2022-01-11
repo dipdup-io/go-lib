@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"path"
 	"strings"
+	"time"
 
 	jsoniter "github.com/json-iterator/go"
 	"github.com/pkg/errors"
@@ -19,12 +20,22 @@ var json = jsoniter.ConfigCompatibleWithStandardLibrary
 // NodeRPC -
 type NodeRPC struct {
 	baseURL string
+	client  *http.Client
 }
 
 // NewNodeRPC -
 func NewNodeRPC(baseURL string) *NodeRPC {
+	t := http.DefaultTransport.(*http.Transport).Clone()
+	t.MaxIdleConns = 100
+	t.MaxConnsPerHost = 100
+	t.MaxIdleConnsPerHost = 100
+
 	return &NodeRPC{
 		baseURL: strings.TrimSuffix(baseURL, "/"),
+		client: &http.Client{
+			Timeout:   time.Second * 15,
+			Transport: t,
+		},
 	}
 }
 
@@ -75,7 +86,7 @@ func (rpc *NodeRPC) makeRequest(method, uri string, queryArgs url.Values, body i
 	if err != nil {
 		return nil, errors.Errorf("makeGetRequest.NewRequest: %v", err)
 	}
-	return http.DefaultClient.Do(req)
+	return rpc.client.Do(req)
 }
 
 //nolint

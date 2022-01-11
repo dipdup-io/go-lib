@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"path"
+	"time"
 
 	jsoniter "github.com/json-iterator/go"
 
@@ -19,12 +20,20 @@ type API struct {
 	baseURL string
 	secret  string
 
-	client http.Client
+	client *http.Client
 }
 
 // New -
 func New(baseURL, secret string) *API {
-	return &API{baseURL, secret, *http.DefaultClient}
+	t := http.DefaultTransport.(*http.Transport).Clone()
+	t.MaxIdleConns = 100
+	t.MaxConnsPerHost = 100
+	t.MaxIdleConnsPerHost = 100
+
+	return &API{baseURL, secret, &http.Client{
+		Timeout:   time.Minute,
+		Transport: t,
+	}}
 }
 
 func (api *API) buildURL(endpoint string, args map[string]string) (string, error) {
