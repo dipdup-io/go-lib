@@ -13,15 +13,17 @@ import (
 
 // Service -
 type Service struct {
-	counters map[string]*prometheus.CounterVec
-	server   *http.Server
-	wg       sync.WaitGroup
+	counters   map[string]*prometheus.CounterVec
+	histograms map[string]*prometheus.HistogramVec
+	server     *http.Server
+	wg         sync.WaitGroup
 }
 
 // NewService -
 func NewService(cfg *config.Prometheus) *Service {
 	var s Service
 	s.counters = make(map[string]*prometheus.CounterVec)
+	s.histograms = make(map[string]*prometheus.HistogramVec)
 
 	if cfg != nil && cfg.URL != "" {
 		s.server = &http.Server{Addr: cfg.URL}
@@ -90,4 +92,31 @@ func (service *Service) IncrementCounter(name string, labels map[string]string) 
 // RegisterGoBuildMetrics -
 func (service *Service) RegisterGoBuildMetrics() {
 	prometheus.MustRegister(collectors.NewBuildInfoCollector())
+}
+
+// RegisterHistogram -
+func (service *Service) RegisterHistogram(name, help string, labels ...string) {
+	vec := prometheus.NewHistogramVec(prometheus.HistogramOpts{
+		Name: name,
+		Help: help,
+	}, labels)
+	service.histograms[name] = vec
+	prometheus.MustRegister(vec)
+}
+
+// Histogram -
+func (service *Service) Histogram(name string) *prometheus.HistogramVec {
+	histogram, ok := service.histograms[name]
+	if ok {
+		return histogram
+	}
+	return nil
+}
+
+// AddHistogramValue -
+func (service *Service) AddHistogramValue(name string, labels map[string]string, observe float64) {
+	histogram, ok := service.histograms[name]
+	if ok {
+		histogram.With(labels).Observe(observe)
+	}
 }
