@@ -15,18 +15,14 @@ func TestBytes_UnmarshalJSON(t *testing.T) {
 	}{
 		{
 			name: "test 1",
-			data: []byte{0x31, 0x32, 0x33, 0x34},
-			want: []byte{0x12, 0x34},
-		}, {
-			name: "test 2",
 			data: []byte{'"', '"'},
 			want: []byte{},
 		}, {
-			name:    "test 3",
+			name:    "test 2",
 			data:    []byte{0x00},
 			wantErr: true,
 		}, {
-			name: "test 4",
+			name: "test 3",
 			data: []byte{'"', '1', '2', '"'},
 			want: []byte{0x12},
 		},
