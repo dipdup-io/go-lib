@@ -7,6 +7,7 @@ import (
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
+	"github.com/pkg/errors"
 )
 
 var json = jsoniter.ConfigCompatibleWithStandardLibrary
@@ -19,13 +20,24 @@ type Bytes []byte
 
 // UnmarshalJSON -
 func (b *Bytes) UnmarshalJSON(data []byte) error {
+	if len(data) == 0 {
+		return nil
+	}
+	if len(data)%2 == 1 {
+		return errors.Errorf("invalid bytes value with length %d: %v", data, len(data))
+	}
+	if len(data) > 1 {
+		if data[0] == '"' && data[len(data)-1] == '"' {
+			data = data[1 : len(data)-1]
+		}
+	}
 	byt := make([]byte, hex.DecodedLen(len(data)))
 	if _, err := hex.Decode(byt, data); err != nil {
 		return err
 	}
+
 	*b = make([]byte, 0)
 	*b = append(*b, byt...)
-
 	return nil
 }
 
