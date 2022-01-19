@@ -19,12 +19,8 @@ type Bytes []byte
 
 // UnmarshalJSON -
 func (b *Bytes) UnmarshalJSON(data []byte) error {
-	var str string
-	if err := json.Unmarshal(data, &str); err != nil {
-		return err
-	}
-	byt, err := hex.DecodeString(str)
-	if err != nil {
+	byt := make([]byte, hex.DecodedLen(len(data)))
+	if _, err := hex.Decode(byt, data); err != nil {
 		return err
 	}
 	*b = make([]byte, 0)
