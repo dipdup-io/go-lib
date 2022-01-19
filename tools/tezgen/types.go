@@ -2,7 +2,6 @@ package tezgen
 
 import (
 	"encoding/hex"
-	"errors"
 	"math/big"
 	"strconv"
 	"time"
@@ -120,7 +119,12 @@ func NewInt(val int64) Int {
 // UnmarshalJSON -
 func (i *Int) UnmarshalJSON(data []byte) error {
 	if i.Int == nil {
-		return errors.New("nil Int value")
+		i.Int = big.NewInt(0)
+	}
+	if len(data) > 2 {
+		if data[0] == '"' && data[len(data)-1] == '"' {
+			data = data[1 : len(data)-1]
+		}
 	}
 	return i.Int.UnmarshalJSON(data)
 }
@@ -128,7 +132,7 @@ func (i *Int) UnmarshalJSON(data []byte) error {
 // MarshalJSON -
 func (i Int) MarshalJSON() ([]byte, error) {
 	if i.Int == nil {
-		return nil, errors.New("nil Int value")
+		i.Int = big.NewInt(0)
 	}
 	return i.Int.MarshalJSON()
 }
