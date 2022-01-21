@@ -10,11 +10,12 @@ type State struct {
 	//nolint
 	tableName struct{} `gorm:"-" pg:"dipdup_state" json:"-"`
 
-	IndexName string `gorm:"primaryKey" pg:",pk" json:"index_name"`
-	IndexType string `json:"index_type"`
-	Hash      string `json:"hash,omitempty"`
-	Level     uint64 `json:"level"`
-	UpdatedAt int    `gorm:"autoUpdateTime"`
+	IndexName string    `gorm:"primaryKey" pg:",pk" json:"index_name"`
+	IndexType string    `json:"index_type"`
+	Hash      string    `json:"hash"`
+	Timestamp time.Time `json:"timestamp"`
+	Level     uint64    `json:"level"`
+	UpdatedAt int       `gorm:"autoUpdateTime"`
 }
 
 // BeforeInsert -
