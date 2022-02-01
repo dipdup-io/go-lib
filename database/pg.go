@@ -62,25 +62,26 @@ func (db *PgGo) Ping(ctx context.Context) error {
 }
 
 // State -
-func (db *PgGo) State(indexName string) (s State, err error) {
-	err = db.conn.Model(&s).Where("index_name = ?", indexName).Limit(1).Select()
-	return
+func (db *PgGo) State(indexName string) (*State, error) {
+	var s State
+	err := db.conn.Model(&s).Where("index_name = ?", indexName).Limit(1).Select()
+	return &s, err
 }
 
 // CreateState -
-func (db *PgGo) CreateState(s State) error {
-	_, err := db.conn.Model(&s).Insert()
+func (db *PgGo) CreateState(s *State) error {
+	_, err := db.conn.Model(s).Insert()
 	return err
 }
 
 // UpdateState -
-func (db *PgGo) UpdateState(s State) error {
-	_, err := db.conn.Model(&s).Where("index_name = ?", s.IndexName).Update()
+func (db *PgGo) UpdateState(s *State) error {
+	_, err := db.conn.Model(s).Where("index_name = ?", s.IndexName).Update()
 	return err
 }
 
 // DeleteState -
-func (db *PgGo) DeleteState(s State) error {
-	_, err := db.conn.Model(&s).Where("index_name = ?", s.IndexName).Delete()
+func (db *PgGo) DeleteState(s *State) error {
+	_, err := db.conn.Model(s).Where("index_name = ?", s.IndexName).Delete()
 	return err
 }

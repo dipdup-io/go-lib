@@ -105,22 +105,23 @@ func (db *Gorm) Ping(ctx context.Context) error {
 }
 
 // State -
-func (db *Gorm) State(indexName string) (s State, err error) {
-	err = db.conn.Where("index_name = ?", indexName).First(&s).Error
-	return
+func (db *Gorm) State(indexName string) (*State, error) {
+	var s State
+	err := db.conn.Where("index_name = ?", indexName).First(s).Error
+	return &s, err
 }
 
 // CreateState -
-func (db *Gorm) CreateState(s State) error {
-	return db.conn.Create(&s).Error
+func (db *Gorm) CreateState(s *State) error {
+	return db.conn.Create(s).Error
 }
 
 // UpdateState -
-func (db *Gorm) UpdateState(s State) error {
-	return db.conn.Save(&s).Error
+func (db *Gorm) UpdateState(s *State) error {
+	return db.conn.Save(s).Error
 }
 
 // DeleteState -
-func (db *Gorm) DeleteState(s State) error {
-	return db.conn.Delete(&s).Error
+func (db *Gorm) DeleteState(s *State) error {
+	return db.conn.Delete(s).Error
 }

@@ -16,11 +16,13 @@ type State struct {
 	Timestamp time.Time `json:"timestamp"`
 	Level     uint64    `json:"level"`
 	UpdatedAt int       `gorm:"autoUpdateTime"`
+	CreatedAt int       `gorm:"autoCreateTime"`
 }
 
 // BeforeInsert -
 func (s *State) BeforeInsert(ctx context.Context) (context.Context, error) {
 	s.UpdatedAt = int(time.Now().Unix())
+	s.CreatedAt = s.UpdatedAt
 	return ctx, nil
 }
 
@@ -37,8 +39,8 @@ func (State) TableName() string {
 
 // StateRepository -
 type StateRepository interface {
-	State(name string) (State, error)
-	UpdateState(state State) error
-	CreateState(state State) error
-	DeleteState(state State) error
+	State(name string) (*State, error)
+	UpdateState(state *State) error
+	CreateState(state *State) error
+	DeleteState(state *State) error
 }
