@@ -207,3 +207,10 @@ func (rpc *NodeRPC) ContractStorage(block, contract string, output interface{}, 
 	err = rpc.get(fmt.Sprintf("chains/main/blocks/%s/context/contracts/%s/storage", block, contract), nil, options, &output)
 	return
 }
+
+// NetworkPoints -
+func (rpc *NodeRPC) NetworkPoints(opts ...RequestOption) (output []NetworkPointWithURI, err error) {
+	options := newRequestOpts(opts...)
+	err = rpc.get("network/points", nil, options, &output)
+	return
+}

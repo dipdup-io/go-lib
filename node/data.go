@@ -239,3 +239,39 @@ type InjectOperationRequest struct {
 	ChainID   string
 	Async     bool
 }
+
+// NetworkPointWithURI -
+type NetworkPointWithURI struct {
+	URI string
+	NetworkPoint
+}
+
+// UnmarshalJSON -
+func (n *NetworkPointWithURI) UnmarshalJSON(buf []byte) error {
+	tmp := []interface{}{&n.URI, &n.NetworkPoint}
+	wantLen := len(tmp)
+	if err := json.Unmarshal(buf, &tmp); err != nil {
+		return err
+	}
+	if g, e := len(tmp), wantLen; g != e {
+		return errors.Errorf("wrong number of fields in NetworkPointWithURI: %d != %d", g, e)
+	}
+	return nil
+}
+
+// NetworkPoint -
+type NetworkPoint struct {
+	Trusted         bool   `json:"trusted"`
+	GreylistedUntil string `json:"greylisted_until"`
+	State           struct {
+		EventKind string `json:"event_kind"`
+		P2PPeerID string `json:"p2p_peer_id"`
+	} `json:"state"`
+	P2PPeerID                 string   `json:"p2p_peer_id"`
+	LastFailedConnection      string   `json:"last_failed_connection"`
+	LastRejectedConnection    []string `json:"last_rejected_connection"`
+	LastEstablishedConnection []string `json:"last_established_connection"`
+	LastDisconnection         []string `json:"last_disconnection"`
+	LastSeen                  []string `json:"last_seen"`
+	LastMiss                  string   `json:"last_miss"`
+}
