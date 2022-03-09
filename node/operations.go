@@ -448,18 +448,6 @@ type EndorsementMetadata struct {
 	Slots          []int           `json:"slots"`
 }
 
-// BalanceUpdate -
-type BalanceUpdate struct {
-	Kind     string `json:"kind"`
-	Contract string `json:"contract,omitempty"`
-	Change   string `json:"change"`
-	Category string `json:"category,omitempty"`
-	Origin   string `json:"origin,omitempty"`
-	Delegate string `json:"delegate,omitempty"`
-	Cycle    uint64 `json:"cycle,omitempty"`
-	Level    uint64 `json:"level,omitempty"`
-}
-
 // OperationResult -
 type OperationResult struct {
 	Status                       string              `json:"status"`

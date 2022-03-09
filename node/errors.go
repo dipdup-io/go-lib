@@ -2,6 +2,13 @@ package node
 
 import (
 	"fmt"
+
+	"github.com/pkg/errors"
+)
+
+// Errors
+var (
+	ErrUnknownKind = errors.New("unknown operation kind")
 )
 
 // RequestError -

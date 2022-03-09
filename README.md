@@ -50,29 +50,7 @@ if err := config.Parse("config.yaml", &cfg); err != nil {
 
 ### `node`
 
-Simple Tezos RPC API wrapper.
-
-```go
-import "github.com/dipdup-net/go-lib/node"
-
-rpc := node.NewNodeRPC(url, node.WithTimeout(timeout))
-
-ctx, cancel := context.WithCancel(context.Background())
-defer cancel()
-
-// example with context
-constants, err := rpc.Constants(node.WithContext(ctx))
-if err != nil {
-	panic(err)
-}
-
-// example without context
-constants, err := rpc.Constants()
-if err != nil {
-	panic(err)
-}
-
-```
+Simple Tezos RPC API wrapper. Docs you can find [here](node/README.md)
 
 ### `database`
 
