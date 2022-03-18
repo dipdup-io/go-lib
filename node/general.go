@@ -7,6 +7,8 @@ type GeneralAPI interface {
 	Version(ctx context.Context) (Version, error)
 	StatsGC(ctx context.Context) (StatsGC, error)
 	StatsMemory(ctx context.Context) (StatsMemory, error)
+
+	URL() string
 }
 
 // General -
@@ -21,6 +23,11 @@ func NewGeneral(baseURL string) *General {
 		baseURL: baseURL,
 		client:  newClient(),
 	}
+}
+
+// URL -
+func (api *General) URL() string {
+	return api.baseURL
 }
 
 // Version -

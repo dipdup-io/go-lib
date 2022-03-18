@@ -38,6 +38,7 @@ type Constants struct {
 	MinProposalQuorum            int64            `json:"min_proposal_quorum"`
 	InitialEndorsers             int64            `json:"initial_endorsers"`
 	DelayPerMissingEndorsement   int64            `json:"delay_per_missing_endorsement,string"`
+	MinimalBlockDelay            int64            `json:"minimal_block_delay,string,omitempty"`
 }
 
 // Int64StringSlice -

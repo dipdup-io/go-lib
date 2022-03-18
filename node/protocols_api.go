@@ -7,7 +7,7 @@ import (
 
 // ProtocolsAPI -
 type ProtocolsAPI interface {
-	Protocols(ctx context.Context) ([]string, error)
+	GetProtocols(ctx context.Context) ([]string, error)
 	Protocol(ctx context.Context, hash string) (ProtocolInfo, error)
 	Environment(ctx context.Context, hash string) (int, error)
 }
@@ -26,8 +26,8 @@ func NewProtocols(baseURL string) *Protocols {
 	}
 }
 
-// Protocols -
-func (api *Protocols) Protocols(ctx context.Context) ([]string, error) {
+// GetProtocols -
+func (api *Protocols) GetProtocols(ctx context.Context) ([]string, error) {
 	req, err := newGetRequest(api.baseURL, "protocols", nil)
 	if err != nil {
 		return nil, err

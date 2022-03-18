@@ -109,6 +109,24 @@ func (op *Operation) UnmarshalJSON(data []byte) error {
 			return err
 		}
 		op.Body = register
+	case KindDoublePreendorsement:
+		var doublePreendorsement DoublePreendorsementEvidence
+		if err := json.Unmarshal(data, &doublePreendorsement); err != nil {
+			return err
+		}
+		op.Body = doublePreendorsement
+	case KindSetDepositsLimit:
+		var setDepositsLimit SetDepositsLimit
+		if err := json.Unmarshal(data, &setDepositsLimit); err != nil {
+			return err
+		}
+		op.Body = setDepositsLimit
+	case KindPreendorsement:
+		var preendorsement Preendorsement
+		if err := json.Unmarshal(data, &preendorsement); err != nil {
+			return err
+		}
+		op.Body = preendorsement
 	}
 	return nil
 }
@@ -156,6 +174,21 @@ func (op Operation) Endorsement() (Endorsement, error) {
 		return Endorsement{}, errors.Errorf("invalid body type: %T", op.Body)
 	}
 	return endorsement, nil
+}
+
+// Preendorsement -
+func (op Operation) Preendorsement() (Preendorsement, error) {
+	if op.Kind != KindPreendorsement {
+		return Preendorsement{}, errors.Errorf("invalid kind of operation: %s", op.Kind)
+	}
+	if op.Body == nil {
+		return Preendorsement{}, errors.New("nil operation body")
+	}
+	preendorsement, ok := op.Body.(Preendorsement)
+	if !ok {
+		return Preendorsement{}, errors.Errorf("invalid body type: %T", op.Body)
+	}
+	return preendorsement, nil
 }
 
 // EndorsementWithSlot -
@@ -293,6 +326,21 @@ func (op Operation) SeedNonceRevelation() (SeedNonceRevelation, error) {
 	return seed, nil
 }
 
+// SetDepositsLimit -
+func (op Operation) SetDepositsLimit() (SetDepositsLimit, error) {
+	if op.Kind != KindSetDepositsLimit {
+		return SetDepositsLimit{}, errors.Errorf("invalid kind of operation: %s", op.Kind)
+	}
+	if op.Body == nil {
+		return SetDepositsLimit{}, errors.New("nil operation body")
+	}
+	tx, ok := op.Body.(SetDepositsLimit)
+	if !ok {
+		return SetDepositsLimit{}, errors.Errorf("invalid body type: %T", op.Body)
+	}
+	return tx, nil
+}
+
 // Transaction -
 func (op Operation) Transaction() (Transaction, error) {
 	if op.Kind != KindTransaction {
@@ -336,6 +384,19 @@ type EndorsementWithSlot struct {
 	Metadata    *EndorsementMetadata      `json:"metadata,omitempty"`
 }
 
+// Preendorsement -
+type Preendorsement struct {
+	Slot             uint64 `json:"slot"`
+	Level            uint64 `json:"level"`
+	Round            int64  `json:"round"`
+	BlockPayloadHash string `json:"block_payload_hash"`
+	Metadata         struct {
+		BalanceUpdates      []interface{} `json:"balance_updates"`
+		Delegate            string        `json:"delegate"`
+		PreendorsementPower int           `json:"preendorsement_power"`
+	} `json:"metadata"`
+}
+
 // Delegation -
 type Delegation struct {
 	Source       string                    `json:"source"`
@@ -356,8 +417,15 @@ type DoubleBakingEvidence struct {
 
 // DoubleEndorsementEvidence -
 type DoubleEndorsementEvidence struct {
-	Op1      *InlinedEndorsement         `json:"Op1"`
-	Op2      *InlinedEndorsement         `json:"Op2"`
+	Op1      *InlinedEndorsement         `json:"op1"`
+	Op2      *InlinedEndorsement         `json:"op2"`
+	Metadata *OnlyBalanceUpdatesMetadata `json:"metadata,omitempty"`
+}
+
+// DoublePreendorsementEvidence -
+type DoublePreendorsementEvidence struct {
+	Op1      *InlinedEndorsement         `json:"op1"`
+	Op2      *InlinedEndorsement         `json:"op2"`
 	Metadata *OnlyBalanceUpdatesMetadata `json:"metadata,omitempty"`
 }
 
@@ -408,6 +476,18 @@ type SeedNonceRevelation struct {
 	Level    uint64                      `json:"level"`
 	Nonce    string                      `json:"nonce"`
 	Metadata *OnlyBalanceUpdatesMetadata `json:"metadata,omitempty"`
+}
+
+// SetDepositsLimit -
+type SetDepositsLimit struct {
+	Kind         string                    `json:"kind"`
+	Source       string                    `json:"source"`
+	Fee          string                    `json:"fee"`
+	Counter      string                    `json:"counter"`
+	GasLimit     string                    `json:"gas_limit"`
+	StorageLimit string                    `json:"storage_limit"`
+	Limit        *string                   `json:"limit,omitempty"`
+	Metadata     *ManagerOperationMetadata `json:"metadata"`
 }
 
 // Transaction -
@@ -595,6 +675,22 @@ type InlinedEndorsement struct {
 type InlinedEndorsementOperations struct {
 	Kind  string `json:"kind"`
 	Level int    `json:"level"`
+}
+
+// InlinedPreendorsement -
+type InlinedPreendorsement struct {
+	Branch     string                           `json:"branch"`
+	Operations *InlinedPreendorsementOperations `json:"operations,omitempty"`
+	Signature  string                           `json:"signature"`
+}
+
+// InlinedPreendorsementOperations -
+type InlinedPreendorsementOperations struct {
+	Kind             string `json:"kind"`
+	Slot             uint64 `json:"slot"`
+	Level            uint64 `json:"level"`
+	Round            int64  `json:"round"`
+	BlockPayloadHash string `json:"block_payload_hash"`
 }
 
 // EndorsementWithSlotEntity -
