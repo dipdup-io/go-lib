@@ -134,5 +134,5 @@ func (c *Content) UnmarshalJSON(data []byte) error {
 
 // IsManager -
 func IsManager(kind string) bool {
-	return kind == KindDelegation || kind == KindOrigination || kind == KindReveal || kind == KindTransaction
+	return kind == KindDelegation || kind == KindOrigination || kind == KindReveal || kind == KindTransaction || kind == KindSetDepositsLimit
 }

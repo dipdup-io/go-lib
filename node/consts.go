@@ -19,6 +19,9 @@ const (
 	KindNonceRevelation        = "seed_nonce_revelation"
 	KindTransaction            = "transaction"
 	KindRegisterGlobalConstant = "register_global_constant"
+	KindPreendorsement         = "preendorsement"
+	KindSetDepositsLimit       = "set_deposits_limit"
+	KindDoublePreendorsement   = "double_preendorsement_evidence"
 )
 
 const (

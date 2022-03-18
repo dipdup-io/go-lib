@@ -30,29 +30,29 @@ type BlockMetadata struct {
 	TestChainStatus struct {
 		Status string `json:"status"`
 	} `json:"test_chain_status"`
-	MaxOperationsTTL       int `json:"max_operations_ttl"`
-	MaxOperationDataLength int `json:"max_operation_data_length"`
-	MaxBlockHeaderLength   int `json:"max_block_header_length"`
+	MaxOperationsTTL       uint64 `json:"max_operations_ttl"`
+	MaxOperationDataLength uint64 `json:"max_operation_data_length"`
+	MaxBlockHeaderLength   uint64 `json:"max_block_header_length"`
 	MaxOperationListLength []struct {
-		MaxSize int `json:"max_size"`
-		MaxOp   int `json:"max_op,omitempty"`
+		MaxSize uint64 `json:"max_size"`
+		MaxOp   uint64 `json:"max_op,omitempty"`
 	} `json:"max_operation_list_length"`
 	Baker            string    `json:"baker"`
 	LevelInfo        LevelInfo `json:"level_info"`
 	VotingPeriodInfo struct {
 		VotingPeriod struct {
-			Index         int    `json:"index"`
+			Index         uint64 `json:"index"`
 			Kind          string `json:"kind"`
-			StartPosition int    `json:"start_position"`
+			StartPosition uint64 `json:"start_position"`
 		} `json:"voting_period"`
-		Position  int `json:"position"`
-		Remaining int `json:"remaining"`
+		Position  uint64 `json:"position"`
+		Remaining uint64 `json:"remaining"`
 	} `json:"voting_period_info"`
 	NonceHash                 string                     `json:"nonce_hash"`
 	ConsumedGas               string                     `json:"consumed_gas"`
 	Deactivated               []interface{}              `json:"deactivated"`
 	BalanceUpdates            []BalanceUpdate            `json:"balance_updates"`
-	LiquidityBakingEscapeEma  int                        `json:"liquidity_baking_escape_ema"`
+	LiquidityBakingEscapeEma  uint64                     `json:"liquidity_baking_escape_ema"`
 	ImplicitOperationsResults []ImplicitOperationsResult `json:"implicit_operations_results"`
 }
 
