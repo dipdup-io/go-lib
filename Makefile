@@ -1,5 +1,5 @@
 lint:
-	golangci-lint run
+	golangci-lint run --go=1.18
 
 test:
 	go test ./...
