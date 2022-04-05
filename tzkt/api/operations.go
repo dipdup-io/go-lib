@@ -45,25 +45,25 @@ func (tzkt *API) GetNonceRevelations(ctx context.Context, filters map[string]str
 }
 
 // GetDelegations -
-func (tzkt *API) GetDelegations(ctx context.Context, filters map[string]string) (operations []Operation, err error) {
+func (tzkt *API) GetDelegations(ctx context.Context, filters map[string]string) (operations []Delegation, err error) {
 	err = tzkt.json(ctx, "/v1/operations/delegations", filters, &operations)
 	return
 }
 
 // GetOriginations -
-func (tzkt *API) GetOriginations(ctx context.Context, filters map[string]string) (operations []Operation, err error) {
+func (tzkt *API) GetOriginations(ctx context.Context, filters map[string]string) (operations []Origination, err error) {
 	err = tzkt.json(ctx, "/v1/operations/originations", filters, &operations)
 	return
 }
 
 // GetTransactions -
-func (tzkt *API) GetTransactions(ctx context.Context, filters map[string]string) (operations []Operation, err error) {
+func (tzkt *API) GetTransactions(ctx context.Context, filters map[string]string) (operations []Transaction, err error) {
 	err = tzkt.json(ctx, "/v1/operations/transactions", filters, &operations)
 	return
 }
 
 // GetReveals -
-func (tzkt *API) GetReveals(ctx context.Context, filters map[string]string) (operations []Operation, err error) {
+func (tzkt *API) GetReveals(ctx context.Context, filters map[string]string) (operations []Reveal, err error) {
 	err = tzkt.json(ctx, "/v1/operations/reveals", filters, &operations)
 	return
 }

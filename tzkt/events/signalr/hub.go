@@ -64,10 +64,12 @@ func (hub *Hub) Connect() error {
 func (hub *Hub) handshake() error {
 	log.Trace().Msgf("connecting to %s...", hub.url.String())
 
-	c, _, err := websocket.DefaultDialer.Dial(hub.url.String(), nil)
+	c, response, err := websocket.DefaultDialer.Dial(hub.url.String(), nil)
 	if err != nil {
 		return errors.Wrap(err, "Connect Dial")
 	}
+	defer response.Body.Close()
+
 	hub.conn = c
 
 	if err := hub.Send(newHandshakeRequest()); err != nil {

@@ -3,6 +3,8 @@ package api
 import (
 	stdJSON "encoding/json"
 	"time"
+
+	"github.com/shopspring/decimal"
 )
 
 const (
@@ -39,10 +41,110 @@ type Parameters struct {
 	Value      stdJSON.RawMessage `json:"value"`
 }
 
+// Origination -
+type Origination struct {
+	Type             string    `json:"type"`
+	ID               uint64    `json:"id"`
+	Level            uint64    `json:"level"`
+	Timestamp        time.Time `json:"timestamp"`
+	Block            string    `json:"block"`
+	Hash             string    `json:"hash"`
+	Counter          uint64    `json:"counter"`
+	Sender           Address   `json:"sender"`
+	Initiator        Address   `json:"initiator"`
+	Nonce            *uint64   `json:"nonce,omitempty"`
+	GasLimit         uint64    `json:"gasLimit"`
+	GasUsed          uint64    `json:"gasUsed"`
+	StorageLimit     uint64    `json:"storageLimit"`
+	StorageUsed      uint64    `json:"storageUsed"`
+	BakerFee         uint64    `json:"bakerFee"`
+	StorageFee       uint64    `json:"storageFee"`
+	AllocationFee    uint64    `json:"allocationFee"`
+	ContractBalance  uint64    `json:"contractBalance"`
+	ContractManager  Address   `json:"contractManager"`
+	ContractDelegate Address   `json:"contractDelegate"`
+	Status           string    `json:"status"`
+	Originated       Contract  `json:"originatedContract"`
+	Errors           []Error   `json:"errors,omitempty"`
+}
+
+// Transaction -
+type Transaction struct {
+	Type          string          `json:"type"`
+	Sender        Address         `json:"sender"`
+	Target        Address         `json:"target"`
+	Initiator     Address         `json:"initiator"`
+	Amount        decimal.Decimal `json:"amount"`
+	Parameter     *Parameters     `json:"parameter"`
+	Timestamp     time.Time       `json:"timestamp"`
+	ID            uint64          `json:"id"`
+	Level         uint64          `json:"level"`
+	Counter       uint64          `json:"counter"`
+	GasLimit      uint64          `json:"gasLimit"`
+	GasUsed       uint64          `json:"gasUsed"`
+	StorageLimit  uint64          `json:"storageLimit"`
+	StorageUsed   uint64          `json:"storageUsed"`
+	BakerFee      uint64          `json:"bakerFee"`
+	StorageFee    uint64          `json:"storageFee"`
+	AllocationFee uint64          `json:"allocationFee"`
+	Status        string          `json:"status"`
+	Parameters    string          `json:"parameters"`
+	Block         string          `json:"block"`
+	Hash          string          `json:"hash"`
+	HasInternals  bool            `json:"hasInternals"`
+}
+
+// Delegation -
+type Delegation struct {
+	Block       string          `json:"block"`
+	Hash        string          `json:"hash"`
+	Type        string          `json:"type"`
+	Status      string          `json:"status"`
+	Sender      Address         `json:"sender"`
+	NewDelegate Address         `json:"newDelegate"`
+	Timestamp   time.Time       `json:"timestamp"`
+	Amount      decimal.Decimal `json:"amount"`
+	ID          uint64          `json:"id"`
+	Level       uint64          `json:"level"`
+	Counter     uint64          `json:"counter"`
+	GasLimit    uint64          `json:"gasLimit"`
+	GasUsed     uint64          `json:"gasUsed"`
+	BakerFee    uint64          `json:"bakerFee"`
+}
+
+// Reveal -
+type Reveal struct {
+	Type      string    `json:"type"`
+	Status    string    `json:"status"`
+	Block     string    `json:"block"`
+	Hash      string    `json:"hash"`
+	Timestamp time.Time `json:"timestamp"`
+	Sender    Address   `json:"sender"`
+	ID        uint64    `json:"id"`
+	Level     uint64    `json:"level"`
+	Counter   uint64    `json:"counter"`
+	GasLimit  uint64    `json:"gasLimit"`
+	GasUsed   uint64    `json:"gasUsed"`
+	BakerFee  uint64    `json:"bakerFee"`
+}
+
+// Error -
+type Error struct {
+	Type string `json:"type"`
+}
+
 // Address -
 type Address struct {
 	Alias   string `json:"alias"`
 	Address string `json:"address"`
+}
+
+// Contract -
+type Contract struct {
+	Kind     string `json:"kind"`
+	Address  string `json:"address"`
+	TypeHash int    `json:"typeHash"`
+	CodeHash int    `json:"codeHash"`
 }
 
 // Block -
