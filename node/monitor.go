@@ -141,11 +141,14 @@ func (monitor *Monitor) pollingMempool(ctx context.Context, filter string) {
 
 	url := fmt.Sprintf("/chains/main/mempool/monitor_operations?%s", filter)
 
+	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
+
 	for {
 		select {
 		case <-ctx.Done():
 			return
-		default:
+		case <-ticker.C:
 			if err := monitor.process(ctx, filter, url); err != nil {
 				log.Err(err).Msg("")
 				continue
