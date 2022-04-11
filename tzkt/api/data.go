@@ -340,3 +340,26 @@ func (props *AdditionalProperties) UnmarshalJSON(data []byte) error {
 	props.Value = &JSONSchema{}
 	return json.Unmarshal(data, props.Value)
 }
+
+// Transfer -
+type Transfer struct {
+	ID            uint64    `json:"id"`
+	Level         uint64    `json:"level"`
+	Timestamp     time.Time `json:"timestamp"`
+	Token         Token     `json:"token"`
+	From          *Address  `json:"from,omitempty"`
+	To            *Address  `json:"to,omitempty"`
+	Amount        string    `json:"amount"`
+	TransactionID *uint64   `json:"transactionId,omitempty"`
+	OriginationID *uint64   `json:"originationId,omitempty"`
+	MigrationID   *uint64   `json:"migrationId,omitempty"`
+}
+
+// Token -
+type Token struct {
+	ID       uint64             `json:"id"`
+	Contract Address            `json:"contract"`
+	TokenID  string             `json:"tokenId"`
+	Standard string             `json:"standard"`
+	Metadata stdJSON.RawMessage `json:"metadata,omitempty"`
+}

@@ -111,13 +111,28 @@ func (tzkt *TzKT) SubscribeToBigMaps(ptr *int64, contract, path string, tags ...
 	return tzkt.subscribe(MethodBigMap, args)
 }
 
-// SubscribeToBigMaps - subscribe to accounts channel. Sends touched accounts (affected by any operation in any way)..
+// SubscribeToAccounts - subscribe to accounts channel. Sends touched accounts (affected by any operation in any way)..
 func (tzkt *TzKT) SubscribeToAccounts(addresses ...string) error {
 	args := make(map[string]interface{})
 	if len(addresses) > 0 {
 		args["addresses"] = addresses
 	}
 	return tzkt.subscribe(MethodAccounts, args)
+}
+
+// SubscribeToTokenTransfers - subscribe to transfers channel. Sends token transfers.
+func (tzkt *TzKT) SubscribeToTokenTransfers(account, contract, tokenID string) error {
+	args := make(map[string]interface{})
+	if account != "" {
+		args["account"] = account
+	}
+	if contract != "" {
+		args["contract"] = contract
+	}
+	if tokenID != "" {
+		args["tokenID"] = tokenID
+	}
+	return tzkt.subscribe(MethodTokenTransfers, args)
 }
 
 func (tzkt *TzKT) subscribe(channel string, args ...interface{}) error {
@@ -214,6 +229,10 @@ func parseData(channel string, data []byte) (interface{}, error) {
 		return head, err
 	case ChannelOperations:
 		return parseOperations(data)
+	case ChannelTransfers:
+		var transfer []Transfer
+		err := json.Unmarshal(data, &transfer)
+		return transfer, err
 	default:
 		return nil, errors.Errorf("unknown channel: %s", channel)
 	}

@@ -2,11 +2,12 @@ package events
 
 // Methods
 const (
-	MethodHead       = "SubscribeToHead"
-	MethodBlocks     = "SubscribeToBlocks"
-	MethodOperations = "SubscribeToOperations"
-	MethodBigMap     = "SubscribeToBigMaps"
-	MethodAccounts   = "SubscribeToAccounts"
+	MethodHead           = "SubscribeToHead"
+	MethodBlocks         = "SubscribeToBlocks"
+	MethodOperations     = "SubscribeToOperations"
+	MethodBigMap         = "SubscribeToBigMaps"
+	MethodAccounts       = "SubscribeToAccounts"
+	MethodTokenTransfers = "SubscribeToTokenTransfers"
 )
 
 // Channels
@@ -16,6 +17,7 @@ const (
 	ChannelOperations = "operations"
 	ChannelBigMap     = "bigmaps"
 	ChannelAccounts   = "accounts"
+	ChannelTransfers  = "transfers"
 )
 
 // operation kinds
