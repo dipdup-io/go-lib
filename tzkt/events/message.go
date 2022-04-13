@@ -259,6 +259,18 @@ type OriginatedContract struct {
 	CodeHash int64  `json:"codeHash"`
 }
 
+// Migration -
+type Migration struct {
+	Type          string    `json:"type"`
+	ID            uint64    `json:"id"`
+	Level         uint64    `json:"level"`
+	Timestamp     time.Time `json:"timestamp"`
+	Block         string    `json:"block"`
+	Kind          string    `json:"kind"`
+	Account       Alias     `json:"account"`
+	BalanceChange int64     `json:"balanceChange"`
+}
+
 // QuoteShort -
 type QuoteShort struct {
 	BTC decimal.Decimal `json:"btc,omitempty"`

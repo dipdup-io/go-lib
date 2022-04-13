@@ -33,6 +33,7 @@ const (
 	KindDoubleEndorsing = "double_endorsing"
 	KindNonceRevelation = "nonce_revelation"
 	KindReveal          = "reveal"
+	KindMigration       = "migration"
 )
 
 // Base URL

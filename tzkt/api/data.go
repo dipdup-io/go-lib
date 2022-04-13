@@ -363,3 +363,15 @@ type Token struct {
 	Standard string             `json:"standard"`
 	Metadata stdJSON.RawMessage `json:"metadata,omitempty"`
 }
+
+// Migration -
+type Migration struct {
+	Type          string    `json:"type"`
+	ID            uint64    `json:"id"`
+	Level         uint64    `json:"level"`
+	Timestamp     time.Time `json:"timestamp"`
+	Block         string    `json:"block"`
+	Kind          string    `json:"kind"`
+	Account       Address   `json:"account"`
+	BalanceChange int64     `json:"balanceChange"`
+}

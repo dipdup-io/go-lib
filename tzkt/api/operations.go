@@ -1,6 +1,8 @@
 package api
 
-import "context"
+import (
+	"context"
+)
 
 // GetEndorsements -
 func (tzkt *API) GetEndorsements(ctx context.Context, filters map[string]string) (operations []Operation, err error) {
@@ -71,5 +73,11 @@ func (tzkt *API) GetReveals(ctx context.Context, filters map[string]string) (ope
 // GetRegisterConstants -
 func (tzkt *API) GetRegisterConstants(ctx context.Context, filters map[string]string) (operations []Operation, err error) {
 	err = tzkt.json(ctx, "/v1/operations/register_constants", filters, &operations)
+	return
+}
+
+// GetMigrations -
+func (tzkt *API) GetMigrations(ctx context.Context, filters map[string]string) (operations []Migration, err error) {
+	err = tzkt.json(ctx, "/v1/operations/migrations", filters, &operations)
 	return
 }

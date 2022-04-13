@@ -254,6 +254,8 @@ func parseOperations(data []byte) (interface{}, error) {
 			result = append(result, &Reveal{})
 		case KindTransaction:
 			result = append(result, &Transaction{})
+		case KindMigration:
+			result = append(result, &Migration{})
 		default:
 			result = append(result, make(map[string]interface{}))
 		}
