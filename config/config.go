@@ -52,9 +52,17 @@ type Database struct {
 type Hasura struct {
 	URL                string `yaml:"url" validate:"required,url"`
 	Secret             string `yaml:"admin_secret" validate:"required"`
+	Source             string `yaml:"source" validate:"omitempty"`
 	RowsLimit          uint64 `yaml:"select_limit" validate:"gt=0"`
 	EnableAggregations bool   `yaml:"allow_aggregation"`
+	AddSource          bool   `yaml:"add_source"`
 	Rest               *bool  `yaml:"rest"`
+}
+
+func (s *Hasura) SetSourceName() {
+	if s.Source == "" {
+		s.Source = "default"
+	}
 }
 
 // Prometheus -
