@@ -3,11 +3,13 @@ package hasura
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"net/http"
 	"net/url"
 	"path"
 	"time"
 
+	"github.com/dipdup-net/go-lib/config"
 	jsoniter "github.com/json-iterator/go"
 
 	"github.com/pkg/errors"
@@ -120,25 +122,47 @@ func (api *API) Health(ctx context.Context) error {
 	return err
 }
 
-// ExportMetadata -
-func (api *API) ExportMetadata(ctx context.Context, data *Metadata) (ExportMetadataResponse, error) {
+// AddSource -
+func (api *API) AddSource(ctx context.Context, hasura *config.Hasura, cfg config.Database) error {
 	req := request{
-		Type: "export_metadata",
-		Args: data,
+		Type: "pg_add_source",
+		Args: map[string]interface{}{
+			"name": hasura.Source,
+			"configuration": Configuration{
+				ConnectionInfo: ConnectionInfo{
+					DatabaseUrl:           fmt.Sprintf("postgresql://%s:%s@%s:%d/%s", cfg.User, cfg.Password /*cfg.Host*/, "db-dipdup", cfg.Port, cfg.Database),
+					UsePreparedStatements: true,
+					IsolationLevel:        "read-committed",
+				},
+			},
+			"replace_configuration": true,
+		},
 	}
-	var resp ExportMetadataResponse
-	err := api.post(ctx, "/v1/query", nil, req, &resp)
+	err := api.post(ctx, "/v1/metadata", nil, req, nil)
+	return err
+}
+
+// ExportMetadata -
+func (api *API) ExportMetadata(ctx context.Context) (Metadata, error) {
+	req := VersionedRequest{
+		Type:    "export_metadata",
+		Version: 2,
+		Args:    map[string]interface{}{},
+	}
+	var resp Metadata
+	err := api.post(ctx, "/v1/metadata", nil, req, &resp)
 	return resp, err
 }
 
 // ReplaceMetadata -
 func (api *API) ReplaceMetadata(ctx context.Context, data *Metadata) error {
-	req := request{
-		Type: "replace_metadata",
-		Args: data,
+	req := VersionedRequest{
+		Type:    "replace_metadata",
+		Version: 1,
+		Args:    data,
 	}
 	var resp replaceMetadataResponse
-	if err := api.post(ctx, "/v1/query", nil, req, &resp); err != nil {
+	if err := api.post(ctx, "/v1/metadata", nil, req, &resp); err != nil {
 		return err
 	}
 	if resp.Message == "success" {
@@ -148,40 +172,42 @@ func (api *API) ReplaceMetadata(ctx context.Context, data *Metadata) error {
 }
 
 // TrackTable -
-func (api *API) TrackTable(ctx context.Context, schema, name string) error {
+func (api *API) TrackTable(ctx context.Context, name string, source string) error {
 	req := request{
-		Type: "track_table",
+		Type: "pg_track_table",
 		Args: map[string]string{
-			"schema": schema,
-			"name":   name,
+			"table":  name,
+			"source": source,
 		},
 	}
-	return api.post(ctx, "/v1/query", nil, req, nil)
+	return api.post(ctx, "/v1/metadata", nil, req, nil)
 }
 
 // CreateSelectPermissions - A select permission is used to restrict access to only the specified columns and rows.
-func (api *API) CreateSelectPermissions(ctx context.Context, table, role string, perm Permission) error {
+func (api *API) CreateSelectPermissions(ctx context.Context, table, source string, role string, perm Permission) error {
 	req := request{
-		Type: "create_select_permission",
+		Type: "pg_create_select_permission",
 		Args: map[string]interface{}{
 			"table":      table,
 			"role":       role,
 			"permission": perm,
+			"source":     source,
 		},
 	}
-	return api.post(ctx, "/v1/query", nil, req, nil)
+	return api.post(ctx, "/v1/metadata", nil, req, nil)
 }
 
 // DropSelectPermissions -
-func (api *API) DropSelectPermissions(ctx context.Context, table, role string) error {
+func (api *API) DropSelectPermissions(ctx context.Context, table, source string, role string) error {
 	req := request{
-		Type: "drop_select_permission",
+		Type: "pg_drop_select_permission",
 		Args: map[string]interface{}{
-			"table": table,
-			"role":  role,
+			"table":  table,
+			"role":   role,
+			"source": source,
 		},
 	}
-	return api.post(ctx, "/v1/query", nil, req, nil)
+	return api.post(ctx, "/v1/metadata", nil, req, nil)
 }
 
 // CreateRestEndpoint -
@@ -200,5 +226,5 @@ func (api *API) CreateRestEndpoint(ctx context.Context, name, url, queryName, co
 			},
 		},
 	}
-	return api.post(ctx, "/v1/query", nil, req, nil)
+	return api.post(ctx, "/v1/metadata", nil, req, nil)
 }

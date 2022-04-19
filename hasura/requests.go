@@ -7,6 +7,12 @@ type request struct {
 	Args interface{} `json:"args"`
 }
 
+type VersionedRequest struct {
+	Type    string      `json:"type"`
+	Version int         `json:"int"`
+	Args    interface{} `json:"args"`
+}
+
 // Permission -
 type Permission struct {
 	Columns   Columns     `json:"columns"`
@@ -18,15 +24,33 @@ type Permission struct {
 // Metadata -
 type Metadata struct {
 	Version          int               `json:"version"`
-	Tables           []Table           `json:"tables"`
+	Sources          []Source          `json:"sources"`
 	QueryCollections []QueryCollection `json:"query_collections,omitempty"`
 }
 
-func newMetadata(version int, tables []Table) *Metadata {
+func newMetadata(version int, sources []Source) *Metadata {
 	return &Metadata{
 		Version: version,
-		Tables:  tables,
+		Sources: sources,
 	}
+}
+
+type Configuration struct {
+	ConnectionInfo ConnectionInfo `json:"connection_info"`
+}
+
+type ConnectionInfo struct {
+	UsePreparedStatements bool   `json:"use_prepared_statements"`
+	IsolationLevel        string `json:"isolation_level"`
+	DatabaseUrl           string `json:"database_url"`
+}
+
+// Source -
+type Source struct {
+	Name          string        `json:"name"`
+	Kind          string        `json:"kind"`
+	Tables        []Table       `json:"tables"`
+	Configuration Configuration `json:"configuration"`
 }
 
 // Table -
