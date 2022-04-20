@@ -41,7 +41,7 @@ func checkHealth(ctx context.Context, api *API) {
 }
 
 // Create - creates hasura models
-func Create(ctx context.Context, hasura *config.Hasura, cfg config.Database, views []string, models ...interface{}) error {
+func Create(ctx context.Context, hasura *config.Hasura, cfg config.Database, views []string, custom []interface{}, models ...interface{}) error {
 	if hasura == nil {
 		return nil
 	}
@@ -126,6 +126,13 @@ func Create(ctx context.Context, hasura *config.Hasura, cfg config.Database, vie
 			Filter:    map[string]interface{}{},
 		}); err != nil {
 			return err
+		}
+	}
+
+	log.Info().Msg("Running custom configurations...")
+	for _, conf := range custom {
+		if err := api.CustomConfiguration(ctx, conf); err != nil {
+			log.Warn().Err(err).Msg("")
 		}
 	}
 

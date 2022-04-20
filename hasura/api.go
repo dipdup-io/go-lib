@@ -183,6 +183,11 @@ func (api *API) TrackTable(ctx context.Context, name string, source string) erro
 	return api.post(ctx, "/v1/metadata", nil, req, nil)
 }
 
+// CustomConfiguration
+func (api *API) CustomConfiguration(ctx context.Context, conf interface{}) error {
+	return api.post(ctx, "/v1/metadata", nil, conf, nil)
+}
+
 // CreateSelectPermissions - A select permission is used to restrict access to only the specified columns and rows.
 func (api *API) CreateSelectPermissions(ctx context.Context, table, source string, role string, perm Permission) error {
 	req := request{
