@@ -59,7 +59,7 @@ type Table struct {
 	ObjectRelationships []interface{}      `json:"object_relationships"`
 	ArrayRelationships  []interface{}      `json:"array_relationships"`
 	SelectPermissions   []SelectPermission `json:"select_permissions"`
-	TableConfiguration  TableConfiguration `json:"configuration"`
+	Configuration       TableConfiguration `json:"configuration"`
 	Schema              TableSchema        `json:"table"`
 }
 
