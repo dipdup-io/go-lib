@@ -70,7 +70,7 @@ func Create(ctx context.Context, hasura *config.Hasura, cfg config.Database, vie
 
 	// Find our source in the existing metadata
 	var selected_source *Source = nil
-	for idx, _ := range export.Sources {
+	for idx := range export.Sources {
 		if export.Sources[idx].Name == hasura.Source {
 			selected_source = &export.Sources[idx]
 			break

@@ -26,6 +26,7 @@ type Metadata struct {
 	Version          int               `json:"version"`
 	Sources          []Source          `json:"sources"`
 	QueryCollections []QueryCollection `json:"query_collections,omitempty"`
+	RestEndpoints    []interface{}     `json:"rest_endpoints"`
 }
 
 func newMetadata(version int, sources []Source) *Metadata {
@@ -58,6 +59,7 @@ type Table struct {
 	ObjectRelationships []interface{}      `json:"object_relationships"`
 	ArrayRelationships  []interface{}      `json:"array_relationships"`
 	SelectPermissions   []SelectPermission `json:"select_permissions"`
+	TableConfiguration  TableConfiguration `json:"configuration"`
 	Schema              TableSchema        `json:"table"`
 }
 
@@ -71,6 +73,13 @@ func newMetadataTable(name, schema string) Table {
 			Schema: schema,
 		},
 	}
+}
+
+// TableConfiguration -
+type TableConfiguration struct {
+	Comment           *string           `json:"comment"`
+	CustomRootFields  map[string]string `json:"custom_root_fields"`
+	CustomColumnNames map[string]string `json:"custom_column_names"`
 }
 
 // TableSchema -
