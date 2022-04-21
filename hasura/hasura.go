@@ -41,7 +41,7 @@ func checkHealth(ctx context.Context, api *API) {
 }
 
 // Create - creates hasura models
-func Create(ctx context.Context, hasura *config.Hasura, cfg config.Database, views []string, custom []interface{}, models ...interface{}) error {
+func Create(ctx context.Context, hasura *config.Hasura, cfg config.Database, views []string, custom []Request, models ...interface{}) error {
 	if hasura == nil {
 		return nil
 	}

@@ -124,7 +124,7 @@ func (api *API) Health(ctx context.Context) error {
 
 // AddSource -
 func (api *API) AddSource(ctx context.Context, hasura *config.Hasura, cfg config.Database) error {
-	req := request{
+	req := Request{
 		Type: "pg_add_source",
 		Args: map[string]interface{}{
 			"name": hasura.Source,
@@ -144,7 +144,7 @@ func (api *API) AddSource(ctx context.Context, hasura *config.Hasura, cfg config
 
 // ExportMetadata -
 func (api *API) ExportMetadata(ctx context.Context) (Metadata, error) {
-	req := VersionedRequest{
+	req := versionedRequest{
 		Type:    "export_metadata",
 		Version: 2,
 		Args:    map[string]interface{}{},
@@ -156,7 +156,7 @@ func (api *API) ExportMetadata(ctx context.Context) (Metadata, error) {
 
 // ReplaceMetadata -
 func (api *API) ReplaceMetadata(ctx context.Context, data *Metadata) error {
-	req := VersionedRequest{
+	req := versionedRequest{
 		Type:    "replace_metadata",
 		Version: 1,
 		Args:    data,
@@ -173,7 +173,7 @@ func (api *API) ReplaceMetadata(ctx context.Context, data *Metadata) error {
 
 // TrackTable -
 func (api *API) TrackTable(ctx context.Context, name string, source string) error {
-	req := request{
+	req := Request{
 		Type: "pg_track_table",
 		Args: map[string]string{
 			"table":  name,
@@ -190,7 +190,7 @@ func (api *API) CustomConfiguration(ctx context.Context, conf interface{}) error
 
 // CreateSelectPermissions - A select permission is used to restrict access to only the specified columns and rows.
 func (api *API) CreateSelectPermissions(ctx context.Context, table, source string, role string, perm Permission) error {
-	req := request{
+	req := Request{
 		Type: "pg_create_select_permission",
 		Args: map[string]interface{}{
 			"table":      table,
@@ -204,7 +204,7 @@ func (api *API) CreateSelectPermissions(ctx context.Context, table, source strin
 
 // DropSelectPermissions -
 func (api *API) DropSelectPermissions(ctx context.Context, table, source string, role string) error {
-	req := request{
+	req := Request{
 		Type: "pg_drop_select_permission",
 		Args: map[string]interface{}{
 			"table":  table,
@@ -217,7 +217,7 @@ func (api *API) DropSelectPermissions(ctx context.Context, table, source string,
 
 // CreateRestEndpoint -
 func (api *API) CreateRestEndpoint(ctx context.Context, name, url, queryName, collectionName string) error {
-	req := request{
+	req := Request{
 		Type: "create_rest_endpoint",
 		Args: map[string]interface{}{
 			"name":    name,

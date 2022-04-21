@@ -2,12 +2,12 @@ package hasura
 
 import "github.com/pkg/errors"
 
-type request struct {
+type Request struct {
 	Type string      `json:"type"`
 	Args interface{} `json:"args"`
 }
 
-type VersionedRequest struct {
+type versionedRequest struct {
 	Type    string      `json:"type"`
 	Version int         `json:"int"`
 	Args    interface{} `json:"args"`
