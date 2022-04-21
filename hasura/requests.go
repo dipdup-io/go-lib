@@ -2,9 +2,15 @@ package hasura
 
 import "github.com/pkg/errors"
 
-type request struct {
+type Request struct {
 	Type string      `json:"type"`
 	Args interface{} `json:"args"`
+}
+
+type versionedRequest struct {
+	Type    string      `json:"type"`
+	Version int         `json:"int"`
+	Args    interface{} `json:"args"`
 }
 
 // Permission -
@@ -18,15 +24,34 @@ type Permission struct {
 // Metadata -
 type Metadata struct {
 	Version          int               `json:"version"`
-	Tables           []Table           `json:"tables"`
+	Sources          []Source          `json:"sources"`
 	QueryCollections []QueryCollection `json:"query_collections,omitempty"`
+	RestEndpoints    []interface{}     `json:"rest_endpoints"`
 }
 
-func newMetadata(version int, tables []Table) *Metadata {
+func newMetadata(version int, sources []Source) *Metadata {
 	return &Metadata{
 		Version: version,
-		Tables:  tables,
+		Sources: sources,
 	}
+}
+
+type Configuration struct {
+	ConnectionInfo ConnectionInfo `json:"connection_info"`
+}
+
+type ConnectionInfo struct {
+	UsePreparedStatements bool        `json:"use_prepared_statements"`
+	IsolationLevel        string      `json:"isolation_level"`
+	DatabaseUrl           interface{} `json:"database_url"`
+}
+
+// Source -
+type Source struct {
+	Name          string        `json:"name"`
+	Kind          string        `json:"kind"`
+	Tables        []Table       `json:"tables"`
+	Configuration Configuration `json:"configuration"`
 }
 
 // Table -
@@ -34,6 +59,7 @@ type Table struct {
 	ObjectRelationships []interface{}      `json:"object_relationships"`
 	ArrayRelationships  []interface{}      `json:"array_relationships"`
 	SelectPermissions   []SelectPermission `json:"select_permissions"`
+	Configuration       TableConfiguration `json:"configuration"`
 	Schema              TableSchema        `json:"table"`
 }
 
@@ -47,6 +73,13 @@ func newMetadataTable(name, schema string) Table {
 			Schema: schema,
 		},
 	}
+}
+
+// TableConfiguration -
+type TableConfiguration struct {
+	Comment           *string           `json:"comment"`
+	CustomRootFields  map[string]string `json:"custom_root_fields"`
+	CustomColumnNames map[string]string `json:"custom_column_names"`
 }
 
 // TableSchema -

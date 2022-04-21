@@ -41,7 +41,7 @@ func checkHealth(ctx context.Context, api *API) {
 }
 
 // Create - creates hasura models
-func Create(ctx context.Context, hasura *config.Hasura, cfg config.Database, views []string, models ...interface{}) error {
+func Create(ctx context.Context, hasura *config.Hasura, cfg config.Database, views []string, custom []Request, models ...interface{}) error {
 	if hasura == nil {
 		return nil
 	}
@@ -49,41 +49,58 @@ func Create(ctx context.Context, hasura *config.Hasura, cfg config.Database, vie
 
 	checkHealth(ctx, api)
 
+	if hasura.AddSource {
+		log.Info().Msg("Adding source...")
+		err := api.AddSource(ctx, hasura, cfg)
+		if err != nil {
+			return err
+		}
+	}
+
 	metadata, err := Generate(*hasura, cfg, models...)
 	if err != nil {
 		return err
 	}
 
 	log.Info().Msg("Fetching existing metadata...")
-	export, err := api.ExportMetadata(ctx, metadata)
+	export, err := api.ExportMetadata(ctx)
 	if err != nil {
 		return err
 	}
 
-	log.Info().Msg("Merging metadata...")
-	tables := make(map[string]struct{})
-	for i := range metadata.Tables {
-		tables[metadata.Tables[i].Schema.Name] = struct{}{}
-	}
-
-	for _, table := range export.Tables {
-		if _, ok := tables[table.Schema.Name]; !ok {
-			metadata.Tables = append(metadata.Tables, table)
+	// Find our source in the existing metadata
+	var selected_source *Source = nil
+	for idx := range export.Sources {
+		if export.Sources[idx].Name == hasura.Source {
+			selected_source = &export.Sources[idx]
+			break
 		}
 	}
+	if selected_source == nil {
+		return errors.Errorf("Source '%s' not found on exported metadata", hasura.Source)
+	}
 
-	if err := createQueryCollections(metadata); err != nil {
+	log.Info().Msg("Merging metadata...")
+	// Clear tables
+	// TODO: maybe instead replace tables by name.
+	selected_source.Tables = make([]Table, 0)
+	// Insert generated tables
+	for _, table := range metadata.Sources[0].Tables {
+		selected_source.Tables = append(selected_source.Tables, table)
+	}
+
+	if err := createQueryCollections(&export); err != nil {
 		return err
 	}
 
 	log.Info().Msg("Replacing metadata...")
-	if err := api.ReplaceMetadata(ctx, metadata); err != nil {
+	if err := api.ReplaceMetadata(ctx, &export); err != nil {
 		return err
 	}
 
-	if len(metadata.QueryCollections) > 0 && (hasura.Rest == nil || *hasura.Rest) {
+	if len(export.QueryCollections) > 0 && (hasura.Rest == nil || *hasura.Rest) {
 		log.Info().Msg("Creating REST endpoints...")
-		for _, query := range metadata.QueryCollections[0].Definition.Queries {
+		for _, query := range export.QueryCollections[0].Definition.Queries {
 			if err := api.CreateRestEndpoint(ctx, query.Name, query.Name, query.Name, allowedQueries); err != nil {
 				if e, ok := err.(APIError); !ok || !e.AlreadyExists() {
 					return err
@@ -94,15 +111,15 @@ func Create(ctx context.Context, hasura *config.Hasura, cfg config.Database, vie
 
 	log.Info().Msg("Tracking views...")
 	for i := range views {
-		if err := api.TrackTable(ctx, "public", views[i]); err != nil {
+		if err := api.TrackTable(ctx, views[i], hasura.Source); err != nil {
 			if !strings.Contains(err.Error(), "view/table already tracked") {
 				return err
 			}
 		}
-		if err := api.DropSelectPermissions(ctx, views[i], "user"); err != nil {
+		if err := api.DropSelectPermissions(ctx, views[i], hasura.Source, "user"); err != nil {
 			log.Warn().Err(err).Msg("")
 		}
-		if err := api.CreateSelectPermissions(ctx, views[i], "user", Permission{
+		if err := api.CreateSelectPermissions(ctx, views[i], hasura.Source, "user", Permission{
 			Limit:     hasura.RowsLimit,
 			AllowAggs: hasura.EnableAggregations,
 			Columns:   Columns{"*"},
@@ -112,22 +129,32 @@ func Create(ctx context.Context, hasura *config.Hasura, cfg config.Database, vie
 		}
 	}
 
+	log.Info().Msg("Running custom configurations...")
+	for _, conf := range custom {
+		if err := api.CustomConfiguration(ctx, conf); err != nil {
+			log.Warn().Err(err).Msg("")
+		}
+	}
+
 	return nil
 }
 
 // Generate - creates hasura table structure in JSON from `models`. `models` should be pointer to your table models. `cfg` is DB config from YAML.
 func Generate(hasura config.Hasura, cfg config.Database, models ...interface{}) (*Metadata, error) {
-	tables := make([]Table, 0)
 	schema := getSchema(cfg)
+	source := Source{
+		Name:   hasura.Source,
+		Tables: make([]Table, 0),
+	}
 	for _, model := range models {
 		table, err := generateOne(hasura, schema, model)
 		if err != nil {
 			return nil, err
 		}
-		tables = append(tables, table.HasuraSchema)
+		source.Tables = append(source.Tables, table.HasuraSchema)
 	}
 
-	return newMetadata(2, tables), nil
+	return newMetadata(3, []Source{source}), nil
 }
 
 type table struct {
