@@ -51,8 +51,7 @@ func Create(ctx context.Context, hasura *config.Hasura, cfg config.Database, vie
 
 	if hasura.AddSource {
 		log.Info().Msg("Adding source...")
-		err := api.AddSource(ctx, hasura, cfg)
-		if err != nil {
+		if err := api.AddSource(ctx, hasura, cfg); err != nil {
 			return err
 		}
 	}
@@ -69,24 +68,24 @@ func Create(ctx context.Context, hasura *config.Hasura, cfg config.Database, vie
 	}
 
 	// Find our source in the existing metadata
-	var selected_source *Source = nil
+	var selectedSource *Source = nil
 	for idx := range export.Sources {
 		if export.Sources[idx].Name == hasura.Source {
-			selected_source = &export.Sources[idx]
+			selectedSource = &export.Sources[idx]
 			break
 		}
 	}
-	if selected_source == nil {
+	if selectedSource == nil {
 		return errors.Errorf("Source '%s' not found on exported metadata", hasura.Source)
 	}
 
 	log.Info().Msg("Merging metadata...")
 	// Clear tables
 	// TODO: maybe instead replace tables by name.
-	selected_source.Tables = make([]Table, 0)
+	selectedSource.Tables = make([]Table, 0)
 	// Insert generated tables
 	for _, table := range metadata.Sources[0].Tables {
-		selected_source.Tables = append(selected_source.Tables, table)
+		selectedSource.Tables = append(selectedSource.Tables, table)
 	}
 
 	if err := createQueryCollections(&export); err != nil {

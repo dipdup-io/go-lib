@@ -142,12 +142,13 @@ func TestGenerate(t *testing.T) {
 				hasura: config.Hasura{
 					EnableAggregations: true,
 					RowsLimit:          5,
+					Source:             "mysql",
 				},
 				models: []interface{}{
 					&testTable{}, &testTable2{}, &testTable3{}, &testTable4{},
 				},
 			},
-			want: `{"tables":[{"array_relationships":[],"object_relationships":[],"select_permissions":[{"permission":{"limit":5,"allow_aggregations":true,"columns":["field_1","field_2"],"filter":{}},"role":"user"}],"table":{"name":"test_table","schema":"public"}},{"array_relationships":[],"object_relationships":[],"select_permissions":[{"permission":{"limit":5,"allow_aggregations":true,"columns":["field_1","field_2"],"filter":{}},"role":"user"}],"table":{"name":"fake_name","schema":"public"}},{"array_relationships":[],"object_relationships":[],"select_permissions":[{"permission":{"limit":5,"allow_aggregations":true,"columns":["field_2"],"filter":{}},"role":"user"}],"table":{"name":"test_table_3","schema":"public"}},{"array_relationships":[],"object_relationships":[],"select_permissions":[{"permission":{"limit":5,"allow_aggregations":true,"columns":["field_2","field_3"],"filter":{}},"role":"user"}],"table":{"name":"test_table_4","schema":"public"}}],"version":2}`,
+			want: `{"version":3,"sources":[{"name":"mysql","kind":"","tables":[{"object_relationships":[],"array_relationships":[],"select_permissions":[{"role":"user","permission":{"columns":["field_1","field_2"],"limit":5,"allow_aggregations":true,"filter":{}}}],"configuration":{"comment":null,"custom_root_fields":null,"custom_column_names":null},"table":{"schema":"public","name":"test_table"}},{"object_relationships":[],"array_relationships":[],"select_permissions":[{"role":"user","permission":{"columns":["field_1","field_2"],"limit":5,"allow_aggregations":true,"filter":{}}}],"configuration":{"comment":null,"custom_root_fields":null,"custom_column_names":null},"table":{"schema":"public","name":"fake_name"}},{"object_relationships":[],"array_relationships":[],"select_permissions":[{"role":"user","permission":{"columns":["field_2"],"limit":5,"allow_aggregations":true,"filter":{}}}],"configuration":{"comment":null,"custom_root_fields":null,"custom_column_names":null},"table":{"schema":"public","name":"test_table_3"}},{"object_relationships":[],"array_relationships":[],"select_permissions":[{"role":"user","permission":{"columns":["field_2","field_3"],"limit":5,"allow_aggregations":true,"filter":{}}}],"configuration":{"comment":null,"custom_root_fields":null,"custom_column_names":null},"table":{"schema":"public","name":"test_table_4"}}],"configuration":{"connection_info":{"use_prepared_statements":false,"isolation_level":""}}}]}`,
 		},
 	}
 	for _, tt := range tests {
@@ -162,7 +163,7 @@ func TestGenerate(t *testing.T) {
 				t.Errorf("MarshalToString() error = %v", err)
 				return
 			}
-			assert.JSONEq(t, tt.want, gotStr)
+			assert.Equal(t, tt.want, gotStr)
 		})
 	}
 }

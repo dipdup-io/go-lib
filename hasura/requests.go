@@ -26,7 +26,7 @@ type Metadata struct {
 	Version          int               `json:"version"`
 	Sources          []Source          `json:"sources"`
 	QueryCollections []QueryCollection `json:"query_collections,omitempty"`
-	RestEndpoints    []interface{}     `json:"rest_endpoints"`
+	RestEndpoints    []interface{}     `json:"rest_endpoints,omitempty"`
 }
 
 func newMetadata(version int, sources []Source) *Metadata {
@@ -36,14 +36,41 @@ func newMetadata(version int, sources []Source) *Metadata {
 	}
 }
 
+// Configuration -
 type Configuration struct {
 	ConnectionInfo ConnectionInfo `json:"connection_info"`
 }
 
+// ConnectionInfo -
 type ConnectionInfo struct {
 	UsePreparedStatements bool        `json:"use_prepared_statements"`
 	IsolationLevel        string      `json:"isolation_level"`
-	DatabaseUrl           interface{} `json:"database_url"`
+	DatabaseUrl           DatabaseUrl `json:"database_url,omitempty"`
+}
+
+// DatabaseUrl -
+type DatabaseUrl string
+
+// DatabaseUrlFromEnv -
+type DatabaseUrlFromEnv struct {
+	FromEnv string `json:"from_env"`
+}
+
+// UnmarshalJSON -
+func (d *DatabaseUrl) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err == nil {
+		*d = DatabaseUrl(s)
+		return nil
+	}
+
+	var fromEnv DatabaseUrlFromEnv
+	if err := json.Unmarshal(data, &fromEnv); err != nil {
+		return err
+	}
+
+	*d = DatabaseUrl(fromEnv.FromEnv)
+	return nil
 }
 
 // Source -

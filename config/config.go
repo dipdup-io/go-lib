@@ -40,7 +40,7 @@ type Contract struct {
 // Database
 type Database struct {
 	Path       string `yaml:"path"`
-	Kind       string `yaml:"kind" validate:"required,oneof=sqlite postgres mysql clickhouse"`
+	Kind       string `yaml:"kind" validate:"required,oneof=sqlite postgres mysql clickhouse elasticsearch"`
 	Host       string `yaml:"host" validate:"required_with=Port User Database"`
 	Port       int    `yaml:"port" validate:"required_with=Host User Database,gt=-1,lt=65535"`
 	User       string `yaml:"user" validate:"required_with=Host Port Database"`
