@@ -41,9 +41,9 @@ type Configuration struct {
 }
 
 type ConnectionInfo struct {
-	UsePreparedStatements bool   `json:"use_prepared_statements"`
-	IsolationLevel        string `json:"isolation_level"`
-	DatabaseUrl           string `json:"database_url"`
+	UsePreparedStatements bool        `json:"use_prepared_statements"`
+	IsolationLevel        string      `json:"isolation_level"`
+	DatabaseUrl           interface{} `json:"database_url"`
 }
 
 // Source -
