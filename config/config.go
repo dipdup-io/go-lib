@@ -21,7 +21,9 @@ type Config struct {
 
 // Substitute -
 func (c *Config) Substitute() error {
-	c.Hasura.SetSourceName()
+	if c.Hasura != nil {
+		c.Hasura.SetSourceName()
+	}
 	return nil
 }
 
