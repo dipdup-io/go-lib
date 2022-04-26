@@ -130,7 +130,7 @@ func (api *API) AddSource(ctx context.Context, hasura *config.Hasura, cfg config
 			"name": hasura.Source,
 			"configuration": Configuration{
 				ConnectionInfo: ConnectionInfo{
-					DatabaseUrl:           DatabaseUrl(fmt.Sprintf("postgresql://%s:%s@%s:%d/%s", cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.Database)),
+					DatabaseUrl:           fmt.Sprintf("postgresql://%s:%s@%s:%d/%s", cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.Database),
 					UsePreparedStatements: true,
 					IsolationLevel:        "read-committed",
 				},
