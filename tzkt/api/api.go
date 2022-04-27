@@ -151,7 +151,7 @@ func (tzkt *API) auth(request *http.Request) error {
 		return errors.Errorf("you have to set auth data")
 	}
 
-	nonce := time.Now().UnixMicro()
+	nonce := time.Now().UnixMilli()
 	key, err := crypto.NewKeyFromBase58(tzkt.privateKey)
 	if err != nil {
 		return err

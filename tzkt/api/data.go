@@ -400,14 +400,9 @@ type AccountMetadata struct {
 	Medium      string `json:"medium"`
 }
 
-// AccountType -
-type AccountType struct {
-	Profile AccountMetadata `json:"profile"`
-}
-
 // MetadataConstraint -
 type MetadataConstraint interface {
-	AccountType
+	AccountMetadata
 }
 
 // Metadata -
