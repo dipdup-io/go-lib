@@ -9,10 +9,9 @@ import (
 
 // Key -
 type Key struct {
-	pubKey  PubKey
-	address string
-	curve   Curve
-	bytes   []byte
+	pubKey PubKey
+	curve  Curve
+	bytes  []byte
 }
 
 // NewKey -
@@ -119,4 +118,9 @@ func (key Key) Sign(data []byte) (Signature, error) {
 // Verify -
 func (key Key) Verify(data, signature []byte) bool {
 	return key.pubKey.Verify(data, signature)
+}
+
+// Address -
+func (key Key) Address() (string, error) {
+	return key.pubKey.Address()
 }

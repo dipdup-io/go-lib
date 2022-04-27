@@ -22,15 +22,6 @@ type Curve interface {
 	Kind() ECKind
 }
 
-// EmptyCurve -
-type EmptyCurve struct {
-	addressPrefix    []byte
-	publicKeyPrefix  []byte
-	privateKeyPrefix []byte
-	signaturePrefix  []byte
-	seedKey          []byte
-}
-
 // NewCurve -
 func NewCurve(kind ECKind) (Curve, error) {
 	switch kind {

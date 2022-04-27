@@ -10,7 +10,13 @@ import (
 )
 
 // Ed25519 -
-type Ed25519 EmptyCurve
+type Ed25519 struct {
+	addressPrefix    []byte
+	publicKeyPrefix  []byte
+	privateKeyPrefix []byte
+	signaturePrefix  []byte
+	seedKey          []byte
+}
 
 // NewEd25519 -
 func NewEd25519() Ed25519 {
