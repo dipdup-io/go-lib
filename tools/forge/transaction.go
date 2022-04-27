@@ -93,7 +93,7 @@ func ForgeArray(value []byte, l uint64) []byte {
 	buf := new(bytes.Buffer)
 	_ = binary.Write(buf, binary.LittleEndian, uint64(len(value)))
 
-	bytes := reverseBytes(buf.Bytes()[0:l])
+	bytes := reverse(buf.Bytes()[0:l])
 	return append(bytes, value...)
 }
 

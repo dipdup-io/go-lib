@@ -92,6 +92,7 @@ type Transaction struct {
 	Block         string          `json:"block"`
 	Hash          string          `json:"hash"`
 	HasInternals  bool            `json:"hasInternals"`
+	Nonce         *uint64         `json:"nonce,omitempty"`
 }
 
 // Delegation -
@@ -110,6 +111,7 @@ type Delegation struct {
 	GasLimit    uint64          `json:"gasLimit"`
 	GasUsed     uint64          `json:"gasUsed"`
 	BakerFee    uint64          `json:"bakerFee"`
+	Nonce       *uint64         `json:"nonce,omitempty"`
 }
 
 // Reveal -
@@ -126,6 +128,7 @@ type Reveal struct {
 	GasLimit  uint64    `json:"gasLimit"`
 	GasUsed   uint64    `json:"gasUsed"`
 	BakerFee  uint64    `json:"bakerFee"`
+	Nonce     *uint64   `json:"nonce,omitempty"`
 }
 
 // Error -
@@ -374,4 +377,41 @@ type Migration struct {
 	Kind          string    `json:"kind"`
 	Account       Address   `json:"account"`
 	BalanceChange int64     `json:"balanceChange"`
+}
+
+// AccountMetadata -
+type AccountMetadata struct {
+	Address     string `json:"address"`
+	Kind        string `json:"kind"`
+	Alias       string `json:"alias"`
+	Description string `json:"description"`
+	Site        string `json:"site"`
+	Support     string `json:"support"`
+	Email       string `json:"email"`
+	Twitter     string `json:"twitter"`
+	Telegram    string `json:"telegram"`
+	Discord     string `json:"discord"`
+	Reddit      string `json:"reddit"`
+	Slack       string `json:"slack"`
+	Github      string `json:"github"`
+	Gitlab      string `json:"gitlab"`
+	Instagram   string `json:"instagram"`
+	Facebook    string `json:"facebook"`
+	Medium      string `json:"medium"`
+}
+
+// AccountType -
+type AccountType struct {
+	Profile AccountMetadata `json:"profile"`
+}
+
+// MetadataConstraint -
+type MetadataConstraint interface {
+	AccountType
+}
+
+// Metadata -
+type Metadata[T MetadataConstraint] struct {
+	Key   string `json:"key"`
+	Value T      `json:"metadata"`
 }

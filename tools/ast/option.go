@@ -147,8 +147,12 @@ func (opt *Option) ToJSONSchema() (*JSONSchema, error) {
 	}
 
 	if len(child.Properties) > 0 {
-		for key, value := range child.Properties {
-			someSchema.Properties[key] = value
+		if opt.Type.IsPrim(consts.PAIR) {
+			someSchema.Properties[opt.Type.GetName()] = child
+		} else {
+			for key, value := range child.Properties {
+				someSchema.Properties[key] = value
+			}
 		}
 	}
 
@@ -168,7 +172,7 @@ func (opt *Option) ToJSONSchema() (*JSONSchema, error) {
 			someSchema,
 		},
 		Default: &JSONSchema{
-			SchemaKey: (*SchemaKey)(noneSchema),
+			SchemaKey: noneSchema,
 		},
 	}, nil
 }
@@ -267,7 +271,7 @@ func (opt *Option) Docs(inferredName string) ([]Typedef, string, error) {
 	}
 
 	optName := fmt.Sprintf("option(%s)", varName)
-	if isSimpleDocType(docs[0].Type) {
+	if docs == nil || isSimpleDocType(docs[0].Type) {
 		return nil, optName, nil
 	}
 	return docs, optName, nil

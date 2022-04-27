@@ -23,6 +23,7 @@ type Hub struct {
 	encoder Encoding
 	msgs    chan interface{}
 	stop    chan struct{}
+	mx      sync.Mutex
 	wg      sync.WaitGroup
 
 	onReconnect func() error
@@ -162,6 +163,8 @@ func (hub *Hub) Send(msg interface{}) error {
 	if err != nil {
 		return err
 	}
+	hub.mx.Lock()
+	defer hub.mx.Unlock()
 	return hub.conn.WriteMessage(websocket.TextMessage, data)
 }
 

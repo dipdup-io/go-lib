@@ -1,7 +1,6 @@
 package ast
 
 import (
-	"encoding/hex"
 	"strings"
 
 	"github.com/dipdup-net/go-lib/tools/base"
@@ -30,20 +29,6 @@ func (u UntypedAST) String() string {
 	}
 
 	return s.String()
-}
-
-// Hash -
-func (u UntypedAST) Hash() (string, error) {
-	var s strings.Builder
-
-	for i := range u {
-		h, err := u[i].Hash()
-		if err != nil {
-			return "", err
-		}
-		s.WriteString(h)
-	}
-	return s.String(), nil
 }
 
 // Annotations -
@@ -119,21 +104,6 @@ func (u UntypedAST) GetStrings(tryUnpack bool) ([]string, error) {
 		s = append(s, arr...)
 	}
 	return s, nil
-}
-
-// Fingerprint -
-func (u UntypedAST) Fingerprint(isCode bool) ([]byte, error) {
-	var s strings.Builder
-	for i := range u {
-		f, err := u[i].Fingerprint(isCode)
-		if err != nil {
-			return nil, err
-		}
-		if _, err := s.WriteString(f); err != nil {
-			return nil, err
-		}
-	}
-	return hex.DecodeString(s.String())
 }
 
 // Unpack - unpack all bytes and store data in the tree.
@@ -250,6 +220,12 @@ func typeNode(node *base.Node, depth int, id *int) (Node, error) {
 		ast = NewBLS12381g2(depth + 1)
 	case consts.BAKERHASH:
 		ast = NewBakerHash(depth + 1)
+	case consts.CHEST:
+		ast = NewChest(depth + 1)
+	case consts.CHESTKEY:
+		ast = NewChestKey(depth + 1)
+	case consts.CONSTANT:
+		ast = NewConstant(depth + 1)
 	default:
 		return nil, errors.Wrap(consts.ErrUnknownPrim, node.Prim)
 	}

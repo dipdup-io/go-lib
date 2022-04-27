@@ -1,6 +1,10 @@
 package hasura
 
-import "github.com/pkg/errors"
+import (
+	"os"
+
+	"github.com/pkg/errors"
+)
 
 type Request struct {
 	Type string      `json:"type"`
@@ -69,7 +73,11 @@ func (d *DatabaseUrl) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	*d = DatabaseUrl(fromEnv.FromEnv)
+	fromEnvValue := os.Getenv(fromEnv.FromEnv)
+	if fromEnvValue == "" {
+		return errors.Errorf("you have to set '%s' environment variable due to hasura connection info", fromEnv.FromEnv)
+	}
+	*d = DatabaseUrl(fromEnvValue)
 	return nil
 }
 

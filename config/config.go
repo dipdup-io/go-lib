@@ -21,14 +21,17 @@ type Config struct {
 
 // Substitute -
 func (c *Config) Substitute() error {
-	c.Hasura.SetSourceName()
+	if c.Hasura != nil {
+		c.Hasura.SetSourceName()
+	}
 	return nil
 }
 
 // DataSource -
 type DataSource struct {
-	Kind string `yaml:"kind"`
-	URL  string `yaml:"url" validate:"required,url"`
+	Kind        string       `yaml:"kind"`
+	URL         string       `yaml:"url" validate:"required,url"`
+	Credentials *Credentials `yaml:"credentials,omitempty" validate:"omitempty"`
 }
 
 // Contracts -
@@ -61,6 +64,9 @@ type Hasura struct {
 }
 
 func (s *Hasura) SetSourceName() {
+	if s == nil {
+		return
+	}
 	if s.Source == "" {
 		s.Source = "default"
 	}

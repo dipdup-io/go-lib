@@ -133,7 +133,7 @@ type BigMapUpdate struct {
 // Content -
 type Content struct {
 	Hash  string             `json:"hash"`
-	Key   string             `json:"key"`
+	Key   stdJSON.RawMessage `json:"key"`
 	Value stdJSON.RawMessage `json:"value"`
 }
 
@@ -167,6 +167,7 @@ type Transaction struct {
 	Block         string          `json:"block"`
 	Hash          string          `json:"hash"`
 	HasInternals  bool            `json:"hasInternals"`
+	Nonce         *uint64         `json:"nonce,omitempty"`
 }
 
 // Parameter -
@@ -221,6 +222,7 @@ type Reveal struct {
 	GasLimit  uint64             `json:"gasLimit"`
 	GasUsed   uint64             `json:"gasUsed"`
 	BakerFee  uint64             `json:"bakerFee"`
+	Nonce     *uint64            `json:"nonce,omitempty"`
 	Status    string             `json:"status"`
 	Errors    stdJSON.RawMessage `json:"errors,omitempty"`
 	Quote     *QuoteShort        `json:"quote,omitempty"`
@@ -238,7 +240,7 @@ type Delegation struct {
 	Counter      uint64             `json:"counter"`
 	Initiator    *Account           `json:"initiator"`
 	Sender       *Account           `json:"sender"`
-	Nonce        uint64             `json:"nonce"`
+	Nonce        *uint64            `json:"nonce,omitempty"`
 	GasLimit     uint64             `json:"gasLimit"`
 	GasUsed      uint64             `json:"gasUsed"`
 	BakerFee     uint64             `json:"bakerFee"`

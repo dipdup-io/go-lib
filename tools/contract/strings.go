@@ -1,11 +1,9 @@
 package contract
 
 import (
-	"crypto/sha512"
+	"crypto/sha256"
 	"encoding/hex"
 	"regexp"
-
-	"github.com/dipdup-net/go-lib/tools/types"
 )
 
 var (
@@ -14,18 +12,11 @@ var (
 
 // ComputeHash -
 func ComputeHash(data []byte) (string, error) {
-	sha := sha512.New()
+	sha := sha256.New()
 	if _, err := sha.Write(data); err != nil {
 		return "", err
 	}
 	return hex.EncodeToString(sha.Sum(nil)), nil
-}
-
-func findHardcodedAddresses(code []byte) types.Set {
-	res := regAddress.FindAllString(string(code), -1)
-	resp := make(types.Set)
-	resp.Append(res...)
-	return resp
 }
 
 // IsAddress -

@@ -7,7 +7,7 @@ import (
 
 // GetDelegates -
 func (tzkt *API) GetDelegates(ctx context.Context, filters map[string]string) (delegates []Delegate, err error) {
-	err = tzkt.json(ctx, "/v1/delegates", filters, &delegates)
+	err = tzkt.json(ctx, "/v1/delegates", filters, false, &delegates)
 	return
 }
 
@@ -18,6 +18,6 @@ func (tzkt *API) GetDelegatesCount(ctx context.Context) (uint64, error) {
 
 // GetDelegateByAddress -
 func (tzkt *API) GetDelegateByAddress(ctx context.Context, address string) (delegate Delegate, err error) {
-	err = tzkt.json(ctx, fmt.Sprintf("/v1/delegates/%s", address), nil, &delegate)
+	err = tzkt.json(ctx, fmt.Sprintf("/v1/delegates/%s", address), nil, false, &delegate)
 	return
 }
