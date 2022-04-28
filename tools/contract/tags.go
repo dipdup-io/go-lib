@@ -6,6 +6,7 @@ import (
 	"github.com/dipdup-net/go-lib/tools/ast"
 	"github.com/dipdup-net/go-lib/tools/base"
 	"github.com/dipdup-net/go-lib/tools/consts"
+	"github.com/dipdup-net/go-lib/tools/contract/trees"
 	"github.com/dipdup-net/go-lib/tools/forge"
 )
 
@@ -68,4 +69,25 @@ func primTags(node *base.Node) string {
 		return consts.SaplingTag
 	}
 	return ""
+}
+
+func isNftLedger(storage *ast.TypedAst) bool {
+	node := storage.FindByName("ledger", false)
+	if node == nil {
+		return false
+	}
+
+	if node.EqualType(trees.NewNftLedgerSingleAsset.Nodes[0]) {
+		return true
+	}
+
+	if node.EqualType(trees.NewNftLedgerAsset.Nodes[0]) {
+		return true
+	}
+
+	if node.EqualType(trees.NewNftLedgerMultiAsset.Nodes[0]) {
+		return true
+	}
+
+	return false
 }

@@ -1,6 +1,10 @@
 package hasura
 
-import "github.com/pkg/errors"
+import (
+	"os"
+
+	"github.com/pkg/errors"
+)
 
 type Request struct {
 	Type string      `json:"type"`

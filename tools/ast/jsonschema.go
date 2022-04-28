@@ -1,9 +1,11 @@
 package ast
 
 import (
+	"encoding/hex"
 	"math/big"
 
 	"github.com/dipdup-net/go-lib/tools/types"
+	"github.com/pkg/errors"
 )
 
 // Schema types
@@ -33,13 +35,10 @@ type JSONSchema struct {
 	Required   []string               `json:"required,omitempty"`
 	XItemTitle string                 `json:"x-itemTitle,omitempty"`
 	Const      string                 `json:"const,omitempty"`
-	SchemaKey  *SchemaKey             `json:"schemaKey,omitempty"`
-	Items      *SchemaKey             `json:"items,omitempty"`
+	SchemaKey  *JSONSchema            `json:"schemaKey,omitempty"`
+	Items      *JSONSchema            `json:"items,omitempty"`
 	XOptions   map[string]interface{} `json:"x-options,omitempty"`
 }
-
-// SchemaKey -
-type SchemaKey JSONSchema
 
 func getStringJSONSchema(d Default) *JSONSchema {
 	return wrapObject(&JSONSchema{
@@ -87,14 +86,19 @@ func setIntJSONSchema(d *Default, data map[string]interface{}) {
 	}
 }
 
-func setBytesJSONSchema(d *Default, data map[string]interface{}) {
+func setBytesJSONSchema(d *Default, data map[string]interface{}) error {
 	for key := range data {
 		if key == d.GetName() {
+			if _, err := hex.DecodeString(data[key].(string)); err != nil {
+				return errors.Errorf("invalid bytes string: %s=%v", key, data[key])
+			}
+
 			d.Value = data[key]
 			d.ValueKind = valueKindBytes
-			break
+			return nil
 		}
 	}
+	return nil
 }
 
 func setOptimizedJSONSchema(d *Default, data map[string]interface{}, optimizer func(string) (string, error)) {

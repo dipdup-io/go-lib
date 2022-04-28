@@ -107,15 +107,11 @@ func ForgeString(value string) ([]byte, error) {
 	return decoded[2 : len(decoded)-4], nil
 }
 
-func reverse(arr []string) []string {
-	for i := len(arr)/2 - 1; i >= 0; i-- {
-		opp := len(arr) - 1 - i
-		arr[i], arr[opp] = arr[opp], arr[i]
-	}
-	return arr
+type reverseConstraint interface {
+	~string | ~byte | ~int64
 }
 
-func reverseBytes(arr []byte) []byte {
+func reverse[T reverseConstraint](arr []T) []T {
 	for i := len(arr)/2 - 1; i >= 0; i-- {
 		opp := len(arr) - 1 - i
 		arr[i], arr[opp] = arr[opp], arr[i]

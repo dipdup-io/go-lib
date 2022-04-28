@@ -18,13 +18,6 @@ type contractData struct {
 	Storage stdJSON.RawMessage `json:"storage"`
 }
 
-// Fingerprint -
-type Fingerprint struct {
-	Parameter []byte
-	Storage   []byte
-	Code      []byte
-}
-
 // Parser -
 type Parser struct {
 	Code    *ast.Script
@@ -34,11 +27,9 @@ type Parser struct {
 	Tags               types.Set
 	Annotations        types.Set
 	HardcodedAddresses types.Set
+	Constants          types.Set
 
-	Fingerprint Fingerprint
-
-	Hash     string
-	Language string
+	Hash string
 
 	CodeRaw []byte
 }
@@ -60,7 +51,6 @@ func NewParser(data []byte) (*Parser, error) {
 		return nil, err
 	}
 
-	hardcoded := findHardcodedAddresses(cd.Code)
 	hash, err := ComputeHash(cd.Code)
 	if err != nil {
 		return nil, err
@@ -81,11 +71,10 @@ func NewParser(data []byte) (*Parser, error) {
 		Storage:            storage,
 		FailStrings:        make(types.Set),
 		Annotations:        make(types.Set),
+		Constants:          make(types.Set),
+		HardcodedAddresses: make(types.Set),
 		Tags:               tags,
-		HardcodedAddresses: hardcoded,
 		Hash:               hash,
-		Language:           consts.LangUnknown,
-		Fingerprint:        Fingerprint{},
 		CodeRaw:            cd.Code,
 	}, nil
 }
@@ -102,7 +91,32 @@ func (p *Parser) Parse() error {
 		return err
 	}
 
-	return nil
+	if p.IsUpgradable() {
+		p.Tags.Add(consts.UpgradableTag)
+	}
+
+	return p.setStorageTypeTags()
+}
+
+// FindConstants -
+func (p *Parser) FindConstants() ([]string, error) {
+	if len(p.Code.Code) == 0 {
+		return nil, nil
+	}
+
+	if err := p.parse(p.Code.Code, p.handleConstants); err != nil {
+		return nil, err
+	}
+
+	if err := p.parse(p.Code.Storage, p.handleConstants); err != nil {
+		return nil, err
+	}
+
+	if err := p.parse(p.Code.Parameter, p.handleConstants); err != nil {
+		return nil, err
+	}
+
+	return p.Constants.Values(), nil
 }
 
 // IsUpgradable -
@@ -125,6 +139,21 @@ func (p *Parser) IsUpgradable() bool {
 	return false
 }
 
+func (p *Parser) setStorageTypeTags() error {
+	storageTyp, err := p.Code.StorageType()
+	if err != nil {
+		return err
+	}
+
+	if p.Annotations.Has("%ledger") {
+		if isNftLedger(storageTyp) {
+			p.Tags.Add(consts.LedgerTag)
+		}
+	}
+
+	return nil
+}
+
 func (p *Parser) parse(tree ast.UntypedAST, handler func(node *base.Node) error) error {
 	for i := range tree {
 		if err := handler(tree[i]); err != nil {
@@ -143,11 +172,6 @@ func (p *Parser) parseCode() error {
 	if len(p.Code.Code) == 0 {
 		return nil
 	}
-	f, err := p.Code.Code.Fingerprint(true)
-	if err != nil {
-		return err
-	}
-	p.Fingerprint.Code = f
 
 	return p.parse(p.Code.Code, p.handleCodeNode)
 }
@@ -156,12 +180,6 @@ func (p *Parser) parseParameter() error {
 	if len(p.Code.Parameter) == 0 {
 		return nil
 	}
-
-	f, err := p.Code.Parameter.Fingerprint(false)
-	if err != nil {
-		return err
-	}
-	p.Fingerprint.Parameter = f
 
 	typedParamTree, err := p.Code.Parameter.ToTypedAST()
 	if err != nil {
@@ -178,11 +196,6 @@ func (p *Parser) parseStorage() error {
 		return nil
 	}
 
-	f, err := p.Code.Storage.Fingerprint(false)
-	if err != nil {
-		return err
-	}
-	p.Fingerprint.Storage = f
 	return p.parse(p.Code.Storage, p.handleStorageNode)
 }
 
@@ -203,9 +216,14 @@ func (p *Parser) handleStorageNode(node *base.Node) error {
 }
 
 func (p *Parser) handleCodeNode(node *base.Node) error {
-	failString := parseFail(node)
-	if failString != "" {
+	if constant := parseConstants(node); constant != "" {
+		p.Constants.Add(constant)
+	} else if failString := parseFail(node); failString != "" {
 		p.FailStrings.Add(failString)
+	}
+
+	if hardcoded := parseHardcoded(node); len(hardcoded) > 0 {
+		p.HardcodedAddresses.Append(hardcoded...)
 	}
 
 	if len(node.Annots) > 0 {
@@ -215,6 +233,42 @@ func (p *Parser) handleCodeNode(node *base.Node) error {
 	p.Tags.Append(primTags(node))
 
 	return nil
+}
+
+func (p *Parser) handleConstants(node *base.Node) error {
+	if constant := parseConstants(node); constant != "" {
+		p.Constants.Add(constant)
+	}
+	return nil
+}
+
+func parseHardcoded(node *base.Node) []string {
+	if node.Prim != consts.STRING || node.StringValue == nil {
+		return nil
+	}
+	value := *node.StringValue
+	if len(value) < 36 {
+		return nil
+	}
+	return regAddress.FindAllString(value, -1)
+}
+
+func parseConstants(node *base.Node) string {
+	if node == nil {
+		return ""
+	}
+
+	if node.Prim != consts.CONSTANT || len(node.Args) != 1 {
+		return ""
+	}
+
+	arg := node.Args[0]
+	if arg.StringValue == nil {
+		return ""
+	}
+
+	value := arg.StringValue
+	return *value
 }
 
 func parseFail(node *base.Node) string {

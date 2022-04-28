@@ -29,8 +29,9 @@ func (c *Config) Substitute() error {
 
 // DataSource -
 type DataSource struct {
-	Kind string `yaml:"kind"`
-	URL  string `yaml:"url" validate:"required,url"`
+	Kind        string       `yaml:"kind"`
+	URL         string       `yaml:"url" validate:"required,url"`
+	Credentials *Credentials `yaml:"credentials,omitempty" validate:"omitempty"`
 }
 
 // Contracts -
@@ -63,6 +64,9 @@ type Hasura struct {
 }
 
 func (s *Hasura) SetSourceName() {
+	if s == nil {
+		return
+	}
 	if s.Source == "" {
 		s.Source = "default"
 	}

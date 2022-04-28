@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/dipdup-net/go-lib/tools/crypto"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/pkg/errors"
 )
@@ -21,25 +22,33 @@ var json = jsoniter.ConfigCompatibleWithStandardLibrary
 type API struct {
 	url    string
 	client *http.Client
+
+	user       string
+	privateKey string
 }
 
 // New -
-func New(baseURL string) *API {
+func New(baseURL string, opts ...Option) *API {
 	t := http.DefaultTransport.(*http.Transport).Clone()
 	t.MaxIdleConns = 100
 	t.MaxConnsPerHost = 100
 	t.MaxIdleConnsPerHost = 100
 
-	return &API{
+	api := &API{
 		url: baseURL,
 		client: &http.Client{
 			Timeout:   time.Minute,
 			Transport: t,
 		},
 	}
+	for i := range opts {
+		opts[i](api)
+	}
+
+	return api
 }
 
-func (tzkt *API) get(ctx context.Context, endpoint string, args map[string]string) (*http.Response, error) {
+func (tzkt *API) get(ctx context.Context, endpoint string, args map[string]string, withAuth bool) (*http.Response, error) {
 	u, err := url.Parse(tzkt.url)
 	if err != nil {
 		return nil, err
@@ -55,6 +64,12 @@ func (tzkt *API) get(ctx context.Context, endpoint string, args map[string]strin
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
 	if err != nil {
 		return nil, err
+	}
+
+	if withAuth {
+		if err := tzkt.auth(req); err != nil {
+			return nil, err
+		}
 	}
 
 	return tzkt.client.Do(req)
@@ -89,8 +104,8 @@ func (tzkt *API) post(ctx context.Context, endpoint string, args map[string]stri
 	return tzkt.client.Do(req)
 }
 
-func (tzkt *API) json(ctx context.Context, endpoint string, args map[string]string, output interface{}) error {
-	resp, err := tzkt.get(ctx, endpoint, args)
+func (tzkt *API) json(ctx context.Context, endpoint string, args map[string]string, withAuth bool, output interface{}) error {
+	resp, err := tzkt.get(ctx, endpoint, args, withAuth)
 	if err != nil {
 		return err
 	}
@@ -102,12 +117,16 @@ func (tzkt *API) json(ctx context.Context, endpoint string, args map[string]stri
 	case http.StatusNoContent:
 		return nil
 	default:
-		return errors.New(fmt.Sprintf("%s: %s %v", resp.Status, endpoint, args))
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+		return errors.New(fmt.Sprintf("%s: %s %s %v", resp.Status, string(body), endpoint, args))
 	}
 }
 
 func (tzkt *API) count(ctx context.Context, endpoint string) (uint64, error) {
-	resp, err := tzkt.get(ctx, endpoint, nil)
+	resp, err := tzkt.get(ctx, endpoint, nil, false)
 	if err != nil {
 		return 0, err
 	}
@@ -123,6 +142,40 @@ func (tzkt *API) count(ctx context.Context, endpoint string) (uint64, error) {
 
 // GetHead -
 func (tzkt *API) GetHead(ctx context.Context) (head Head, err error) {
-	err = tzkt.json(ctx, "/v1/head", nil, &head)
+	err = tzkt.json(ctx, "/v1/head", nil, false, &head)
 	return
+}
+
+func (tzkt *API) auth(request *http.Request) error {
+	if tzkt.privateKey == "" || tzkt.user == "" {
+		return errors.Errorf("you have to set auth data")
+	}
+
+	nonce := time.Now().UnixMilli()
+	key, err := crypto.NewKeyFromBase58(tzkt.privateKey)
+	if err != nil {
+		return err
+	}
+
+	nonceString := fmt.Sprintf("%d", nonce)
+
+	sign, err := key.Sign([]byte(nonceString))
+	if err != nil {
+		return err
+	}
+
+	if !key.Verify([]byte(nonceString), sign.Bytes()) {
+		return errors.Errorf("invalid signature")
+	}
+
+	signature, err := sign.Base58()
+	if err != nil {
+		return err
+	}
+
+	request.Header.Add("X-TZKT-USER", tzkt.user)
+	request.Header.Add("X-TZKT-NONCE", nonceString)
+	request.Header.Add("X-TZKT-SIGNATURE", signature)
+
+	return nil
 }

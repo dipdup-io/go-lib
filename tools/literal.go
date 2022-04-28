@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"regexp"
 	"strings"
 
 	"github.com/dipdup-net/go-lib/tools/consts"
@@ -25,7 +26,28 @@ func IsContract(address string) bool {
 	return len(address) == 36 && strings.HasPrefix(address, "KT")
 }
 
-// IsAddress -
-func IsAddress(address string) bool {
+// IsAddressLazy -
+func IsAddressLazy(address string) bool {
 	return len(address) == 36 && (strings.HasPrefix(address, "KT") || strings.HasPrefix(address, "tz"))
+}
+
+var (
+	addressRegex       = regexp.MustCompile("(tz|KT)[0-9A-Za-z]{34}")
+	operationHashRegex = regexp.MustCompile("(o)[0-9A-Za-z]{50}")
+	bigMapKeyHashRegex = regexp.MustCompile("(expr)[0-9A-Za-z]{50}")
+)
+
+// IsAddress -
+func IsAddress(str string) bool {
+	return addressRegex.MatchString(str)
+}
+
+// IsOperationHash -
+func IsOperationHash(str string) bool {
+	return operationHashRegex.MatchString(str)
+}
+
+// IsBigMapKeyHash -
+func IsBigMapKeyHash(str string) bool {
+	return bigMapKeyHashRegex.MatchString(str)
 }
