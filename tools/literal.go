@@ -31,9 +31,23 @@ func IsAddressLazy(address string) bool {
 	return len(address) == 36 && (strings.HasPrefix(address, "KT") || strings.HasPrefix(address, "tz"))
 }
 
+var (
+	addressRegex       = regexp.MustCompile("(tz|KT)[0-9A-Za-z]{34}")
+	operationHashRegex = regexp.MustCompile("(o)[0-9A-Za-z]{50}")
+	bigMapKeyHashRegex = regexp.MustCompile("(expr)[0-9A-Za-z]{50}")
+)
+
 // IsAddress -
 func IsAddress(str string) bool {
-	regexString := "(tz|KT)[0-9A-Za-z]{34}"
-	re := regexp.MustCompile(regexString)
-	return re.MatchString(str)
+	return addressRegex.MatchString(str)
+}
+
+// IsOperationHash -
+func IsOperationHash(str string) bool {
+	return operationHashRegex.MatchString(str)
+}
+
+// IsBigMapKeyHash -
+func IsBigMapKeyHash(str string) bool {
+	return bigMapKeyHashRegex.MatchString(str)
 }
