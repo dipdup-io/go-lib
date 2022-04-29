@@ -2,6 +2,10 @@ package api
 
 import (
 	"context"
+	"fmt"
+
+	"github.com/dipdup-net/go-lib/tools"
+	"github.com/pkg/errors"
 )
 
 // GetEndorsements -
@@ -79,5 +83,20 @@ func (tzkt *API) GetRegisterConstants(ctx context.Context, filters map[string]st
 // GetMigrations -
 func (tzkt *API) GetMigrations(ctx context.Context, filters map[string]string) (operations []Migration, err error) {
 	err = tzkt.json(ctx, "/v1/operations/migrations", filters, false, &operations)
+	return
+}
+
+// GetOperationsByHash -
+func (tzkt *API) GetOperationsByHash(ctx context.Context, hash string, filters map[string]string) (operations []Operation, err error) {
+	err = tzkt.json(ctx, fmt.Sprintf("/v1/operations/%s", hash), filters, false, &operations)
+	return
+}
+
+// GetTransactionsByHash -
+func (tzkt *API) GetTransactionsByHash(ctx context.Context, hash string, filters map[string]string) (operations []Transaction, err error) {
+	if !tools.IsOperationHash(hash) {
+		return nil, errors.Errorf("invalid operation hash: %s", hash)
+	}
+	err = tzkt.json(ctx, fmt.Sprintf("/v1/operations/transactions/%s", hash), filters, false, &operations)
 	return
 }
