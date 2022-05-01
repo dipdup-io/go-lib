@@ -158,17 +158,13 @@ func (api *API) ExportMetadata(ctx context.Context) (Metadata, error) {
 func (api *API) ReplaceMetadata(ctx context.Context, data *Metadata) error {
 	req := versionedRequest{
 		Type:    "replace_metadata",
-		Version: 1,
-		Args:    data,
+		Version: 2,
+		Args: map[string]any{
+			"metadata":                    data,
+			"allow_inconsistent_metadata": true,
+		},
 	}
-	var resp replaceMetadataResponse
-	if err := api.post(ctx, "/v1/metadata", nil, req, &resp); err != nil {
-		return err
-	}
-	if resp.Message == "success" {
-		return nil
-	}
-	return errors.Errorf("Can't replace hasura's metadata: %s", resp.Message)
+	return api.post(ctx, "/v1/metadata", nil, req, nil)
 }
 
 // TrackTable -

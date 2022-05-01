@@ -25,7 +25,7 @@ func checkHealth(ctx context.Context, api *API) {
 	if err := api.Health(ctx); err != nil {
 		return
 	}
-	ticker := time.NewTicker(5 * time.Second)
+	ticker := time.NewTicker(time.Second)
 	for {
 		select {
 		case <-ctx.Done():

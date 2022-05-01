@@ -49,7 +49,7 @@ type Configuration struct {
 type ConnectionInfo struct {
 	UsePreparedStatements bool        `json:"use_prepared_statements"`
 	IsolationLevel        string      `json:"isolation_level"`
-	DatabaseUrl           DatabaseUrl `json:"database_url,omitempty"`
+	DatabaseUrl           DatabaseUrl `json:"database_url"`
 }
 
 // DatabaseUrl -
@@ -73,11 +73,7 @@ func (d *DatabaseUrl) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	fromEnvValue := os.Getenv(fromEnv.FromEnv)
-	if fromEnvValue == "" {
-		return errors.Errorf("you have to set '%s' environment variable due to hasura connection info", fromEnv.FromEnv)
-	}
-	*d = DatabaseUrl(fromEnvValue)
+	*d = DatabaseUrl(os.Getenv(fromEnv.FromEnv))
 	return nil
 }
 
