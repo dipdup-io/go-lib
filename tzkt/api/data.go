@@ -22,6 +22,11 @@ const (
 	KindRegisterGlobalConstant = "register_constant"
 )
 
+// urls
+const (
+	BaseURL = "https://api.tzkt.io"
+)
+
 // Operation -
 type Operation struct {
 	ID         uint64      `json:"id" mapstructure:"id"`

@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
 	"strconv"
 	"time"
@@ -117,11 +119,10 @@ func (tzkt *API) json(ctx context.Context, endpoint string, args map[string]stri
 	case http.StatusNoContent:
 		return nil
 	default:
-		body, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
+		if _, err := io.Copy(os.Stdout, resp.Body); err != nil {
 			return err
 		}
-		return errors.New(fmt.Sprintf("%s: %s %s %v", resp.Status, string(body), endpoint, args))
+		return errors.New(fmt.Sprintf("%s: %s %v", resp.Status, endpoint, args))
 	}
 }
 

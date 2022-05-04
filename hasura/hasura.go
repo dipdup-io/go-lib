@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/dipdup-net/go-lib/config"
+	"github.com/go-playground/validator/v10"
 	"github.com/iancoleman/strcase"
 	"github.com/pkg/errors"
 
@@ -25,7 +26,7 @@ func checkHealth(ctx context.Context, api *API) {
 	if err := api.Health(ctx); err != nil {
 		return
 	}
-	ticker := time.NewTicker(5 * time.Second)
+	ticker := time.NewTicker(time.Second)
 	for {
 		select {
 		case <-ctx.Done():
@@ -40,23 +41,37 @@ func checkHealth(ctx context.Context, api *API) {
 	}
 }
 
+// GenerateArgs -
+type GenerateArgs struct {
+	Config               *config.Hasura  `validate:"required"`
+	DatabaseConfig       config.Database `validate:"required"`
+	Views                []string        `validate:"omitempty"`
+	CustomConfigurations []Request       `validate:"omitempty"`
+	Models               []any           `validate:"omitempty"`
+}
+
 // Create - creates hasura models
-func Create(ctx context.Context, hasura *config.Hasura, cfg config.Database, views []string, custom []Request, models ...interface{}) error {
-	if hasura == nil {
+func Create(ctx context.Context, args GenerateArgs) error {
+	if args.Config == nil {
 		return nil
 	}
-	api := New(hasura.URL, hasura.Secret)
+
+	if err := validator.New().Struct(args); err != nil {
+		return err
+	}
+
+	api := New(args.Config.URL, args.Config.Secret)
 
 	checkHealth(ctx, api)
 
-	if hasura.AddSource {
+	if args.Config.AddSource {
 		log.Info().Msg("Adding source...")
-		if err := api.AddSource(ctx, hasura, cfg); err != nil {
+		if err := api.AddSource(ctx, args.Config, args.DatabaseConfig); err != nil {
 			return err
 		}
 	}
 
-	metadata, err := Generate(*hasura, cfg, models...)
+	metadata, err := Generate(*args.Config, args.DatabaseConfig, args.Models...)
 	if err != nil {
 		return err
 	}
@@ -70,13 +85,13 @@ func Create(ctx context.Context, hasura *config.Hasura, cfg config.Database, vie
 	// Find our source in the existing metadata
 	var selectedSource *Source = nil
 	for idx := range export.Sources {
-		if export.Sources[idx].Name == hasura.Source {
+		if export.Sources[idx].Name == args.Config.Source {
 			selectedSource = &export.Sources[idx]
 			break
 		}
 	}
 	if selectedSource == nil {
-		return errors.Errorf("Source '%s' not found on exported metadata", hasura.Source)
+		return errors.Errorf("Source '%s' not found on exported metadata", args.Config.Source)
 	}
 
 	log.Info().Msg("Merging metadata...")
@@ -97,7 +112,7 @@ func Create(ctx context.Context, hasura *config.Hasura, cfg config.Database, vie
 		return err
 	}
 
-	if len(export.QueryCollections) > 0 && (hasura.Rest == nil || *hasura.Rest) {
+	if len(export.QueryCollections) > 0 && (args.Config.Rest == nil || *args.Config.Rest) {
 		log.Info().Msg("Creating REST endpoints...")
 		for _, query := range export.QueryCollections[0].Definition.Queries {
 			if err := api.CreateRestEndpoint(ctx, query.Name, query.Name, query.Name, allowedQueries); err != nil {
@@ -109,18 +124,18 @@ func Create(ctx context.Context, hasura *config.Hasura, cfg config.Database, vie
 	}
 
 	log.Info().Msg("Tracking views...")
-	for i := range views {
-		if err := api.TrackTable(ctx, views[i], hasura.Source); err != nil {
+	for i := range args.Views {
+		if err := api.TrackTable(ctx, args.Views[i], args.Config.Source); err != nil {
 			if !strings.Contains(err.Error(), "view/table already tracked") {
 				return err
 			}
 		}
-		if err := api.DropSelectPermissions(ctx, views[i], hasura.Source, "user"); err != nil {
+		if err := api.DropSelectPermissions(ctx, args.Views[i], args.Config.Source, "user"); err != nil {
 			log.Warn().Err(err).Msg("")
 		}
-		if err := api.CreateSelectPermissions(ctx, views[i], hasura.Source, "user", Permission{
-			Limit:     hasura.RowsLimit,
-			AllowAggs: hasura.EnableAggregations,
+		if err := api.CreateSelectPermissions(ctx, args.Views[i], args.Config.Source, "user", Permission{
+			Limit:     args.Config.RowsLimit,
+			AllowAggs: args.Config.EnableAggregations,
 			Columns:   Columns{"*"},
 			Filter:    map[string]interface{}{},
 		}); err != nil {
@@ -129,7 +144,7 @@ func Create(ctx context.Context, hasura *config.Hasura, cfg config.Database, vie
 	}
 
 	log.Info().Msg("Running custom configurations...")
-	for _, conf := range custom {
+	for _, conf := range args.CustomConfigurations {
 		if err := api.CustomConfiguration(ctx, conf); err != nil {
 			log.Warn().Err(err).Msg("")
 		}
