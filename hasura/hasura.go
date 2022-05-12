@@ -340,3 +340,33 @@ func mergeQueries(a []Query, b []Query) []Query {
 	}
 	return b
 }
+
+func ReadCustomConfigs(ctx context.Context, database config.Database, hasuraConfigDir string) ([]Request, error) {
+	files, err := ioutil.ReadDir(hasuraConfigDir)
+	if err != nil {
+		return nil, err
+	}
+
+	custom_configs := make([]Request, 0)
+	for i := range files {
+		if files[i].IsDir() || strings.HasPrefix(files[i].Name(), ".") {
+			continue
+		}
+
+		path := fmt.Sprintf("%s/%s", hasuraConfigDir, files[i].Name())
+		raw, err := ioutil.ReadFile(path)
+		if err != nil {
+			return nil, err
+		}
+
+		conf := Request{}
+
+		err = json.Unmarshal([]byte(raw), &conf)
+		if err != nil {
+			return nil, err
+		}
+		custom_configs = append(custom_configs, conf)
+	}
+
+	return custom_configs, nil
+}
