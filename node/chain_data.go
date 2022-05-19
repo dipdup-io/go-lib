@@ -43,6 +43,7 @@ type MempoolResponse struct {
 	Refused       []Failed  `json:"refused"`
 	BranchRefused []Failed  `json:"branch_refused"`
 	BranchDelayed []Failed  `json:"branch_delayed"`
+	Outdated      []Failed  `json:"outdated"`
 }
 
 // Applied -

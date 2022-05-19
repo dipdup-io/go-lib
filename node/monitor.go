@@ -18,6 +18,7 @@ const (
 	filterRefused       = "refused"
 	filterBranchRefused = "branch_refused"
 	filterBranchDelayed = "branch_delayed"
+	filterOutdated      = "outdated"
 )
 
 // Monitor -
@@ -29,11 +30,13 @@ type Monitor struct {
 	refused       chan []*FailedMonitor
 	branchDelayed chan []*FailedMonitor
 	branchRefused chan []*FailedMonitor
+	outdated      chan []*FailedMonitor
 
 	subscribedOnApplied       bool
 	subscribedOnRefused       bool
 	subscribedOnBranchDelayed bool
 	subscribedOnBranchRefused bool
+	subscribedOnOutdated      bool
 
 	wg sync.WaitGroup
 }
@@ -51,6 +54,7 @@ func NewMonitor(url string) *Monitor {
 		refused:       make(chan []*FailedMonitor, 4096),
 		branchDelayed: make(chan []*FailedMonitor, 4096),
 		branchRefused: make(chan []*FailedMonitor, 4096),
+		outdated:      make(chan []*FailedMonitor, 4096),
 		client: &http.Client{
 			Transport: t,
 			Timeout:   time.Minute,
@@ -102,6 +106,17 @@ func (monitor *Monitor) SubscribeOnMempoolBranchDelayed(ctx context.Context) {
 	go monitor.pollingMempool(ctx, filterBranchDelayed)
 }
 
+// SubscribeOnMempoolOutdated -
+func (monitor *Monitor) SubscribeOnMempoolOutdated(ctx context.Context) {
+	if monitor.subscribedOnOutdated {
+		return
+	}
+	monitor.subscribedOnOutdated = true
+
+	monitor.wg.Add(1)
+	go monitor.pollingMempool(ctx, filterOutdated)
+}
+
 func (monitor *Monitor) Close() error {
 	monitor.wg.Wait()
 
@@ -109,6 +124,7 @@ func (monitor *Monitor) Close() error {
 	close(monitor.refused)
 	close(monitor.branchDelayed)
 	close(monitor.branchRefused)
+	close(monitor.outdated)
 	return nil
 }
 
@@ -130,6 +146,11 @@ func (monitor *Monitor) BranchDelayed() <-chan []*FailedMonitor {
 // Refused -
 func (monitor *Monitor) Refused() <-chan []*FailedMonitor {
 	return monitor.refused
+}
+
+// Outdated -
+func (monitor *Monitor) Outdated() <-chan []*FailedMonitor {
+	return monitor.outdated
 }
 
 func (monitor *Monitor) pollingMempool(ctx context.Context, filter string) {
@@ -168,6 +189,8 @@ func (monitor *Monitor) process(ctx context.Context, filter, url string) error {
 		return monitor.longPollingFailed(ctx, url, monitor.branchRefused)
 	case filterRefused:
 		return monitor.longPollingFailed(ctx, url, monitor.refused)
+	case filterOutdated:
+		return monitor.longPollingFailed(ctx, url, monitor.outdated)
 	default:
 		return errors.Errorf("unknown filter: %s", filter)
 	}
