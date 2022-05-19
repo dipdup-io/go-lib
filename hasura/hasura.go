@@ -341,6 +341,7 @@ func mergeQueries(a []Query, b []Query) []Query {
 	return b
 }
 
+// ReadCustomConfigs -
 func ReadCustomConfigs(ctx context.Context, database config.Database, hasuraConfigDir string) ([]Request, error) {
 	files, err := ioutil.ReadDir(hasuraConfigDir)
 	if err != nil {
@@ -361,7 +362,7 @@ func ReadCustomConfigs(ctx context.Context, database config.Database, hasuraConf
 
 		conf := Request{}
 
-		err = json.Unmarshal([]byte(raw), &conf)
+		err = json.Unmarshal(raw, &conf)
 		if err != nil {
 			return nil, err
 		}
