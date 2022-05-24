@@ -19,10 +19,13 @@ func NewBigInt(val int64) *BigInt {
 
 // NewBigIntFromString -
 func NewBigIntFromString(val string) *BigInt {
-	b := big.NewInt(0)
-	b, _ = b.SetString(val, 10)
+	if value, ok := big.NewInt(0).SetString(val, 10); ok {
+		return &BigInt{
+			Int: value,
+		}
+	}
 	return &BigInt{
-		Int: b,
+		Int: big.NewInt(0),
 	}
 }
 

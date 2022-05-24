@@ -202,11 +202,11 @@ func (contract *{{$.TypeName}}) Get{{ $value.Type }}(ctx context.Context, page P
 	}
 	values := make([]{{ $value.Type }}, 0)
 	for i := range operations {
-		if operations[i].Parameters == nil {
+		if operations[i].Parameter == nil {
 			continue
 		}
 		var value {{ $value.Type }}
-		if err := json.Unmarshal(operations[i].Parameters.Value, &value); err != nil {
+		if err := json.Unmarshal(operations[i].Parameter.Value, &value); err != nil {
 			return nil, err
 		}
 		values = append(values, value)
@@ -237,7 +237,7 @@ func getLimits(p Page) Page {
 	return newPage
 }
 
-func getTransactions(ctx context.Context, tzktAPI *api.API, entrypoint, contract string, page Page) ([]api.Operation, error) {
+func getTransactions(ctx context.Context, tzktAPI *api.API, entrypoint, contract string, page Page) ([]api.Transaction, error) {
 	limits := getLimits(page)
 	return tzktAPI.GetTransactions(ctx, map[string]string{
 		"entrypoint": entrypoint,
