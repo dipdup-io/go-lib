@@ -151,14 +151,11 @@ func (tzkt *API) auth(request *http.Request) error {
 	if tzkt.privateKey == "" || tzkt.user == "" {
 		return errors.Errorf("you have to set auth data")
 	}
-
-	nonce := time.Now().UnixMilli()
 	key, err := crypto.NewKeyFromBase58(tzkt.privateKey)
 	if err != nil {
 		return err
 	}
-
-	nonceString := fmt.Sprintf("%d", nonce)
+	nonceString := fmt.Sprintf("%d", time.Now().UTC().UnixMilli())
 
 	sign, err := key.Sign([]byte(nonceString))
 	if err != nil {
