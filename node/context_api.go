@@ -36,6 +36,10 @@ type ContextAPI interface {
 	DelegateVotingPower(ctx context.Context, blockID, pkh string) (int, error)
 	ActiveDelegatesWithRolls(ctx context.Context, blockID string) ([]string, error)
 	LiquidityBakingCPMMAddress(ctx context.Context, blockID string) (string, error)
+	TxRollupState(ctx context.Context, txRollupID string) (TxRollupState, error)
+	TxRollupCommitment(ctx context.Context, blockID, txRollupID, blockLevel string) (*RollupCommitmentForBlock, error)
+	TxRollupInbox(ctx context.Context, blockID, txRollupID, blockLevel string) (*TxRollupInbox, error)
+	TxRollupPendingBondedCommitments(ctx context.Context, blockID, txRollupID, pkh string) (uint64, error)
 }
 
 // Context -
@@ -318,4 +322,48 @@ func (api *Context) LiquidityBakingCPMMAddress(ctx context.Context, blockID stri
 	var result string
 	err = req.doWithJSONResponse(ctx, api.client, &result)
 	return result, err
+}
+
+// TxRollupState -
+func (api *Context) TxRollupState(ctx context.Context, blockID, txRollupID string) (TxRollupState, error) {
+	req, err := newGetRequest(api.baseURL, fmt.Sprintf("chains/%s/blocks/%s/context/tx_rollup/%s/state", api.chainID, blockID, txRollupID), nil)
+	if err != nil {
+		return TxRollupState{}, err
+	}
+	var state TxRollupState
+	err = req.doWithJSONResponse(ctx, api.client, &state)
+	return state, err
+}
+
+// TxRollupCommitment -
+func (api *Context) TxRollupCommitment(ctx context.Context, blockID, txRollupID, blockLevel string) (*RollupCommitmentForBlock, error) {
+	req, err := newGetRequest(api.baseURL, fmt.Sprintf("chains/%s/blocks/%s/context/tx_rollup/%s/commitment/%s", api.chainID, blockID, txRollupID, blockLevel), nil)
+	if err != nil {
+		return nil, err
+	}
+	result := new(RollupCommitmentForBlock)
+	err = req.doWithJSONResponse(ctx, api.client, result)
+	return result, err
+}
+
+// TxRollupInbox -
+func (api *Context) TxRollupInbox(ctx context.Context, blockID, txRollupID, blockLevel string) (*TxRollupInbox, error) {
+	req, err := newGetRequest(api.baseURL, fmt.Sprintf("chains/%s/blocks/%s/context/tx_rollup/%s/inbox/%s", api.chainID, blockID, txRollupID, blockLevel), nil)
+	if err != nil {
+		return nil, err
+	}
+	inbox := new(TxRollupInbox)
+	err = req.doWithJSONResponse(ctx, api.client, inbox)
+	return inbox, err
+}
+
+// TxRollupPendingBondedCommitments -
+func (api *Context) TxRollupPendingBondedCommitments(ctx context.Context, blockID, txRollupID, pkh string) (uint64, error) {
+	req, err := newGetRequest(api.baseURL, fmt.Sprintf("chains/%s/blocks/%s/context/tx_rollup/%s/pending_bonded_commitments/%s", api.chainID, blockID, txRollupID, pkh), nil)
+	if err != nil {
+		return 0, err
+	}
+	var response uint64
+	err = req.doWithJSONResponse(ctx, api.client, &response)
+	return response, err
 }
