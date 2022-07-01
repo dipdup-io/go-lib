@@ -6,11 +6,12 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/dipdup-net/go-lib/tzkt/data"
 	"github.com/pkg/errors"
 )
 
 // GetContractJSONSchema -
-func (tzkt *API) GetContractJSONSchema(ctx context.Context, address string) (response ContractJSONSchema, err error) {
+func (tzkt *API) GetContractJSONSchema(ctx context.Context, address string) (response data.ContractJSONSchema, err error) {
 	err = tzkt.json(ctx, fmt.Sprintf("/v1/contracts/%s/interface", address), nil, false, &response)
 	return
 }

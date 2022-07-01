@@ -2,14 +2,14 @@ package types
 
 import (
 	"github.com/dave/jennifer/jen"
-	"github.com/dipdup-net/go-lib/tzkt/api"
+	"github.com/dipdup-net/go-lib/tzkt/data"
 )
 
 // Object -
 type Object struct{}
 
 // AsField -
-func (Object) AsField(name, path string, schema api.JSONSchema, isRequired bool, result *ContractTypeResult) (jen.Code, error) {
+func (Object) AsField(name, path string, schema data.JSONSchema, isRequired bool, result *ContractTypeResult) (jen.Code, error) {
 	tags := map[string]string{
 		"json": name,
 	}
@@ -22,7 +22,7 @@ func (Object) AsField(name, path string, schema api.JSONSchema, isRequired bool,
 }
 
 // AsCode -
-func (obj Object) AsCode(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
+func (obj Object) AsCode(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	code, err := obj.create(name, path, schema, result)
 	if err != nil {
 		return Code{}, err
@@ -36,11 +36,11 @@ func (obj Object) AsCode(name, path string, schema api.JSONSchema, result *Contr
 }
 
 // AsType -
-func (obj Object) AsType(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
+func (obj Object) AsType(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	return obj.create(name, path, schema, result)
 }
 
-func (Object) create(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
+func (Object) create(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	fields := make([]jen.Code, 0)
 	statements := make([]jen.Code, 0)
 

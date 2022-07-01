@@ -7,6 +7,8 @@ import (
 	"sync"
 
 	"github.com/dipdup-net/go-lib/tzkt/events/signalr"
+
+	tzktData "github.com/dipdup-net/go-lib/tzkt/data"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
@@ -26,7 +28,7 @@ type TzKT struct {
 // NewTzKT - constructor of `TzKT`. `url` is TzKT events base URL. If it's empty https://api.tzkt.io/v1/events is set.
 func NewTzKT(url string) *TzKT {
 	if url == "" {
-		url = BaseURL
+		url = tzktData.BaseEventsURL
 	}
 	return &TzKT{
 		s:             signalr.NewSignalR(url),
@@ -209,28 +211,28 @@ func (tzkt *TzKT) onReconnect() error {
 	return nil
 }
 
-func parseData(channel string, data []byte) (interface{}, error) {
+func parseData(channel string, data []byte) (any, error) {
 	switch channel {
 	case ChannelAccounts:
-		var acc []Account
+		var acc []tzktData.Account
 		err := json.Unmarshal(data, &acc)
 		return acc, err
 	case ChannelBigMap:
-		var updates []BigMapUpdate
+		var updates []tzktData.BigMapUpdate
 		err := json.Unmarshal(data, &updates)
 		return updates, err
 	case ChannelBlocks:
-		var block []Block
+		var block []tzktData.Block
 		err := json.Unmarshal(data, &block)
 		return block, err
 	case ChannelHead:
-		var head Head
+		var head tzktData.Head
 		err := json.Unmarshal(data, &head)
 		return head, err
 	case ChannelOperations:
 		return parseOperations(data)
 	case ChannelTransfers:
-		var transfer []Transfer
+		var transfer []tzktData.Transfer
 		err := json.Unmarshal(data, &transfer)
 		return transfer, err
 	default:
@@ -238,24 +240,62 @@ func parseData(channel string, data []byte) (interface{}, error) {
 	}
 }
 
-func parseOperations(data []byte) (interface{}, error) {
-	var operations []Operation
+func parseOperations(data []byte) (any, error) {
+	var operations []tzktData.Operation
 	if err := json.Unmarshal(data, &operations); err != nil {
 		return nil, err
 	}
-	result := make([]interface{}, 0)
+	result := make([]any, 0)
 	for i := range operations {
 		switch operations[i].Type {
-		case KindDelegation:
-			result = append(result, &Delegation{})
-		case KindOrigination:
-			result = append(result, &Origination{})
-		case KindReveal:
-			result = append(result, &Reveal{})
-		case KindTransaction:
-			result = append(result, &Transaction{})
-		case KindMigration:
-			result = append(result, &Migration{})
+		case tzktData.KindDelegation:
+			result = append(result, &tzktData.Delegation{})
+		case tzktData.KindOrigination:
+			result = append(result, &tzktData.Origination{})
+		case tzktData.KindReveal:
+			result = append(result, &tzktData.Reveal{})
+		case tzktData.KindTransaction:
+			result = append(result, &tzktData.Transaction{})
+		case tzktData.KindMigration:
+			result = append(result, &tzktData.Migration{})
+		case tzktData.KindActivation:
+			result = append(result, &tzktData.Activation{})
+		case tzktData.KindBallot:
+			result = append(result, &tzktData.Ballot{})
+		case tzktData.KindDoubleBaking:
+			result = append(result, &tzktData.DoubleBaking{})
+		case tzktData.KindDoubleEndorsing:
+			result = append(result, &tzktData.DoubleEndorsing{})
+		case tzktData.KindEndorsement:
+			result = append(result, &tzktData.Endorsement{})
+		case tzktData.KindNonceRevelation:
+			result = append(result, &tzktData.NonceRevelation{})
+		case tzktData.KindProposal:
+			result = append(result, &tzktData.Proposal{})
+		case tzktData.KindPreendorsement:
+			result = append(result, &tzktData.Preendorsement{})
+		case tzktData.KindRegisterGlobalConstant:
+			result = append(result, &tzktData.RegisterConstant{})
+		case tzktData.KindSetDepositsLimit:
+			result = append(result, &tzktData.SetDepositsLimit{})
+		case tzktData.KindRollupDispatchTickets:
+			result = append(result, &tzktData.TxRollupDispatchTicket{})
+		case tzktData.KindRollupFinalizeCommitment:
+			result = append(result, &tzktData.TxRollupFinalizeCommitment{})
+		case tzktData.KindRollupReturnBond:
+			result = append(result, &tzktData.TxRollupReturnBond{})
+		case tzktData.KindRollupSubmitBatch:
+			result = append(result, &tzktData.TxRollupSubmitBatch{})
+		case tzktData.KindTransferTicket:
+			result = append(result, &tzktData.TransferTicket{})
+		case tzktData.KindTxRollupCommit:
+			result = append(result, &tzktData.TxRollupCommit{})
+		case tzktData.KindTxRollupOrigination:
+			result = append(result, &tzktData.TxRollupOrigination{})
+		case tzktData.KindTxRollupRejection:
+			result = append(result, &tzktData.TxRollupRejection{})
+		case tzktData.KindTxRollupRemoveCommitment:
+			result = append(result, &tzktData.TxRollupRemoveCommitment{})
 		default:
 			result = append(result, make(map[string]interface{}))
 		}

@@ -36,7 +36,7 @@ type ContextAPI interface {
 	DelegateVotingPower(ctx context.Context, blockID, pkh string) (int, error)
 	ActiveDelegatesWithRolls(ctx context.Context, blockID string) ([]string, error)
 	LiquidityBakingCPMMAddress(ctx context.Context, blockID string) (string, error)
-	TxRollupState(ctx context.Context, txRollupID string) (TxRollupState, error)
+	TxRollupState(ctx context.Context, blockID, txRollupID string) (TxRollupState, error)
 	TxRollupCommitment(ctx context.Context, blockID, txRollupID, blockLevel string) (*RollupCommitmentForBlock, error)
 	TxRollupInbox(ctx context.Context, blockID, txRollupID, blockLevel string) (*TxRollupInbox, error)
 	TxRollupPendingBondedCommitments(ctx context.Context, blockID, txRollupID, pkh string) (uint64, error)

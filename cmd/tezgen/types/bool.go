@@ -2,14 +2,14 @@ package types
 
 import (
 	"github.com/dave/jennifer/jen"
-	"github.com/dipdup-net/go-lib/tzkt/api"
+	"github.com/dipdup-net/go-lib/tzkt/data"
 )
 
 // Bool -
 type Bool struct{}
 
 // AsField -
-func (Bool) AsField(name, path string, schema api.JSONSchema, isRequired bool, result *ContractTypeResult) (jen.Code, error) {
+func (Bool) AsField(name, path string, schema data.JSONSchema, isRequired bool, result *ContractTypeResult) (jen.Code, error) {
 	tags := map[string]string{
 		"json": name,
 	}
@@ -22,7 +22,7 @@ func (Bool) AsField(name, path string, schema api.JSONSchema, isRequired bool, r
 }
 
 // AsCode -
-func (Bool) AsCode(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
+func (Bool) AsCode(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	typ := result.GetName("Bool", name)
 	return Code{
 		Statement: jen.Comment(typ).Line().Type().Id(typ).Bool().Line(),
@@ -31,7 +31,7 @@ func (Bool) AsCode(name, path string, schema api.JSONSchema, result *ContractTyp
 }
 
 // AsType -
-func (Bool) AsType(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
+func (Bool) AsType(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	return Code{
 		Statement: jen.Bool(),
 		Name:      result.GetName("Bool", name),

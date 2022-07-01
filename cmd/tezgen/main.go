@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/dipdup-net/go-lib/tzkt/api"
+	"github.com/dipdup-net/go-lib/tzkt/data"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -34,7 +35,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	var response api.ContractJSONSchema
+	var response data.ContractJSONSchema
 	var err error
 
 	if args.File == "" {

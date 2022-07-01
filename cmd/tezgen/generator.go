@@ -9,7 +9,7 @@ import (
 	"text/template"
 
 	"github.com/dipdup-net/go-lib/cmd/tezgen/types"
-	"github.com/dipdup-net/go-lib/tzkt/api"
+	"github.com/dipdup-net/go-lib/tzkt/data"
 	"github.com/iancoleman/strcase"
 )
 
@@ -27,7 +27,7 @@ var (
 )
 
 // Generate -
-func Generate(schema api.ContractJSONSchema, name, contract, dest string) error {
+func Generate(schema data.ContractJSONSchema, name, contract, dest string) error {
 	if dest == "" {
 		output, err := os.Getwd()
 		if err != nil {
@@ -65,7 +65,7 @@ func generateContractObject(name, contract, dest string, result types.ContractTy
 	})
 }
 
-func generateContractTypes(schema api.ContractJSONSchema, packageName, dest string) (types.ContractTypeResult, error) {
+func generateContractTypes(schema data.ContractJSONSchema, packageName, dest string) (types.ContractTypeResult, error) {
 	result, err := types.GenerateContractTypes(schema, packageName)
 	if err != nil {
 		return result, err

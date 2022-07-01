@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/dave/jennifer/jen"
-	"github.com/dipdup-net/go-lib/tzkt/api"
+	"github.com/dipdup-net/go-lib/tzkt/data"
 	"github.com/iancoleman/strcase"
 	"github.com/pkg/errors"
 )
@@ -20,9 +20,9 @@ var reservedNames = map[string]string{
 
 // Type -
 type Type interface {
-	AsField(name, path string, schema api.JSONSchema, isRequired bool, result *ContractTypeResult) (jen.Code, error)
-	AsCode(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error)
-	AsType(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error)
+	AsField(name, path string, schema data.JSONSchema, isRequired bool, result *ContractTypeResult) (jen.Code, error)
+	AsCode(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error)
+	AsType(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error)
 }
 
 // Code -
@@ -32,7 +32,7 @@ type Code struct {
 }
 
 // Generate -
-func Generate(name string, schema api.JSONSchema, result *ContractTypeResult) (string, error) {
+func Generate(name string, schema data.JSONSchema, result *ContractTypeResult) (string, error) {
 	typ, err := selectType(schema)
 	if err != nil {
 		return "", err
@@ -90,7 +90,7 @@ type BigMapData struct {
 }
 
 // GenerateContractTypes -
-func GenerateContractTypes(schema api.ContractJSONSchema, packageName string) (ContractTypeResult, error) {
+func GenerateContractTypes(schema data.ContractJSONSchema, packageName string) (ContractTypeResult, error) {
 	result := ContractTypeResult{
 		File:        jen.NewFile(packageName),
 		Entrypoints: make(map[string]EntrypointData),
@@ -110,7 +110,7 @@ func GenerateContractTypes(schema api.ContractJSONSchema, packageName string) (C
 	return result, nil
 }
 
-func generateForContract(schema api.ContractJSONSchema, result *ContractTypeResult) error {
+func generateForContract(schema data.ContractJSONSchema, result *ContractTypeResult) error {
 	for _, entrypoint := range schema.Entrypoints {
 		entrypointType, err := Generate(entrypoint.Name, entrypoint.Parameter, result)
 		if err != nil {
@@ -140,7 +140,7 @@ func generateForContract(schema api.ContractJSONSchema, result *ContractTypeResu
 	return nil
 }
 
-func selectType(schema api.JSONSchema) (Type, error) {
+func selectType(schema data.JSONSchema) (Type, error) {
 	switch schema.Type {
 	case "object":
 		switch schema.Comment {

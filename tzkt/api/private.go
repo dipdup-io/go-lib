@@ -1,18 +1,22 @@
 package api
 
-import "context"
+import (
+	"context"
+
+	"github.com/dipdup-net/go-lib/tzkt/data"
+)
 
 // GetAccountsMetadata -
-func (tzkt *API) GetAccountsMetadata(ctx context.Context, filters map[string]string) ([]AccountMetadata, error) {
-	var data []Metadata[AccountMetadata]
-	if err := tzkt.json(ctx, "/v1/metadata/accounts", filters, true, &data); err != nil {
+func (tzkt *API) GetAccountsMetadata(ctx context.Context, filters map[string]string) ([]data.AccountMetadata, error) {
+	var raw []data.Metadata[data.AccountMetadata]
+	if err := tzkt.json(ctx, "/v1/metadata/accounts", filters, true, &raw); err != nil {
 		return nil, err
 	}
 
-	items := make([]AccountMetadata, len(data))
-	for i := range data {
-		items[i] = data[i].Value
-		items[i].Address = data[i].Key
+	items := make([]data.AccountMetadata, len(raw))
+	for i := range raw {
+		items[i] = raw[i].Value
+		items[i].Address = raw[i].Key
 	}
 
 	return items, nil

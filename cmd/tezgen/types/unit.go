@@ -2,14 +2,14 @@ package types
 
 import (
 	"github.com/dave/jennifer/jen"
-	"github.com/dipdup-net/go-lib/tzkt/api"
+	"github.com/dipdup-net/go-lib/tzkt/data"
 )
 
 // Unit -
 type Unit struct{}
 
 // AsField -
-func (Unit) AsField(name, path string, schema api.JSONSchema, isRequired bool, result *ContractTypeResult) (jen.Code, error) {
+func (Unit) AsField(name, path string, schema data.JSONSchema, isRequired bool, result *ContractTypeResult) (jen.Code, error) {
 	tags := map[string]string{
 		"json": name,
 	}
@@ -24,7 +24,7 @@ func (Unit) AsField(name, path string, schema api.JSONSchema, isRequired bool, r
 }
 
 // AsCode -
-func (Unit) AsCode(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
+func (Unit) AsCode(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	typName := result.GetName("Unit", name)
 	return Code{
 		Statement: jen.Comment(typName).Line().Type().Id(typName).Add(
@@ -35,7 +35,7 @@ func (Unit) AsCode(name, path string, schema api.JSONSchema, result *ContractTyp
 }
 
 // AsType -
-func (Unit) AsType(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
+func (Unit) AsType(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	return Code{
 		Statement: jen.Add(
 			jen.Qual("github.com/dipdup-net/go-lib/tools/tezgen", "Unit"),

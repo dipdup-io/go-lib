@@ -2,14 +2,14 @@ package types
 
 import (
 	"github.com/dave/jennifer/jen"
-	"github.com/dipdup-net/go-lib/tzkt/api"
+	"github.com/dipdup-net/go-lib/tzkt/data"
 )
 
 // Bytes -
 type Bytes struct{}
 
 // AsField -
-func (Bytes) AsField(name, path string, schema api.JSONSchema, isRequired bool, result *ContractTypeResult) (jen.Code, error) {
+func (Bytes) AsField(name, path string, schema data.JSONSchema, isRequired bool, result *ContractTypeResult) (jen.Code, error) {
 	tags := map[string]string{
 		"json": name,
 	}
@@ -24,7 +24,7 @@ func (Bytes) AsField(name, path string, schema api.JSONSchema, isRequired bool, 
 }
 
 // AsCode -
-func (Bytes) AsCode(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
+func (Bytes) AsCode(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	typName := result.GetName("Bytes", name)
 	return Code{
 		Statement: jen.Comment(typName).Line().Type().Id(typName).Add(
@@ -35,7 +35,7 @@ func (Bytes) AsCode(name, path string, schema api.JSONSchema, result *ContractTy
 }
 
 // AsType -
-func (Bytes) AsType(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
+func (Bytes) AsType(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	return Code{
 		Statement: jen.Add(
 			jen.Qual("github.com/dipdup-net/go-lib/tools/tezgen", "Bytes"),

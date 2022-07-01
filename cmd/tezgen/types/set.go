@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/dave/jennifer/jen"
-	"github.com/dipdup-net/go-lib/tzkt/api"
+	"github.com/dipdup-net/go-lib/tzkt/data"
 	"github.com/pkg/errors"
 )
 
@@ -12,7 +12,7 @@ import (
 type Set struct{}
 
 // AsField -
-func (s Set) AsField(name, path string, schema api.JSONSchema, isRequired bool, result *ContractTypeResult) (jen.Code, error) {
+func (s Set) AsField(name, path string, schema data.JSONSchema, isRequired bool, result *ContractTypeResult) (jen.Code, error) {
 	tags := map[string]string{
 		"json": name,
 	}
@@ -30,7 +30,7 @@ func (s Set) AsField(name, path string, schema api.JSONSchema, isRequired bool, 
 }
 
 // AsCode -
-func (s Set) AsCode(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
+func (s Set) AsCode(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	code, err := s.createType(name, path, schema, result)
 	if err != nil {
 		return code, err
@@ -44,11 +44,11 @@ func (s Set) AsCode(name, path string, schema api.JSONSchema, result *ContractTy
 }
 
 // AsType -
-func (s Set) AsType(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
+func (s Set) AsType(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	return s.createType(name, path, schema, result)
 }
 
-func (Set) createType(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
+func (Set) createType(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	var code Code
 	code.Name = result.GetName("Set", name)
 

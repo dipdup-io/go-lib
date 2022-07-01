@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/dipdup-net/go-lib/tools/crypto"
+	"github.com/dipdup-net/go-lib/tzkt/data"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/pkg/errors"
 )
@@ -142,7 +143,7 @@ func (tzkt *API) count(ctx context.Context, endpoint string) (uint64, error) {
 }
 
 // GetHead -
-func (tzkt *API) GetHead(ctx context.Context) (head Head, err error) {
+func (tzkt *API) GetHead(ctx context.Context) (head data.Head, err error) {
 	err = tzkt.json(ctx, "/v1/head", nil, false, &head)
 	return
 }

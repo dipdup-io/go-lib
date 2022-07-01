@@ -4,14 +4,14 @@ import (
 	"fmt"
 
 	"github.com/dave/jennifer/jen"
-	"github.com/dipdup-net/go-lib/tzkt/api"
+	"github.com/dipdup-net/go-lib/tzkt/data"
 )
 
 // List -
 type List struct{}
 
 // AsField -
-func (List) AsField(name, path string, schema api.JSONSchema, isRequired bool, result *ContractTypeResult) (jen.Code, error) {
+func (List) AsField(name, path string, schema data.JSONSchema, isRequired bool, result *ContractTypeResult) (jen.Code, error) {
 	tags := map[string]string{
 		"json": name,
 	}
@@ -24,7 +24,7 @@ func (List) AsField(name, path string, schema api.JSONSchema, isRequired bool, r
 }
 
 // AsCode -
-func (l List) AsCode(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
+func (l List) AsCode(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	code, err := l.createList(name, path, schema, result)
 	if err != nil {
 		return code, err
@@ -37,11 +37,11 @@ func (l List) AsCode(name, path string, schema api.JSONSchema, result *ContractT
 }
 
 // AsType -
-func (l List) AsType(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
+func (l List) AsType(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	return l.createList(name, path, schema, result)
 }
 
-func (List) createList(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
+func (List) createList(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	var code Code
 	code.Name = result.GetName("List", name)
 

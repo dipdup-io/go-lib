@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/dave/jennifer/jen"
-	"github.com/dipdup-net/go-lib/tzkt/api"
+	"github.com/dipdup-net/go-lib/tzkt/data"
 	"github.com/pkg/errors"
 )
 
@@ -12,7 +12,7 @@ import (
 type Option struct{}
 
 // AsField -
-func (Option) AsField(name, path string, schema api.JSONSchema, isRequired bool, result *ContractTypeResult) (jen.Code, error) {
+func (Option) AsField(name, path string, schema data.JSONSchema, isRequired bool, result *ContractTypeResult) (jen.Code, error) {
 	tags := map[string]string{
 		"json": fmt.Sprintf("%s,omitempty", name),
 	}
@@ -25,7 +25,7 @@ func (Option) AsField(name, path string, schema api.JSONSchema, isRequired bool,
 }
 
 // AsCode -
-func (opt Option) AsCode(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
+func (opt Option) AsCode(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	optType, err := opt.createOption(name, path, schema, result)
 	if err != nil {
 		return Code{}, err
@@ -39,11 +39,11 @@ func (opt Option) AsCode(name, path string, schema api.JSONSchema, result *Contr
 }
 
 // AsType -
-func (opt Option) AsType(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
+func (opt Option) AsType(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	return opt.createOption(name, path, schema, result)
 }
 
-func (Option) createOption(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
+func (Option) createOption(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	var code Code
 	code.Name = result.GetName("Option", name)
 
@@ -51,7 +51,7 @@ func (Option) createOption(name, path string, schema api.JSONSchema, result *Con
 		return code, errors.Errorf("invalid oneOf field for option: %s", code.Name)
 	}
 
-	var entityType api.JSONSchema
+	var entityType data.JSONSchema
 	for i := range schema.OneOf {
 		switch schema.OneOf[i].Type {
 		case "null":

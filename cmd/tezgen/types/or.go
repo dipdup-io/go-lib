@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/dave/jennifer/jen"
-	"github.com/dipdup-net/go-lib/tzkt/api"
+	"github.com/dipdup-net/go-lib/tzkt/data"
 	"github.com/iancoleman/strcase"
 )
 
@@ -13,7 +13,7 @@ import (
 type Or struct{}
 
 // AsField -
-func (Or) AsField(name, path string, schema api.JSONSchema, isRequired bool, result *ContractTypeResult) (jen.Code, error) {
+func (Or) AsField(name, path string, schema data.JSONSchema, isRequired bool, result *ContractTypeResult) (jen.Code, error) {
 	tags := map[string]string{
 		"json": name,
 	}
@@ -26,7 +26,7 @@ func (Or) AsField(name, path string, schema api.JSONSchema, isRequired bool, res
 }
 
 // AsCode -
-func (obj Or) AsCode(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
+func (obj Or) AsCode(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	code, err := obj.createOr(name, path, schema, result)
 	if err != nil {
 		return code, err
@@ -39,11 +39,11 @@ func (obj Or) AsCode(name, path string, schema api.JSONSchema, result *ContractT
 }
 
 // AsType -
-func (obj Or) AsType(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
+func (obj Or) AsType(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	return obj.createOr(name, path, schema, result)
 }
 
-func (obj Or) createOr(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
+func (obj Or) createOr(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	if len(schema.OneOf) != 2 {
 		return Code{}, errors.New("invalid oneOf key for or type")
 	}
@@ -79,7 +79,7 @@ func (obj Or) createOr(name, path string, schema api.JSONSchema, result *Contrac
 	}, nil
 }
 
-func (obj Or) createSide(name, side, path string, schema api.JSONSchema, result *ContractTypeResult) (jen.Code, jen.Code, error) {
+func (obj Or) createSide(name, side, path string, schema data.JSONSchema, result *ContractTypeResult) (jen.Code, jen.Code, error) {
 	typ, err := selectType(schema)
 	if err != nil {
 		return nil, nil, err

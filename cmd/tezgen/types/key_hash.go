@@ -2,14 +2,14 @@ package types
 
 import (
 	"github.com/dave/jennifer/jen"
-	"github.com/dipdup-net/go-lib/tzkt/api"
+	"github.com/dipdup-net/go-lib/tzkt/data"
 )
 
 // KeyHash -
 type KeyHash struct{}
 
 // AsField -
-func (KeyHash) AsField(name, path string, schema api.JSONSchema, isRequired bool, result *ContractTypeResult) (jen.Code, error) {
+func (KeyHash) AsField(name, path string, schema data.JSONSchema, isRequired bool, result *ContractTypeResult) (jen.Code, error) {
 	tags := map[string]string{
 		"json": name,
 	}
@@ -22,7 +22,7 @@ func (KeyHash) AsField(name, path string, schema api.JSONSchema, isRequired bool
 }
 
 // AsCode -
-func (KeyHash) AsCode(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
+func (KeyHash) AsCode(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	typName := result.GetName("KeyHash", name)
 	return Code{
 		Statement: jen.Comment(typName).Line().Type().Id(typName).String().Line(),
@@ -31,7 +31,7 @@ func (KeyHash) AsCode(name, path string, schema api.JSONSchema, result *Contract
 }
 
 // AsType -
-func (KeyHash) AsType(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
+func (KeyHash) AsType(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	return Code{
 		Statement: jen.String(),
 		Name:      name,

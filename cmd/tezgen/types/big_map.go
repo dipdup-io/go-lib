@@ -4,11 +4,11 @@ import (
 	"fmt"
 
 	"github.com/dave/jennifer/jen"
-	"github.com/dipdup-net/go-lib/tzkt/api"
+	"github.com/dipdup-net/go-lib/tzkt/data"
 )
 
 // GenerateBigMap -
-func GenerateBigMap(bigMap api.BigMapJSONSchema, result *ContractTypeResult) error {
+func GenerateBigMap(bigMap data.BigMapJSONSchema, result *ContractTypeResult) error {
 	keyTypeName, err := Generate(fmt.Sprintf("key_%s", bigMap.Name), bigMap.Key, result)
 	if err != nil {
 		return err
@@ -65,7 +65,7 @@ func GenerateBigMap(bigMap api.BigMapJSONSchema, result *ContractTypeResult) err
 type BigMap struct{}
 
 // AsField -
-func (BigMap) AsField(name, path string, schema api.JSONSchema, isRequired bool, result *ContractTypeResult) (jen.Code, error) {
+func (BigMap) AsField(name, path string, schema data.JSONSchema, isRequired bool, result *ContractTypeResult) (jen.Code, error) {
 	tags := map[string]string{
 		"json": name,
 	}
@@ -86,7 +86,7 @@ func (BigMap) AsField(name, path string, schema api.JSONSchema, isRequired bool,
 }
 
 // AsCode -
-func (BigMap) AsCode(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
+func (BigMap) AsCode(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	return Code{
 		Statement: nil,
 		Name:      result.GetName("BigMap", name),
@@ -94,7 +94,7 @@ func (BigMap) AsCode(name, path string, schema api.JSONSchema, result *ContractT
 }
 
 // AsType -
-func (BigMap) AsType(name, path string, schema api.JSONSchema, result *ContractTypeResult) (Code, error) {
+func (BigMap) AsType(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	typName := result.GetName("BigMap", name)
 	return Code{
 		Statement: jen.Id(typName),
