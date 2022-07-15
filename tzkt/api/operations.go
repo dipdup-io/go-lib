@@ -167,3 +167,27 @@ func (tzkt *API) GetTransferTicket(ctx context.Context, filters map[string]strin
 	err = tzkt.json(ctx, "/v1/operations/transfer_ticket", filters, false, &operations)
 	return
 }
+
+// GetBakings -
+func (tzkt *API) GetBakings(ctx context.Context, filters map[string]string) (operations []data.Baking, err error) {
+	err = tzkt.json(ctx, "/v1/operations/baking", filters, false, &operations)
+	return
+}
+
+// GetEndorsingRewards -
+func (tzkt *API) GetEndorsingRewards(ctx context.Context, filters map[string]string) (operations []data.EndorsingReward, err error) {
+	err = tzkt.json(ctx, "/v1/operations/endorsing_rewards", filters, false, &operations)
+	return
+}
+
+// GetRevelationPenalties -
+func (tzkt *API) GetRevelationPenalties(ctx context.Context, filters map[string]string) (operations []data.RevelationPenalty, err error) {
+	err = tzkt.json(ctx, "/v1/operations/revelation_penalties", filters, false, &operations)
+	return
+}
+
+// GetDoublePreendorsings -
+func (tzkt *API) GetDoublePreendorsings(ctx context.Context, filters map[string]string) (operations []data.DoublePreendorsing, err error) {
+	err = tzkt.json(ctx, "/v1/operations/double_preendorsing", filters, false, &operations)
+	return
+}

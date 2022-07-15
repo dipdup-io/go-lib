@@ -10,6 +10,7 @@ const (
 	KindProposal                 = "proposal"
 	KindDoubleBaking             = "double_baking"
 	KindDoubleEndorsing          = "double_endorsing"
+	KindDoublePreendorsing       = "double_preendorsing"
 	KindActivation               = "activation"
 	KindMigration                = "migration"
 	KindNonceRevelation          = "nonce_revelation"
@@ -26,6 +27,9 @@ const (
 	KindRollupReturnBond         = "tx_rollup_return_bond"
 	KindRollupSubmitBatch        = "tx_rollup_submit_batch"
 	KindSetDepositsLimit         = "set_deposits_limit"
+	KindRevelationPenalty        = "revelation_penalty"
+	KindBaking                   = "baking"
+	KindEndorsingReward          = "endorsing_reward"
 )
 
 // urls

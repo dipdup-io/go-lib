@@ -296,6 +296,14 @@ func parseOperations(data []byte) (any, error) {
 			result = append(result, &tzktData.TxRollupRejection{})
 		case tzktData.KindTxRollupRemoveCommitment:
 			result = append(result, &tzktData.TxRollupRemoveCommitment{})
+		case tzktData.KindRevelationPenalty:
+			result = append(result, &tzktData.RevelationPenalty{})
+		case tzktData.KindEndorsingReward:
+			result = append(result, &tzktData.EndorsingReward{})
+		case tzktData.KindBaking:
+			result = append(result, &tzktData.Baking{})
+		case tzktData.KindDoublePreendorsing:
+			result = append(result, &tzktData.DoublePreendorsing{})
 		default:
 			result = append(result, make(map[string]interface{}))
 		}

@@ -8,18 +8,23 @@ import (
 
 // Block -
 type Block struct {
+	Cycle         int64     `json:"cycle"`
 	Level         uint64    `json:"level"`
 	Hash          string    `json:"hash"`
 	Timestamp     time.Time `json:"timestamp"`
 	Proto         int64     `json:"proto"`
 	Priority      int64     `json:"priority"`
 	Validations   int64     `json:"validations"`
+	BlockRound    uint64    `json:"blockRound"`
+	PayloadRound  uint64    `josn:"payloadRound"`
 	Deposit       int64     `json:"deposit"`
 	Reward        int64     `json:"reward"`
 	Fees          int64     `json:"fees"`
+	Bonus         int64     `json:"bonus"`
 	LbEscapeEma   int64     `json:"lbEscapeEma"`
 	NonceRevealed bool      `json:"nonceRevealed"`
 	LbEscapeVote  bool      `json:"lbEscapeVote"`
+	LbToggleEma   uint64    `json:"lbToggleEma"`
 	Baker         Address   `json:"baker"`
 }
 

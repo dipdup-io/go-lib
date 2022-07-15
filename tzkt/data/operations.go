@@ -13,7 +13,8 @@ type OperationConstraint interface {
 	Transaction | Origination | Delegation | Reveal | RegisterConstant | Endorsement | Preendorsement |
 		Ballot | Proposal | Activation | TransferTicket | TxRollupCommit | TxRollupDispatchTicket |
 		TxRollupFinalizeCommitment | TxRollupOrigination | TxRollupRejection | TxRollupRemoveCommitment |
-		TxRollupReturnBond | TxRollupSubmitBatch | NonceRevelation | DoubleBaking | DoubleEndorsing | SetDepositsLimit
+		TxRollupReturnBond | TxRollupSubmitBatch | NonceRevelation | DoubleBaking | DoubleEndorsing | SetDepositsLimit |
+		Baking | RevelationPenalty | EndorsingReward
 }
 
 // Operation -
@@ -307,7 +308,7 @@ type TxRollupCommit struct {
 	StorageLimit uint64    `json:"storageLimit"`
 	StorageUsed  uint64    `json:"storageUsed"`
 	BakerFee     uint64    `json:"bakerFee"`
-	Bond         int64     `json:"bond"`
+	Bond         uint64    `json:"bond"`
 	Sender       Address   `json:"sender"`
 	Rollup       Address   `json:"rollup"`
 	Errors       []Error   `json:"errors,omitempty"`
@@ -393,8 +394,8 @@ type TxRollupRejection struct {
 	StorageLimit uint64    `json:"storageLimit"`
 	StorageUsed  uint64    `json:"storageUsed"`
 	BakerFee     uint64    `json:"bakerFee"`
-	Reward       int64     `json:"reward"`
-	Loss         int64     `json:"loss"`
+	Reward       uint64    `json:"reward"`
+	Loss         uint64    `json:"loss"`
 	Rollup       Address   `json:"rollup"`
 	Sender       Address   `json:"sender"`
 	Committer    Address   `json:"committer"`
@@ -438,7 +439,7 @@ type TxRollupReturnBond struct {
 	StorageLimit uint64    `json:"storageLimit"`
 	StorageUsed  uint64    `json:"storageUsed"`
 	BakerFee     uint64    `json:"bakerFee"`
-	Bond         int64     `json:"bond"`
+	Bond         uint64    `json:"bond"`
 	Timestamp    time.Time `json:"timestamp"`
 	Rollup       Address   `json:"rollup"`
 	Sender       Address   `json:"sender"`
@@ -555,4 +556,70 @@ type Quote struct {
 // Error -
 type Error struct {
 	Type string `json:"type"`
+}
+
+// Baking -
+type Baking struct {
+	Type         string    `json:"type"`
+	ID           uint64    `json:"id"`
+	Level        uint64    `json:"level"`
+	Timestamp    time.Time `json:"timestamp"`
+	Block        string    `json:"block"`
+	Proposer     *Account  `json:"proposer"`
+	Producer     *Account  `json:"producer"`
+	PayloadRound int       `json:"payloadRound"`
+	BlockRound   int       `json:"blockRound"`
+	Deposit      int64     `json:"deposit"`
+	Reward       int64     `json:"reward"`
+	Bonus        int64     `json:"bonus"`
+	Fees         int64     `json:"fees"`
+	Baker        Account   `json:"baker"`
+	Priority     int       `json:"priority"`
+	Quote        *Quote    `json:"quote,omitempty"`
+}
+
+// EndorsingReward -
+type EndorsingReward struct {
+	Type      string    `json:"type"`
+	ID        uint64    `json:"id"`
+	Level     uint64    `json:"level"`
+	Timestamp time.Time `json:"timestamp"`
+	Block     string    `json:"block"`
+	Baker     *Account  `json:"baker"`
+	Expected  int64     `json:"expected"`
+	Received  int64     `json:"received"`
+	Quote     *Quote    `json:"quote,omitempty"`
+}
+
+// RevelationPenalty -
+type RevelationPenalty struct {
+	Type        string    `json:"type"`
+	ID          uint64    `json:"id"`
+	Level       uint64    `json:"level"`
+	Timestamp   time.Time `json:"timestamp"`
+	Block       string    `json:"block"`
+	Baker       *Account  `json:"baker"`
+	MissedLevel int64     `json:"missedLevel"`
+	Loss        int64     `json:"loss"`
+	Quote       *Quote    `json:"quote,omitempty"`
+}
+
+// DoublePreendorsing -
+type DoublePreendorsing struct {
+	Type                 string    `json:"type"`
+	ID                   uint64    `json:"id"`
+	Level                uint64    `json:"level"`
+	Timestamp            time.Time `json:"timestamp"`
+	Block                string    `json:"block"`
+	Hash                 string    `json:"hash"`
+	AccusedLevel         uint64    `json:"accusedLevel"`
+	Accuser              *Account  `json:"accuser"`
+	AccuserReward        int64     `json:"accuserReward"`
+	Offender             *Account  `json:"offender"`
+	OffenderLoss         int64     `json:"offenderLoss"`
+	Quote                *Quote    `json:"quote,omitempty"`
+	AccuserRewards       int64     `json:"accuserRewards,omitempty"`
+	OffenderLostDeposits int64     `json:"offenderLostDeposits,omitempty"`
+	OffenderLostRewards  int64     `json:"offenderLostRewards,omitempty"`
+	OffenderLostFees     int64     `json:"offenderLostFees,omitempty"`
 }
