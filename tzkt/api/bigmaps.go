@@ -9,7 +9,7 @@ import (
 
 // GetBigmapsCount -
 func (tzkt *API) GetBigmapsCount(ctx context.Context) (uint64, error) {
-	return tzkt.count(ctx, "/v1/bigmaps/count")
+	return tzkt.count(ctx, "/v1/bigmaps/count", nil)
 }
 
 // GetBigmaps -

@@ -15,7 +15,7 @@ func (tzkt *API) GetDelegates(ctx context.Context, filters map[string]string) (d
 
 // GetDelegatesCount -
 func (tzkt *API) GetDelegatesCount(ctx context.Context) (uint64, error) {
-	return tzkt.count(ctx, "/v1/delegates/count")
+	return tzkt.count(ctx, "/v1/delegates/count", nil)
 }
 
 // GetDelegateByAddress -

@@ -127,8 +127,8 @@ func (tzkt *API) json(ctx context.Context, endpoint string, args map[string]stri
 	}
 }
 
-func (tzkt *API) count(ctx context.Context, endpoint string) (uint64, error) {
-	resp, err := tzkt.get(ctx, endpoint, nil, false)
+func (tzkt *API) count(ctx context.Context, endpoint string, args map[string]string) (uint64, error) {
+	resp, err := tzkt.get(ctx, endpoint, args, false)
 	if err != nil {
 		return 0, err
 	}
