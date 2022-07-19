@@ -73,3 +73,62 @@ type Token struct {
 	Standard string             `json:"standard"`
 	Metadata stdJSON.RawMessage `json:"metadata,omitempty"`
 }
+
+// Protocol -
+type Protocol struct {
+	Code            int64              `json:"code"`
+	Hash            string             `json:"hash"`
+	FirstLevel      uint64             `json:"firstLevel"`
+	FirstCycle      uint64             `json:"firstCycle"`
+	FirstCycleLevel uint64             `json:"firstCycleLevel"`
+	LastLevel       uint64             `json:"lastLevel,omitempty"`
+	Constants       *ProtocolConstants `json:"constants,omitempty"`
+	Metadata        *ProtocolMetadata  `json:"metadata,omitempty"`
+}
+
+// ProtocolConstants -
+type ProtocolConstants struct {
+	RampUpCycles                         int64   `json:"rampUpCycles"`
+	NoRewardCycles                       int64   `json:"noRewardCycles"`
+	PreservedCycles                      int64   `json:"preservedCycles"`
+	BlocksPerCycle                       int64   `json:"blocksPerCycle"`
+	BlocksPerCommitment                  int64   `json:"blocksPerCommitment"`
+	BlocksPerSnapshot                    int64   `json:"blocksPerSnapshot"`
+	BlocksPerVoting                      int64   `json:"blocksPerVoting"`
+	TimeBetweenBlocks                    int64   `json:"timeBetweenBlocks"`
+	EndorsersPerBlock                    int64   `json:"endorsersPerBlock"`
+	HardOperationGasLimit                int64   `json:"hardOperationGasLimit"`
+	HardOperationStorageLimit            int64   `json:"hardOperationStorageLimit"`
+	HardBlockGasLimit                    int64   `json:"hardBlockGasLimit"`
+	TokensPerRoll                        int64   `json:"tokensPerRoll"`
+	RevelationReward                     int64   `json:"revelationReward"`
+	BlockDeposit                         int64   `json:"blockDeposit"`
+	BlockReward                          []int64 `json:"blockReward"`
+	EndorsementDeposit                   int64   `json:"endorsementDeposit"`
+	EndorsementReward                    []int64 `json:"endorsementReward"`
+	OriginationSize                      int64   `json:"originationSize"`
+	ByteCost                             int64   `json:"byteCost"`
+	ProposalQuorum                       int64   `json:"proposalQuorum"`
+	BallotQuorumMin                      int64   `json:"ballotQuorumMin"`
+	BallotQuorumMax                      int64   `json:"ballotQuorumMax"`
+	LbSubsidy                            int64   `json:"lbSubsidy"`
+	LbSunsetLevel                        int64   `json:"lbSunsetLevel"`
+	LbToggleThreshold                    int64   `json:"lbToggleThreshold"`
+	ConsensusThreshold                   int64   `json:"consensusThreshold"`
+	MinParticipationNumerator            int64   `json:"minParticipationNumerator"`
+	MinParticipationDenominator          int64   `json:"minParticipationDenominator"`
+	MaxSlashingPeriod                    int64   `json:"maxSlashingPeriod"`
+	FrozenDepositsPercentage             int64   `json:"frozenDepositsPercentage"`
+	DoubleBakingPunishment               int64   `json:"doubleBakingPunishment"`
+	DoubleEndorsingPunishmentNumerator   int64   `json:"doubleEndorsingPunishmentNumerator"`
+	DoubleEndorsingPunishmentDenominator int64   `json:"doubleEndorsingPunishmentDenominator"`
+	TxRollupOriginationSize              int64   `json:"txRollupOriginationSize"`
+	TxRollupCommitmentBond               int64   `json:"txRollupCommitmentBond"`
+	LbEscapeThreshold                    int64   `json:"lbEscapeThreshold"`
+}
+
+// ProtocolConstants -
+type ProtocolMetadata struct {
+	Docs  string `json:"docs"`
+	Alias string `json:"alias"`
+}
