@@ -7,7 +7,6 @@ import (
 
 	jsoniter "github.com/json-iterator/go"
 	"github.com/pkg/errors"
-	"github.com/rs/zerolog/log"
 )
 
 var json = jsoniter.ConfigCompatibleWithStandardLibrary
@@ -28,8 +27,6 @@ func NewJSONEncoding() *JSONEncoding {
 
 // Decode -
 func (e *JSONEncoding) Decode(data []byte) (interface{}, error) {
-	log.Trace().Msg(string(data))
-
 	var typ Type
 	if err := json.Unmarshal(data, &typ); err != nil {
 		return nil, err

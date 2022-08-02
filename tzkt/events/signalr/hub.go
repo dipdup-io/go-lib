@@ -1,6 +1,7 @@
 package signalr
 
 import (
+	"context"
 	"net"
 	"net/url"
 	"sync"
@@ -8,6 +9,7 @@ import (
 
 	"github.com/gorilla/websocket"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
@@ -22,7 +24,7 @@ type Hub struct {
 
 	encoder Encoding
 	msgs    chan interface{}
-	stop    chan struct{}
+	log     zerolog.Logger
 	mx      sync.Mutex
 	wg      sync.WaitGroup
 
@@ -48,22 +50,22 @@ func NewHub(address, connectionToken string) (*Hub, error) {
 		url:     u,
 		encoder: NewJSONEncoding(),
 		msgs:    make(chan interface{}, 1024),
-		stop:    make(chan struct{}, 1),
+		log:     log.Logger,
 	}, nil
 }
 
 // Connect -
-func (hub *Hub) Connect() error {
+func (hub *Hub) Connect(ctx context.Context) error {
 	if err := hub.handshake(); err != nil {
 		return err
 	}
 
-	hub.listen()
+	hub.listen(ctx)
 	return nil
 }
 
 func (hub *Hub) handshake() error {
-	log.Trace().Msgf("connecting to %s...", hub.url.String())
+	hub.log.Debug().Msgf("connecting to %s...", hub.url.String())
 
 	c, response, err := websocket.DefaultDialer.Dial(hub.url.String(), nil)
 	if err != nil {
@@ -85,14 +87,13 @@ func (hub *Hub) handshake() error {
 	if resp.Error != "" {
 		return errors.Wrap(ErrHandshake, resp.Error)
 	}
-	log.Trace().Msg("connected")
+	hub.log.Debug().Msg("connected")
 
 	return nil
 }
 
 // Close -
 func (hub *Hub) Close() error {
-	hub.stop <- struct{}{}
 	hub.wg.Wait()
 
 	if err := hub.Send(newCloseMessage()); err != nil {
@@ -103,22 +104,21 @@ func (hub *Hub) Close() error {
 		return err
 	}
 
-	close(hub.stop)
 	close(hub.msgs)
 	return nil
 }
 
 func (hub *Hub) reconnect() error {
-	log.Warn().Msg("reconnecting...")
+	hub.log.Warn().Msg("reconnecting...")
 
 	if err := hub.Send(newCloseMessage()); err != nil {
-		log.Err(err).Msg("send")
+		hub.log.Err(err).Msg("send")
 	}
 
 	if err := hub.conn.Close(); err != nil {
-		log.Err(err).Msg("close")
+		hub.log.Err(err).Msg("close")
 	}
-	log.Trace().Msg("connection closed")
+	hub.log.Debug().Msg("connection closed")
 	if err := hub.handshake(); err != nil {
 		return err
 	}
@@ -128,7 +128,7 @@ func (hub *Hub) reconnect() error {
 	return nil
 }
 
-func (hub *Hub) listen() {
+func (hub *Hub) listen(ctx context.Context) {
 	hub.wg.Add(1)
 
 	go func() {
@@ -136,20 +136,21 @@ func (hub *Hub) listen() {
 
 		for {
 			select {
-			case <-hub.stop:
+			case <-ctx.Done():
+				hub.log.Debug().Msg("stop hub listenning...")
 				return
 			default:
 				if err := hub.readAllMessages(); err != nil {
 					switch {
 					case errors.Is(err, ErrTimeout) || websocket.IsCloseError(err, websocket.CloseAbnormalClosure):
 						if err := hub.reconnect(); err != nil {
-							log.Err(err).Msg("reconnect")
-							log.Warn().Msg("retry after 5 seconds")
+							hub.log.Err(err).Msg("reconnect")
+							hub.log.Warn().Msg("retry after 5 seconds")
 							time.Sleep(time.Second * 5)
 						}
 					case errors.Is(err, ErrEmptyResponse):
 					default:
-						log.Err(err).Msg("readAllMessages")
+						hub.log.Err(err).Msg("readAllMessages")
 					}
 				}
 			}
@@ -163,6 +164,9 @@ func (hub *Hub) Send(msg interface{}) error {
 	if err != nil {
 		return err
 	}
+
+	hub.log.Trace().Str("data", string(data)).Msg("==> TzKT server")
+
 	hub.mx.Lock()
 	defer hub.mx.Unlock()
 	return hub.conn.WriteMessage(websocket.TextMessage, data)
@@ -186,6 +190,8 @@ func (hub *Hub) readOneMessage(msg interface{}) error {
 	if len(data) == 0 {
 		return ErrEmptyResponse
 	}
+	hub.log.Trace().Str("data", string(data)).Msg("<== TzKT server")
+
 	if err := json.Unmarshal(data, msg); err != nil {
 		return err
 	}
@@ -203,7 +209,7 @@ func (hub *Hub) readAllMessages() error {
 		return err
 	}
 	if scanner == nil {
-		log.Warn().Msg("no messages during read timeout")
+		hub.log.Warn().Msg("no messages during read timeout")
 		return ErrEmptyResponse
 	}
 	if err := scanner.Scan(); err != nil {
@@ -219,11 +225,14 @@ func (hub *Hub) readAllMessages() error {
 			break
 		}
 
+		hub.log.Trace().Str("data", string(data)).Msg("<== TzKT server")
+
 		msg, err := hub.encoder.Decode(data)
 		if err != nil {
 			return err
 		}
 		hub.msgs <- msg
+
 		if closeMsg, ok := msg.(CloseMessage); ok {
 			return hub.closeMessageHandler(closeMsg)
 		}
@@ -238,7 +247,7 @@ func (hub *Hub) readAllMessages() error {
 
 func (hub *Hub) closeMessageHandler(msg CloseMessage) error {
 	if msg.Error != "" {
-		log.Error().Msg(msg.Error)
+		hub.log.Error().Msg(msg.Error)
 	}
 	if !msg.AllowReconnect {
 		return ErrConnectionClose

@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
 	"github.com/pkg/errors"
@@ -23,6 +24,8 @@ const (
 type Transport struct {
 	url    string
 	client *http.Client
+
+	log zerolog.Logger
 }
 
 // NewTransport -
@@ -38,6 +41,7 @@ func NewTransport(baseURL string) *Transport {
 			Timeout:   time.Minute,
 			Transport: t,
 		},
+		log: log.Logger,
 	}
 }
 
@@ -52,7 +56,7 @@ func (t *Transport) Negotiate(version Version) (response NegotiateResponse, err 
 	q.Set("negotiateVersion", string(version))
 	u.RawQuery = q.Encode()
 
-	log.Trace().Str("url", u.String()).Msg("send negotiate request...")
+	t.log.Debug().Str("url", u.String()).Msg("send negotiate request...")
 
 	req, err := http.NewRequest(http.MethodPost, u.String(), nil)
 	if err != nil {

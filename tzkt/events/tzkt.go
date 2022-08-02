@@ -1,6 +1,7 @@
 package events
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -10,6 +11,7 @@ import (
 
 	tzktData "github.com/dipdup-net/go-lib/tzkt/data"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
 
@@ -20,8 +22,9 @@ type TzKT struct {
 
 	subscriptions []signalr.Invocation
 
+	log zerolog.Logger
+
 	msgs chan Message
-	stop chan struct{}
 	wg   sync.WaitGroup
 }
 
@@ -33,31 +36,35 @@ func NewTzKT(url string) *TzKT {
 	return &TzKT{
 		s:             signalr.NewSignalR(url),
 		msgs:          make(chan Message, 1024),
-		stop:          make(chan struct{}, 1),
 		subscriptions: make([]signalr.Invocation, 0),
+		log:           log.Logger,
 	}
 }
 
+// SetLogger -
+func (tzkt *TzKT) SetLogger(logger zerolog.Logger) {
+	tzkt.log = logger
+	tzkt.s.SetLogger(logger)
+}
+
 // Connect - connect to events SignalR server
-func (tzkt *TzKT) Connect() error {
-	if err := tzkt.s.Connect(signalr.Version1); err != nil {
+func (tzkt *TzKT) Connect(ctx context.Context) error {
+	if err := tzkt.s.Connect(ctx, signalr.Version1); err != nil {
 		return err
 	}
 	tzkt.s.SetOnReconnect(tzkt.onReconnect)
-	tzkt.listen()
+	tzkt.listen(ctx)
 	return nil
 }
 
 // Close - closing all connections
 func (tzkt *TzKT) Close() error {
-	tzkt.stop <- struct{}{}
 	tzkt.wg.Wait()
 
 	if err := tzkt.s.Close(); err != nil {
 		return err
 	}
 	close(tzkt.msgs)
-	close(tzkt.stop)
 	return nil
 }
 
@@ -144,7 +151,7 @@ func (tzkt *TzKT) subscribe(channel string, args ...interface{}) error {
 	return tzkt.s.Send(msg)
 }
 
-func (tzkt *TzKT) listen() {
+func (tzkt *TzKT) listen(ctx context.Context) {
 	tzkt.wg.Add(1)
 
 	go func() {
@@ -152,19 +159,20 @@ func (tzkt *TzKT) listen() {
 
 		for {
 			select {
-			case <-tzkt.stop:
+			case <-ctx.Done():
+				tzkt.log.Debug().Msg("listenning was stopped")
 				return
 			case msg := <-tzkt.s.Messages():
 				switch typ := msg.(type) {
 				case signalr.Invocation:
 					if len(typ.Arguments) == 0 {
-						log.Warn().Msgf("empty arguments of invocation: %v", typ)
+						tzkt.log.Warn().Msgf("empty arguments of invocation: %v", typ)
 						continue
 					}
 
 					var packet Packet
 					if err := json.Unmarshal(typ.Arguments[0], &packet); err != nil {
-						log.Err(err).Msg("invalid invocation argument")
+						tzkt.log.Err(err).Msg("invalid invocation argument")
 						continue
 					}
 
@@ -177,7 +185,7 @@ func (tzkt *TzKT) listen() {
 					if packet.Data != nil {
 						data, err := parseData(typ.Target, packet.Data)
 						if err != nil {
-							log.Err(err).Msg("error during parsing data")
+							tzkt.log.Err(err).Msg("error during parsing data")
 							continue
 						}
 						message.Body = data

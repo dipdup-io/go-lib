@@ -1,10 +1,16 @@
 package signalr
 
+import (
+	"context"
+
+	"github.com/rs/zerolog"
+)
+
 // SignalR -
 type SignalR struct {
 	hub *Hub
 	t   *Transport
-
+	log zerolog.Logger
 	url string
 }
 
@@ -16,8 +22,14 @@ func NewSignalR(url string) *SignalR {
 	}
 }
 
+// SetLogger -
+func (s *SignalR) SetLogger(log zerolog.Logger) {
+	s.t.log = log
+	s.log = log
+}
+
 // Connect - connect to server
-func (s *SignalR) Connect(version Version) error {
+func (s *SignalR) Connect(ctx context.Context, version Version) error {
 	resp, err := s.t.Negotiate(version)
 	if err != nil {
 		return err
@@ -35,8 +47,9 @@ func (s *SignalR) Connect(version Version) error {
 		return err
 	}
 	s.hub = hub
+	s.hub.log = s.log
 
-	return s.hub.Connect()
+	return s.hub.Connect(ctx)
 }
 
 // Messages - listens message channel
