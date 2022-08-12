@@ -135,5 +135,8 @@ func (c *Content) UnmarshalJSON(data []byte) error {
 
 // IsManager -
 func IsManager(kind string) bool {
-	return kind == KindDelegation || kind == KindOrigination || kind == KindReveal || kind == KindTransaction || kind == KindSetDepositsLimit
+	return kind == KindOrigination || kind == KindReveal || kind == KindTransaction || kind == KindSetDepositsLimit ||
+		kind == KindDelegation || kind == KindRegisterGlobalConstant || kind == KindTxRollupCommit || kind == KindTxRollupDispatchTickets ||
+		kind == KindTxRollupFinalizeCommitment || kind == KindTxRollupOrigination || kind == KindTxRollupRejection ||
+		kind == KindTxRollupRemoveCommitment || kind == KindTxRollupReturnBond || kind == KindTxRollupSubmitBatch
 }
