@@ -2,8 +2,7 @@ package translator
 
 import (
 	"io/ioutil"
-	"log"
-	"os"
+	"regexp"
 
 	"github.com/yhirose/go-peg"
 )
@@ -13,7 +12,6 @@ type Converter struct {
 	parser  *peg.Parser
 	grammar string
 	err     error
-	debug   bool
 }
 
 // NewConverter -
@@ -44,8 +42,6 @@ func NewConverter(opts ...ConverterOption) (Converter, error) {
 
 // FromFile -
 func (c Converter) FromFile(filename string) (string, error) {
-	c.trace()
-
 	michelson, err := readFileToString(filename)
 	if err != nil {
 		return "", err
@@ -56,7 +52,7 @@ func (c Converter) FromFile(filename string) (string, error) {
 
 // FromString -
 func (c Converter) FromString(input string) (string, error) {
-	c.trace()
+	input = removeComments(input)
 
 	ast, err := c.parser.ParseAndGetAst(input, nil)
 	if err != nil {
@@ -66,27 +62,18 @@ func (c Converter) FromString(input string) (string, error) {
 	return NewJSONTranslator().Translate(ast)
 }
 
-func (c Converter) trace() {
-	if c.debug {
-		c.parser.TracerEnter = func(name string, s string, v *peg.Values, d peg.Any, p int) {
-			log.Printf("Enter: %s %d %d", name, p, len(s))
-		}
-		c.parser.TracerLeave = func(name string, s string, v *peg.Values, d peg.Any, p int, l int) {
-			if l != -1 {
-				log.Printf("Leave: %s %d %d", name, len(s), l+p)
-			}
-		}
-	}
-}
-
 func readFileToString(filename string) (string, error) {
-	f, err := os.Open(filename)
-	if err != nil {
-		return "", err
-	}
-	data, err := ioutil.ReadAll(f)
+	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return "", err
 	}
 	return string(data), nil
+}
+
+var oneLineComment = regexp.MustCompile("#[^\n]*")
+var multiLineComment = regexp.MustCompile(`\/\*[^\*]*\*/`)
+
+func removeComments(data string) string {
+	data = oneLineComment.ReplaceAllString(data, "")
+	return multiLineComment.ReplaceAllString(data, "")
 }

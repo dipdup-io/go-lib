@@ -21,10 +21,3 @@ func WithGrammar(grammar string) ConverterOption {
 		c.grammar = grammar
 	}
 }
-
-// WithDebug -
-func WithDebug() ConverterOption {
-	return func(c *Converter) {
-		c.debug = true
-	}
-}

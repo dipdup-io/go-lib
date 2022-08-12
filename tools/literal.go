@@ -35,6 +35,7 @@ var (
 	addressRegex       = regexp.MustCompile("(tz|KT)[0-9A-Za-z]{34}")
 	operationHashRegex = regexp.MustCompile("(o)[0-9A-Za-z]{50}")
 	bigMapKeyHashRegex = regexp.MustCompile("(expr)[0-9A-Za-z]{50}")
+	bakerHashRegex     = regexp.MustCompile("(SG1)[0-9A-Za-z]{33}")
 )
 
 // IsAddress -
@@ -50,4 +51,9 @@ func IsOperationHash(str string) bool {
 // IsBigMapKeyHash -
 func IsBigMapKeyHash(str string) bool {
 	return bigMapKeyHashRegex.MatchString(str)
+}
+
+// IsBakerHash -
+func IsBakerHash(str string) bool {
+	return bakerHashRegex.MatchString(str)
 }

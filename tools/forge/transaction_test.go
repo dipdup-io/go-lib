@@ -122,7 +122,7 @@ func TestTransaction(t *testing.T) {
 				t.Errorf("UnmarshalFromString() error = %v", err)
 				return
 			}
-			transaction, err := operation.Transaction()
+			transaction, err := node.NewTypedOperation[node.Transaction](operation)
 			if err != nil {
 				t.Errorf("operation.Transaction() error = %v", err)
 				return

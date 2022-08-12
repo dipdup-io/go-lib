@@ -31,6 +31,9 @@ const (
 	KindTxRollupRejection          = "tx_rollup_rejection"
 	KindTxRollupDispatchTickets    = "tx_rollup_dispatch_tickets"
 	KindTransferTicket             = "transfer_ticket"
+	KindEvent                      = "event"
+	KindVdfRevelation              = "vdf_revelation"
+	KindIncreasePaidStorage        = "Increase_paid_storage"
 )
 
 const (

@@ -76,6 +76,9 @@ type BalanceUpdate struct {
 	Delegate string `json:"delegate,omitempty"`
 	Cycle    uint64 `json:"cycle,omitempty"`
 	Level    uint64 `json:"level,omitempty"`
+	BondID   struct {
+		TxRollup string `json:"tx_rollup"`
+	} `json:"bond_id,omitempty"`
 }
 
 // ImplicitOperationsResult -
