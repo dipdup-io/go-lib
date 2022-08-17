@@ -142,3 +142,21 @@ type ProtocolMetadata struct {
 	Docs  string `json:"docs"`
 	Alias string `json:"alias"`
 }
+
+// Statistics -
+type Statistics struct {
+	Level             uint64    `json:"level"`
+	Timestamp         time.Time `json:"timestamp"`
+	TotalSupply       uint64    `json:"totalSupply"`
+	CirculatingSupply uint64    `json:"circulatingSupply"`
+	TotalBootstrapped uint64    `json:"totalBootstrapped"`
+	TotalCommitments  uint64    `json:"totalCommitments"`
+	TotalActivated    uint64    `json:"totalActivated"`
+	TotalCreated      uint64    `json:"totalCreated"`
+	TotalBurned       uint64    `json:"totalBurned"`
+	TotalBanished     uint64    `json:"totalBanished"`
+	TotalFrozen       uint64    `json:"totalFrozen"`
+	TotalRollupBonds  uint64    `json:"totalRollupBonds"`
+	TotalVested       uint64    `json:"totalVested"`
+	Quote             *Quote    `json:"quote,omitempty"`
+}
