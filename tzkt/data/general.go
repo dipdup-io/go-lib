@@ -12,8 +12,8 @@ type Address struct {
 	Address string `json:"address"`
 }
 
-// Contract -
-type Contract struct {
+// OriginatedContract -
+type OriginatedContract struct {
 	Kind     string `json:"kind"`
 	Alias    string `json:"alias,omitempty"`
 	Address  string `json:"address,omitempty"`

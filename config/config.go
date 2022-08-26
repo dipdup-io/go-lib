@@ -2,7 +2,7 @@ package config
 
 import (
 	"bytes"
-	"io/ioutil"
+	"os"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
@@ -117,7 +117,7 @@ func readFile(filename string) (*bytes.Buffer, error) {
 		return nil, errors.Errorf("you have to provide configuration filename")
 	}
 
-	data, err := ioutil.ReadFile(filename)
+	data, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, errors.Wrapf(err, "reading file %s", filename)
 	}

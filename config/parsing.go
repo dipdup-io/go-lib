@@ -2,14 +2,14 @@ package config
 
 import (
 	"bytes"
-	"io/ioutil"
+	"io"
 	"os"
 
 	"golang.org/x/text/transform"
 )
 
 func expandVariables(data []byte) ([]byte, error) {
-	return ioutil.ReadAll(transform.NewReader(bytes.NewBuffer(data), newExpandTransformer()))
+	return io.ReadAll(transform.NewReader(bytes.NewBuffer(data), newExpandTransformer()))
 }
 
 // expandTransformer implements transform.Transformer

@@ -3,7 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/dipdup-net/go-lib/tzkt/data"
@@ -31,10 +31,22 @@ func (tzkt *API) BuildContractParameters(ctx context.Context, contract, entrypoi
 
 	switch response.StatusCode {
 	case http.StatusOK:
-		return ioutil.ReadAll(response.Body)
+		return io.ReadAll(response.Body)
 	case http.StatusNoContent:
 		return nil, nil
 	default:
 		return nil, errors.New(fmt.Sprintf("%s: %s %s", response.Status, entrypoint, contract))
 	}
+}
+
+// GetContractByAddress -
+func (tzkt *API) GetContractByAddress(ctx context.Context, address string) (response data.Contract, err error) {
+	err = tzkt.json(ctx, fmt.Sprintf("/v1/contracts/%s", address), nil, false, &response)
+	return
+}
+
+// ListContracts -
+func (tzkt *API) ListContracts(ctx context.Context, filters map[string]string) (response []data.Contract, err error) {
+	err = tzkt.json(ctx, "/v1/contracts", filters, false, &response)
+	return
 }

@@ -38,33 +38,33 @@ type Parameters struct {
 
 // Origination -
 type Origination struct {
-	Type             string             `json:"type"`
-	ID               uint64             `json:"id"`
-	Level            uint64             `json:"level"`
-	Timestamp        time.Time          `json:"timestamp"`
-	Block            string             `json:"block"`
-	Hash             string             `json:"hash"`
-	Counter          uint64             `json:"counter"`
-	Sender           *Address           `json:"sender"`
-	Initiator        *Address           `json:"initiator"`
-	Nonce            *uint64            `json:"nonce,omitempty"`
-	GasLimit         uint64             `json:"gasLimit"`
-	GasUsed          uint64             `json:"gasUsed"`
-	StorageLimit     uint64             `json:"storageLimit"`
-	StorageUsed      uint64             `json:"storageUsed"`
-	BakerFee         uint64             `json:"bakerFee"`
-	StorageFee       uint64             `json:"storageFee"`
-	AllocationFee    uint64             `json:"allocationFee"`
-	ContractBalance  uint64             `json:"contractBalance"`
-	ContractManager  *Address           `json:"contractManager"`
-	ContractDelegate *Address           `json:"contractDelegate"`
-	Code             stdJSON.RawMessage `json:"code"`
-	Storage          stdJSON.RawMessage `json:"storage"`
-	Diffs            stdJSON.RawMessage `json:"diffs"`
-	Status           string             `json:"status"`
-	Originated       *Contract          `json:"originatedContract,omitempty"`
-	Errors           []Error            `json:"errors,omitempty"`
-	Quote            *Quote             `json:"quote,omitempty"`
+	Type             string              `json:"type"`
+	ID               uint64              `json:"id"`
+	Level            uint64              `json:"level"`
+	Timestamp        time.Time           `json:"timestamp"`
+	Block            string              `json:"block"`
+	Hash             string              `json:"hash"`
+	Counter          uint64              `json:"counter"`
+	Sender           *Address            `json:"sender"`
+	Initiator        *Address            `json:"initiator"`
+	Nonce            *uint64             `json:"nonce,omitempty"`
+	GasLimit         uint64              `json:"gasLimit"`
+	GasUsed          uint64              `json:"gasUsed"`
+	StorageLimit     uint64              `json:"storageLimit"`
+	StorageUsed      uint64              `json:"storageUsed"`
+	BakerFee         uint64              `json:"bakerFee"`
+	StorageFee       uint64              `json:"storageFee"`
+	AllocationFee    uint64              `json:"allocationFee"`
+	ContractBalance  uint64              `json:"contractBalance"`
+	ContractManager  *Address            `json:"contractManager"`
+	ContractDelegate *Address            `json:"contractDelegate"`
+	Code             stdJSON.RawMessage  `json:"code"`
+	Storage          stdJSON.RawMessage  `json:"storage"`
+	Diffs            stdJSON.RawMessage  `json:"diffs"`
+	Status           string              `json:"status"`
+	Originated       *OriginatedContract `json:"originatedContract,omitempty"`
+	Errors           []Error             `json:"errors,omitempty"`
+	Quote            *Quote              `json:"quote,omitempty"`
 }
 
 // Transaction -

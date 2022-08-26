@@ -1,7 +1,7 @@
 package translator
 
 import (
-	"io/ioutil"
+	"os"
 	"regexp"
 
 	"github.com/yhirose/go-peg"
@@ -63,7 +63,7 @@ func (c Converter) FromString(input string) (string, error) {
 }
 
 func readFileToString(filename string) (string, error) {
-	data, err := ioutil.ReadFile(filename)
+	data, err := os.ReadFile(filename)
 	if err != nil {
 		return "", err
 	}

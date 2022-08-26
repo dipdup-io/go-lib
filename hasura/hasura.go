@@ -3,7 +3,7 @@ package hasura
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"reflect"
 	"strings"
@@ -99,9 +99,7 @@ func Create(ctx context.Context, args GenerateArgs) error {
 	// TODO: maybe instead replace tables by name.
 	selectedSource.Tables = make([]Table, 0)
 	// Insert generated tables
-	for _, table := range metadata.Sources[0].Tables {
-		selectedSource.Tables = append(selectedSource.Tables, table)
-	}
+	selectedSource.Tables = append(selectedSource.Tables, metadata.Sources[0].Tables...)
 
 	if err := createQueryCollections(&export); err != nil {
 		return err
@@ -274,7 +272,7 @@ func createQueryCollections(metadata *Metadata) error {
 		return nil
 	}
 
-	files, err := ioutil.ReadDir("graphql")
+	files, err := os.ReadDir("graphql")
 	if err != nil {
 		if os.IsNotExist(err) {
 			return nil
@@ -297,7 +295,7 @@ func createQueryCollections(metadata *Metadata) error {
 		}
 		defer f.Close()
 
-		data, err := ioutil.ReadAll(f)
+		data, err := io.ReadAll(f)
 		if err != nil {
 			return err
 		}
@@ -343,7 +341,7 @@ func mergeQueries(a []Query, b []Query) []Query {
 
 // ReadCustomConfigs -
 func ReadCustomConfigs(ctx context.Context, database config.Database, hasuraConfigDir string) ([]Request, error) {
-	files, err := ioutil.ReadDir(hasuraConfigDir)
+	files, err := os.ReadDir(hasuraConfigDir)
 	if err != nil {
 		return nil, err
 	}
@@ -355,7 +353,7 @@ func ReadCustomConfigs(ctx context.Context, database config.Database, hasuraConf
 		}
 
 		path := fmt.Sprintf("%s/%s", hasuraConfigDir, files[i].Name())
-		raw, err := ioutil.ReadFile(path)
+		raw, err := os.ReadFile(path)
 		if err != nil {
 			return nil, err
 		}

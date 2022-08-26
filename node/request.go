@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"path"
@@ -64,7 +63,7 @@ func (r *request) checkStatusCode(resp *http.Response) error {
 	if resp.StatusCode == http.StatusOK {
 		return nil
 	}
-	data, err := ioutil.ReadAll(resp.Body)
+	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return RequestError{
 			Code: resp.StatusCode,
@@ -103,5 +102,5 @@ func (r *request) doWithBytesResponse(ctx context.Context, client *client) ([]by
 		return nil, err
 	}
 
-	return ioutil.ReadAll(resp.Body)
+	return io.ReadAll(resp.Body)
 }
