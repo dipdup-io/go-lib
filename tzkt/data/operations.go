@@ -14,7 +14,7 @@ type OperationConstraint interface {
 		Ballot | Proposal | Activation | TransferTicket | TxRollupCommit | TxRollupDispatchTicket |
 		TxRollupFinalizeCommitment | TxRollupOrigination | TxRollupRejection | TxRollupRemoveCommitment |
 		TxRollupReturnBond | TxRollupSubmitBatch | NonceRevelation | DoubleBaking | DoubleEndorsing | SetDepositsLimit |
-		Baking | RevelationPenalty | EndorsingReward
+		Baking | RevelationPenalty | EndorsingReward | VdfRevelation | IncreasePaidStorage
 }
 
 // Operation -
@@ -622,4 +622,41 @@ type DoublePreendorsing struct {
 	OffenderLostDeposits int64     `json:"offenderLostDeposits,omitempty"`
 	OffenderLostRewards  int64     `json:"offenderLostRewards,omitempty"`
 	OffenderLostFees     int64     `json:"offenderLostFees,omitempty"`
+}
+
+// VdfRevelation -
+type VdfRevelation struct {
+	Type      string    `json:"type"`
+	ID        uint64    `json:"id"`
+	Level     uint64    `json:"level"`
+	Timestamp time.Time `json:"timestamp"`
+	Block     string    `json:"block"`
+	Hash      string    `json:"hash"`
+	Baker     *Account  `json:"baker"`
+	Cycle     uint64    `json:"cycle"`
+	Solution  string    `json:"solution"`
+	Proof     string    `json:"proof"`
+	Reward    uint64    `json:"reward"`
+	Quote     *Quote    `json:"quote,omitempty"`
+}
+
+// IncreasePaidStorage -
+type IncreasePaidStorage struct {
+	Type         string          `json:"type"`
+	ID           uint64          `json:"id"`
+	Level        uint64          `json:"level"`
+	Timestamp    time.Time       `json:"timestamp"`
+	Block        string          `json:"block"`
+	Hash         string          `json:"hash"`
+	Sender       Account         `json:"sender"`
+	Counter      uint64          `json:"counter"`
+	GasLimit     uint64          `json:"gasLimit"`
+	GasUsed      uint64          `json:"gasUsed"`
+	StorageLimit uint64          `json:"storageLimit"`
+	StorageUsed  uint64          `json:"storageUsed"`
+	BakerFee     uint64          `json:"bakerFee"`
+	StorageFee   uint64          `json:"storageFee"`
+	Status       string          `json:"status"`
+	Contract     Account         `json:"contract"`
+	Amount       decimal.Decimal `json:"amount"`
 }

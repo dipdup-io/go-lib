@@ -30,6 +30,8 @@ const (
 	KindRevelationPenalty        = "revelation_penalty"
 	KindBaking                   = "baking"
 	KindEndorsingReward          = "endorsing_reward"
+	KindVdfRevelation            = "vdf_revelation"
+	KindIncreasePaidStorage      = "increase_paid_storage"
 )
 
 // urls

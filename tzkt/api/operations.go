@@ -191,3 +191,15 @@ func (tzkt *API) GetDoublePreendorsings(ctx context.Context, filters map[string]
 	err = tzkt.json(ctx, "/v1/operations/double_preendorsing", filters, false, &operations)
 	return
 }
+
+// GetVdfRevelations -
+func (tzkt *API) GetVdfRevelations(ctx context.Context, filters map[string]string) (operations []data.VdfRevelation, err error) {
+	err = tzkt.json(ctx, "/v1/operations/vdf_revelations", filters, false, &operations)
+	return
+}
+
+// GetIncreasePaidStorage -
+func (tzkt *API) GetIncreasePaidStorage(ctx context.Context, filters map[string]string) (operations []data.IncreasePaidStorage, err error) {
+	err = tzkt.json(ctx, "/v1/operations/increase_paid_storage", filters, false, &operations)
+	return
+}
