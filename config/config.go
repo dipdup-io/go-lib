@@ -13,10 +13,10 @@ import (
 type Config struct {
 	Version     string                `yaml:"version" validate:"required"`
 	Database    Database              `yaml:"database" validate:"required"`
-	DataSources map[string]DataSource `yaml:"datasources"`
-	Contracts   map[string]Contract   `yaml:"contracts"`
-	Hasura      *Hasura               `yaml:"hasura" validate:"omitempty"`
-	Prometheus  *Prometheus           `yaml:"prometheus" validate:"omitempty"`
+	DataSources map[string]DataSource `yaml:"datasources,omitempty"`
+	Contracts   map[string]Contract   `yaml:"contracts,omitempty"`
+	Hasura      *Hasura               `yaml:"hasura,omitempty" validate:"omitempty"`
+	Prometheus  *Prometheus           `yaml:"prometheus,omitempty" validate:"omitempty"`
 }
 
 // Substitute -
@@ -42,7 +42,7 @@ type Contract struct {
 
 // Database
 type Database struct {
-	Path       string `yaml:"path"`
+	Path       string `yaml:"path,omitempty"`
 	Kind       string `yaml:"kind" validate:"required,oneof=sqlite postgres mysql clickhouse elasticsearch"`
 	Host       string `yaml:"host" validate:"required_with=Port User Database"`
 	Port       int    `yaml:"port" validate:"required_with=Host User Database,gt=-1,lt=65535"`
