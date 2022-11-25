@@ -7,19 +7,6 @@ This library partially implements DipDup framework features and can be used for 
 
 ## Packages
 
-### `cmdline`
-
-Command line argument parser, compatible with [DipDup CLI](https://docs.dipdup.net/command-line).
-
-```go
-import "github.com/dipdup-net/go-lib/cmdline"
-
-args := cmdline.Parse()
-if args.Help {
-	return
-}
-```
-
 ### `config`
 
 DipDup YAML [configuration](https://docs.dipdup.net/config-file-reference) parser. You can validate config by `validate` tag from [validator package](https://github.com/go-playground/validator).
