@@ -6,11 +6,9 @@ linters:
     - govet
     - prealloc
     - unconvert
-    - deadcode
-    - structcheck
-    - varcheck
     - errcheck
     - ineffassign
     - typecheck
     - containedctx
     - tenv
+    - unused
