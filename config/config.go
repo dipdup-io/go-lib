@@ -21,9 +21,6 @@ type Config struct {
 
 // Substitute -
 func (c *Config) Substitute() error {
-	if c.Hasura != nil {
-		c.Hasura.SetSourceName()
-	}
 	return nil
 }
 
@@ -32,6 +29,7 @@ type DataSource struct {
 	Kind        string       `yaml:"kind"`
 	URL         string       `yaml:"url" validate:"required,url"`
 	Credentials *Credentials `yaml:"credentials,omitempty" validate:"omitempty"`
+	Timeout     uint         `yaml:"timeout" validate:"omitempty"`
 }
 
 // Contracts -
@@ -63,13 +61,12 @@ type Hasura struct {
 	Rest               *bool  `yaml:"rest"`
 }
 
-func (s *Hasura) SetSourceName() {
-	if s == nil {
-		return
-	}
-	if s.Source == "" {
-		s.Source = "default"
-	}
+// UnmarshalYAML -
+func (h *Hasura) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	h.Source = "default"
+
+	type plain Hasura
+	return unmarshal((*plain)(h))
 }
 
 // Prometheus -
