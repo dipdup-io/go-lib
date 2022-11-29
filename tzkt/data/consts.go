@@ -32,6 +32,8 @@ const (
 	KindEndorsingReward          = "endorsing_reward"
 	KindVdfRevelation            = "vdf_revelation"
 	KindIncreasePaidStorage      = "increase_paid_storage"
+	KindUpdateConsensusKey       = "update_consensus_key"
+	KindDrainDelegate            = "drain_delegate"
 )
 
 // urls

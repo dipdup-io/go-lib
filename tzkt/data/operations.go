@@ -14,7 +14,8 @@ type OperationConstraint interface {
 		Ballot | Proposal | Activation | TransferTicket | TxRollupCommit | TxRollupDispatchTicket |
 		TxRollupFinalizeCommitment | TxRollupOrigination | TxRollupRejection | TxRollupRemoveCommitment |
 		TxRollupReturnBond | TxRollupSubmitBatch | NonceRevelation | DoubleBaking | DoubleEndorsing | SetDepositsLimit |
-		Baking | RevelationPenalty | EndorsingReward | VdfRevelation | IncreasePaidStorage
+		Baking | RevelationPenalty | EndorsingReward | VdfRevelation | IncreasePaidStorage | DrainDelegate |
+		UpdateConsensusKey
 }
 
 // Operation -
@@ -659,4 +660,41 @@ type IncreasePaidStorage struct {
 	Status       string          `json:"status"`
 	Contract     Account         `json:"contract"`
 	Amount       decimal.Decimal `json:"amount"`
+}
+
+// UpdateConsensusKey -
+type UpdateConsensusKey struct {
+	Type            string    `json:"type"`
+	ID              uint64    `json:"id"`
+	Level           uint64    `json:"level"`
+	Timestamp       time.Time `json:"timestamp"`
+	Block           string    `json:"block"`
+	Hash            string    `json:"hash"`
+	Sender          Account   `json:"sender"`
+	Counter         uint64    `json:"counter"`
+	GasLimit        uint64    `json:"gasLimit"`
+	GasUsed         uint64    `json:"gasUsed"`
+	StorageLimit    uint64    `json:"storageLimit"`
+	BakerFee        uint64    `json:"bakerFee"`
+	Status          string    `json:"status"`
+	ActivationCycle uint64    `json:"activationCycle"`
+	PublicKey       string    `json:"publicKey"`
+	PublicKeyHash   string    `json:"publicKeyHash"`
+	Errors          []Error   `json:"errors,omitempty"`
+	Quote           *Quote    `json:"quote,omitempty"`
+}
+
+// DrainDelegate -
+type DrainDelegate struct {
+	Type      string    `json:"type"`
+	ID        uint64    `json:"id"`
+	Level     uint64    `json:"level"`
+	Timestamp time.Time `json:"timestamp"`
+	Block     string    `json:"block"`
+	Hash      string    `json:"hash"`
+	Delegate  Account   `json:"delegate"`
+	Target    Account   `json:"target"`
+	Amount    uint64    `json:"amount"`
+	Fee       uint64    `json:"fee"`
+	Quote     *Quote    `json:"quote,omitempty"`
 }

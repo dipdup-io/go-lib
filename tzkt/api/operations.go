@@ -203,3 +203,15 @@ func (tzkt *API) GetIncreasePaidStorage(ctx context.Context, filters map[string]
 	err = tzkt.json(ctx, "/v1/operations/increase_paid_storage", filters, false, &operations)
 	return
 }
+
+// GetUpdateConsensusKey -
+func (tzkt *API) GetUpdateConsensusKey(ctx context.Context, filters map[string]string) (operations []data.UpdateConsensusKey, err error) {
+	err = tzkt.json(ctx, "/v1/operations/update_consensus_key", filters, false, &operations)
+	return
+}
+
+// GetDrainDelegates -
+func (tzkt *API) GetDrainDelegates(ctx context.Context, filters map[string]string) (operations []data.DrainDelegate, err error) {
+	err = tzkt.json(ctx, "/v1/operations/drain_delegate", filters, false, &operations)
+	return
+}

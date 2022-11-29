@@ -312,6 +312,14 @@ func parseOperations(data []byte) (any, error) {
 			result = append(result, &tzktData.Baking{})
 		case tzktData.KindDoublePreendorsing:
 			result = append(result, &tzktData.DoublePreendorsing{})
+		case tzktData.KindIncreasePaidStorage:
+			result = append(result, &tzktData.IncreasePaidStorage{})
+		case tzktData.KindVdfRevelation:
+			result = append(result, &tzktData.VdfRevelation{})
+		case tzktData.KindUpdateConsensusKey:
+			result = append(result, &tzktData.UpdateConsensusKey{})
+		case tzktData.KindDrainDelegate:
+			result = append(result, &tzktData.DrainDelegate{})
 		default:
 			result = append(result, make(map[string]interface{}))
 		}

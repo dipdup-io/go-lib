@@ -34,6 +34,8 @@ const (
 	KindEvent                      = "event"
 	KindVdfRevelation              = "vdf_revelation"
 	KindIncreasePaidStorage        = "Increase_paid_storage"
+	KindUpdateConsensusKey         = "update_consensus_key"
+	KindDrainDelegate              = "drain_delegate"
 )
 
 const (

@@ -15,7 +15,8 @@ type OperationConstraint interface {
 		RegisterGlobalConstant | DoublePreendorsementEvidence | SetDepositsLimit |
 		Preendorsement | Event | VdfRevelation | TxRollupCommit | TxRollupOrigination |
 		TxRollupDispatchTickets | TxRollupFinalizeCommitment | TxRollupRejection |
-		TxRollupRemoveCommitment | TxRollupSubmitBatch
+		TxRollupRemoveCommitment | TxRollupSubmitBatch | UpdateConsensusKey |
+		DrainDelegate
 }
 
 // OperationGroup -
@@ -93,6 +94,10 @@ func (op *Operation) UnmarshalJSON(data []byte) error {
 		err = parseOperation[TxRollupRemoveCommitment](data, op)
 	case KindTxRollupSubmitBatch:
 		err = parseOperation[TxRollupSubmitBatch](data, op)
+	case KindUpdateConsensusKey:
+		err = parseOperation[UpdateConsensusKey](data, op)
+	case KindDrainDelegate:
+		err = parseOperation[DrainDelegate](data, op)
 
 	}
 	return err
@@ -623,5 +628,26 @@ type TxRollupSubmitBatch struct {
 	StorageLimit string                    `json:"storage_limit"`
 	Rollup       string                    `json:"rollup"`
 	Content      string                    `json:"content"`
+	Metadata     *ManagerOperationMetadata `json:"metadata,omitempty"`
+}
+
+// UpdateConsensusKey -
+type UpdateConsensusKey struct {
+	Kind         string                    `json:"kind"`
+	Source       string                    `json:"source"`
+	Fee          string                    `json:"fee"`
+	Counter      string                    `json:"counter"`
+	GasLimit     string                    `json:"gas_limit"`
+	StorageLimit string                    `json:"storage_limit"`
+	Pk           string                    `json:"pk"`
+	Metadata     *ManagerOperationMetadata `json:"metadata,omitempty"`
+}
+
+// DrainDelegate -
+type DrainDelegate struct {
+	Kind         string                    `json:"kind"`
+	ConsensusKey string                    `json:"consensus_key"`
+	Delegate     string                    `json:"delegate"`
+	Destination  string                    `json:"destination"`
 	Metadata     *ManagerOperationMetadata `json:"metadata,omitempty"`
 }
