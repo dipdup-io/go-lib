@@ -2,7 +2,6 @@ package data
 
 import (
 	"encoding/json"
-	stdJSON "encoding/json"
 	"time"
 )
 
@@ -63,25 +62,6 @@ type Transfer struct {
 	TransactionID *uint64   `json:"transactionId,omitempty"`
 	OriginationID *uint64   `json:"originationId,omitempty"`
 	MigrationID   *uint64   `json:"migrationId,omitempty"`
-}
-
-// Token -
-type Token struct {
-	ID             uint64             `json:"id"`
-	Contract       Address            `json:"contract"`
-	TokenID        string             `json:"tokenId"`
-	Standard       string             `json:"standard"`
-	Metadata       stdJSON.RawMessage `json:"metadata,omitempty"`
-	FirstLevel     uint64             `json:"firstLevel"`
-	FirstTime      time.Time          `json:"firstTime"`
-	LastLevel      uint64             `json:"lastLevel"`
-	LastTime       time.Time          `json:"lastTime"`
-	TransfersCount uint64             `json:"transfersCount"`
-	BalancesCount  uint64             `json:"balancesCount"`
-	HoldersCount   uint64             `json:"holdersCount"`
-	TotalMinted    string             `json:"totalMinted"`
-	TotalBurned    string             `json:"totalBurned"`
-	TotalSupply    string             `json:"totalSupply"`
 }
 
 // Protocol -

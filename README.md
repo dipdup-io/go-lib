@@ -117,14 +117,20 @@ Read more about events and SignalR in the [doc](https://github.com/dipdup-net/go
 package main
 
 import (
+	"context"
 	"log"
 
+	"github.com/dipdup-net/go-lib/tzkt/data"
 	"github.com/dipdup-net/go-lib/tzkt/events"
 )
 
 func main() {
-	tzkt := events.NewTzKT(events.BaseURL)
-	if err := tzkt.Connect(); err != nil {
+	tzkt := events.NewTzKT(data.BaseEventsURL)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	if err := tzkt.Connect(ctx); err != nil {
 		log.Panic(err)
 	}
 	defer tzkt.Close()
@@ -137,6 +143,10 @@ func main() {
 		panic(err)
 	}
 
+	if err := tzkt.SubscribeToCycles(2); err != nil {
+		panic(err)
+	}
+
 	if err := tzkt.SubscribeToAccounts("KT1K4EwTpbvYN9agJdjpyJm4ZZdhpUNKB3F6"); err != nil {
 		panic(err)
 	}
@@ -145,7 +155,15 @@ func main() {
 		panic(err)
 	}
 
-	if err := tzkt.SubscribeToOperations("KT1K4EwTpbvYN9agJdjpyJm4ZZdhpUNKB3F6", events.KindTransaction); err != nil {
+	if err := tzkt.SubscribeToOperations("KT1K4EwTpbvYN9agJdjpyJm4ZZdhpUNKB3F6", data.KindTransaction); err != nil {
+		panic(err)
+	}
+
+	if err := tzkt.SubscribeToTokenTransfers("", "", ""); err != nil {
+		panic(err)
+	}
+
+	if err := tzkt.SubscribeToTokenBalances("", "", ""); err != nil {
 		panic(err)
 	}
 
@@ -155,28 +173,40 @@ func main() {
 
 			switch msg.Channel {
 			case events.ChannelAccounts:
-				items := msg.Body.([]events.Account)
+				items := msg.Body.([]data.Account)
 				for _, item := range items {
 					log.Println(item)
 				}
 			case events.ChannelBigMap:
-				items := msg.Body.([]events.BigMapUpdate)
+				items := msg.Body.([]data.BigMapUpdate)
 				for _, item := range items {
 					log.Println(item)
 				}
 			case events.ChannelBlocks:
-				items := msg.Body.([]events.Block)
+				items := msg.Body.([]data.Block)
 				for _, item := range items {
 					log.Println(item)
 				}
 			case events.ChannelHead:
-				head := msg.Body.(events.Head)
+				head := msg.Body.(data.Head)
 				log.Println(head)
 			case events.ChannelOperations:
-				items := msg.Body.([]interface{})
+				items := msg.Body.([]any)
 				for _, item := range items {
-					log.Println(item.(*events.Transaction))
+					log.Println(item.(*data.Transaction))
 				}
+			case events.ChannelTokenBalances:
+				items := msg.Body.([]data.TokenBalance)
+				for _, item := range items {
+					log.Println(item)
+				}
+			case events.ChannelTransfers:
+				items := msg.Body.([]data.Transfer)
+				for _, item := range items {
+					log.Println(item)
+				}
+			case events.ChannelCycles:
+				log.Println(msg.Body.(data.Cycle))
 			}
 
 		case events.MessageTypeReorg:

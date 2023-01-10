@@ -3,6 +3,7 @@ Golang library for TzKT events API
 
 ## Usage 
 
+Full docs for TzKT API can be found [here](https://api.tzkt.io/).
 
 ### TzKT client
 
@@ -15,9 +16,13 @@ import events "github.com/dipdup-net/go-lib/tzkt/events"
 Then create `TzKT` client, connect to server and subscribe to channels.
 
 ```golang
-tzkt := events.NewTzKT(events.BaseURL)
-if err := tzkt.Connect(); err != nil {
-    log.Panic(err)
+tzkt := events.NewTzKT(data.BaseEventsURL)
+
+ctx, cancel := context.WithCancel(context.Background())
+defer cancel()
+
+if err := tzkt.Connect(ctx); err != nil {
+	log.Panic(err)
 }
 defer tzkt.Close()
 

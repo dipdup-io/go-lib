@@ -144,6 +144,33 @@ func (tzkt *TzKT) SubscribeToTokenTransfers(account, contract, tokenID string) e
 	return tzkt.subscribe(MethodTokenTransfers, args)
 }
 
+// SubscribeToTokenBalances - sends token balances when they are updated.
+func (tzkt *TzKT) SubscribeToTokenBalances(account, contract, tokenID string) error {
+	args := make(map[string]interface{})
+	if account != "" {
+		args["account"] = account
+	}
+	if contract != "" {
+		args["contract"] = contract
+	}
+	if tokenID != "" {
+		args["tokenID"] = tokenID
+	}
+	return tzkt.subscribe(MethodTokenBalances, args)
+}
+
+// SubscribeToCycles - notifies of the start of a new cycle with a specified delay.
+// delayBlocks is the number of blocks (2 by default) to delay a new cycle notification. It should be >= 2 (to not worry abour reorgs) and < cycle size
+func (tzkt *TzKT) SubscribeToCycles(delayBlocks uint64) error {
+	if delayBlocks < 2 {
+		return errors.Errorf("delayBocks should be >= 2: %d", delayBlocks)
+	}
+	args := map[string]any{
+		"delayBocks": delayBlocks,
+	}
+	return tzkt.subscribe(MethodCycles, args)
+}
+
 func (tzkt *TzKT) subscribe(channel string, args ...interface{}) error {
 	tzkt.invokationID += 1
 	msg := signalr.NewInvocation(fmt.Sprintf("%d", tzkt.invokationID), channel, args...)
@@ -243,6 +270,14 @@ func parseData(channel string, data []byte) (any, error) {
 		var transfer []tzktData.Transfer
 		err := json.Unmarshal(data, &transfer)
 		return transfer, err
+	case ChannelTokenBalances:
+		var balances []tzktData.TokenBalance
+		err := json.Unmarshal(data, &balances)
+		return balances, err
+	case ChannelCycles:
+		var cycle tzktData.Cycle
+		err := json.Unmarshal(data, &cycle)
+		return cycle, err
 	default:
 		return nil, errors.Errorf("unknown channel: %s", channel)
 	}
