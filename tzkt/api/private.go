@@ -9,7 +9,7 @@ import (
 // GetAccountsMetadata -
 func (tzkt *API) GetAccountsMetadata(ctx context.Context, filters map[string]string) ([]data.AccountMetadata, error) {
 	var raw []data.Metadata[data.AccountMetadata]
-	if err := tzkt.json(ctx, "/v1/metadata/accounts", filters, true, &raw); err != nil {
+	if err := tzkt.json(ctx, "/v1/extras/accounts", filters, true, &raw); err != nil {
 		return nil, err
 	}
 

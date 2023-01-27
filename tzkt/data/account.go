@@ -76,7 +76,7 @@ type MetadataConstraint interface {
 // Metadata -
 type Metadata[T MetadataConstraint] struct {
 	Key   string `json:"key"`
-	Value T      `json:"metadata"`
+	Value T      `json:"extras"`
 }
 
 // Account -
