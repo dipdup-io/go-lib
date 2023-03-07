@@ -355,6 +355,20 @@ func parseOperations(data []byte) (any, error) {
 			result = append(result, &tzktData.UpdateConsensusKey{})
 		case tzktData.KindDrainDelegate:
 			result = append(result, &tzktData.DrainDelegate{})
+		case tzktData.KindSrAddMessages:
+			result = append(result, &tzktData.SmartRollupAddMessage{})
+		case tzktData.KindSrCement:
+			result = append(result, &tzktData.SmartRollupCement{})
+		case tzktData.KindSrExecute:
+			result = append(result, &tzktData.SmartRollupExecute{})
+		case tzktData.KindSrOriginate:
+			result = append(result, &tzktData.SmartRollupOriginate{})
+		case tzktData.KindSrPublish:
+			result = append(result, &tzktData.SmartRollupPublish{})
+		case tzktData.KindSrRecoverBond:
+			result = append(result, &tzktData.SmartRollupRecoverBond{})
+		case tzktData.KindSrRefute:
+			result = append(result, &tzktData.SmartRollupRefute{})
 		default:
 			result = append(result, make(map[string]interface{}))
 		}
