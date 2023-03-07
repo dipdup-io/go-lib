@@ -34,6 +34,13 @@ const (
 	KindIncreasePaidStorage      = "increase_paid_storage"
 	KindUpdateConsensusKey       = "update_consensus_key"
 	KindDrainDelegate            = "drain_delegate"
+	KindSrAddMessages            = "sr_add_messages"
+	KindSrCement                 = "sr_cement"
+	KindSrExecute                = "sr_execute"
+	KindSrOriginate              = "sr_originate"
+	KindSrPublish                = "sr_publish"
+	KindSrRecoverBond            = "sr_recover_bond"
+	KindSrRefute                 = "sr_recover_bond"
 )
 
 // urls

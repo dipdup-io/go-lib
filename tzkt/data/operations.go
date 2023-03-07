@@ -14,8 +14,9 @@ type OperationConstraint interface {
 		Ballot | Proposal | Activation | TransferTicket | TxRollupCommit | TxRollupDispatchTicket |
 		TxRollupFinalizeCommitment | TxRollupOrigination | TxRollupRejection | TxRollupRemoveCommitment |
 		TxRollupReturnBond | TxRollupSubmitBatch | NonceRevelation | DoubleBaking | DoubleEndorsing | SetDepositsLimit |
-		Baking | RevelationPenalty | EndorsingReward | VdfRevelation | IncreasePaidStorage | DrainDelegate |
-		UpdateConsensusKey
+		DoublePreendorsing | Baking | RevelationPenalty | EndorsingReward | VdfRevelation | IncreasePaidStorage |
+		DrainDelegate | UpdateConsensusKey | SmartRollupAddMessage | SmartRollupCement | SmartRollupExecute |
+		SmartRollupOriginate | SmartRollupPublish | SmartRollupRefute | SmartRollupRecoverBond
 }
 
 // Operation -
@@ -697,4 +698,166 @@ type DrainDelegate struct {
 	Amount    uint64    `json:"amount"`
 	Fee       uint64    `json:"fee"`
 	Quote     *Quote    `json:"quote,omitempty"`
+}
+
+// SmartRollupAddMessage -
+type SmartRollupAddMessage struct {
+	Type          string    `json:"type"`
+	ID            uint64    `json:"id"`
+	Level         uint64    `json:"level"`
+	Timestamp     time.Time `json:"timestamp"`
+	Hash          string    `json:"hash"`
+	Sender        *Address  `json:"sender,omitempty"`
+	Counter       uint64    `json:"counter"`
+	GasLimit      uint64    `json:"gasLimit"`
+	GasUsed       uint64    `json:"gasUsed"`
+	StorageLimit  uint64    `json:"storageLimit"`
+	BakerFee      uint64    `json:"bakerFee"`
+	Status        string    `json:"status"`
+	MessagesCount uint64    `json:"messagesCount"`
+	Errors        []Error   `json:"errors,omitempty"`
+	Quote         *Quote    `json:"quote,omitempty"`
+}
+
+// SmartRollupCement -
+type SmartRollupCement struct {
+	Type         string            `json:"type"`
+	ID           uint64            `json:"id"`
+	Level        uint64            `json:"level"`
+	Timestamp    time.Time         `json:"timestamp"`
+	Hash         string            `json:"hash"`
+	Sender       *Address          `json:"sender,omitempty"`
+	Counter      uint64            `json:"counter"`
+	GasLimit     uint64            `json:"gasLimit"`
+	GasUsed      uint64            `json:"gasUsed"`
+	StorageLimit uint64            `json:"storageLimit"`
+	BakerFee     uint64            `json:"bakerFee"`
+	Status       string            `json:"status"`
+	Rollup       *Address          `json:"rollup,omitempty"`
+	Commitment   *SrCommitmentInfo `json:"commitment,omitempty"`
+	Errors       []Error           `json:"errors,omitempty"`
+	Quote        *Quote            `json:"quote,omitempty"`
+}
+
+// SrCommitmentInfo -
+type SrCommitmentInfo struct {
+	ID         uint64   `json:"id"`
+	Initiator  *Address `json:"initiator,omitempty"`
+	InboxLevel uint64   `json:"inboxLevel"`
+	State      string   `json:"state"`
+	Hash       string   `json:"hash"`
+	Ticks      uint64   `json:"ticks"`
+	FirstLevel uint64   `json:"firstLevel"`
+	FirstTime  string   `json:"firstTime"`
+}
+
+// SmartRollupExecute -
+type SmartRollupExecute struct {
+	Type         string            `json:"type"`
+	ID           uint64            `json:"id"`
+	Level        uint64            `json:"level"`
+	Timestamp    time.Time         `json:"timestamp"`
+	Hash         string            `json:"hash"`
+	Sender       *Address          `json:"sender,omitempty"`
+	Counter      uint64            `json:"counter"`
+	GasLimit     uint64            `json:"gasLimit"`
+	GasUsed      uint64            `json:"gasUsed"`
+	StorageLimit uint64            `json:"storageLimit"`
+	BakerFee     uint64            `json:"bakerFee"`
+	Status       string            `json:"status"`
+	Rollup       *Address          `json:"rollup,omitempty"`
+	Commitment   *SrCommitmentInfo `json:"commitment,omitempty"`
+	Errors       []Error           `json:"errors,omitempty"`
+	Quote        *Quote            `json:"quote,omitempty"`
+}
+
+// SmartRollupOriginate -
+type SmartRollupOriginate struct {
+	Type          string             `json:"type"`
+	ID            uint64             `json:"id"`
+	Level         uint64             `json:"level"`
+	Timestamp     time.Time          `json:"timestamp"`
+	Hash          string             `json:"hash"`
+	Sender        *Address           `json:"sender,omitempty"`
+	Counter       uint64             `json:"counter"`
+	GasLimit      uint64             `json:"gasLimit"`
+	GasUsed       uint64             `json:"gasUsed"`
+	StorageLimit  uint64             `json:"storageLimit"`
+	BakerFee      uint64             `json:"bakerFee"`
+	Status        string             `json:"status"`
+	Rollup        *Address           `json:"rollup,omitempty"`
+	ParameterType stdJSON.RawMessage `json:"parameterType,omitempty"`
+	Errors        []Error            `json:"errors,omitempty"`
+	Quote         *Quote             `json:"quote,omitempty"`
+}
+
+// SmartRollupPublish -
+type SmartRollupPublish struct {
+	Type         string            `json:"type"`
+	ID           uint64            `json:"id"`
+	Level        uint64            `json:"level"`
+	Timestamp    time.Time         `json:"timestamp"`
+	Hash         string            `json:"hash"`
+	Sender       *Address          `json:"sender,omitempty"`
+	Counter      uint64            `json:"counter"`
+	GasLimit     uint64            `json:"gasLimit"`
+	GasUsed      uint64            `json:"gasUsed"`
+	StorageLimit uint64            `json:"storageLimit"`
+	BakerFee     uint64            `json:"bakerFee"`
+	Status       string            `json:"status"`
+	Rollup       *Address          `json:"rollup,omitempty"`
+	Commitment   *SrCommitmentInfo `json:"commitment,omitempty"`
+	Bond         uint64            `json:"bond"`
+}
+
+// SmartRollupRecoverBond -
+type SmartRollupRecoverBond struct {
+	Type         string    `json:"type"`
+	ID           uint64    `json:"id"`
+	Level        uint64    `json:"level"`
+	Timestamp    time.Time `json:"timestamp"`
+	Hash         string    `json:"hash"`
+	Sender       *Address  `json:"sender,omitempty"`
+	Counter      uint64    `json:"counter"`
+	GasLimit     uint64    `json:"gasLimit"`
+	GasUsed      uint64    `json:"gasUsed"`
+	StorageLimit uint64    `json:"storageLimit"`
+	BakerFee     uint64    `json:"bakerFee"`
+	Status       string    `json:"status"`
+	Rollup       *Address  `json:"rollup,omitempty"`
+	Staker       *Address  `json:"staker,omitempty"`
+	Bond         uint64    `json:"bond"`
+}
+
+// SmartRollupRefute
+type SmartRollupRefute struct {
+	Type         string      `json:"type"`
+	ID           uint64      `json:"id"`
+	Level        uint64      `json:"level"`
+	Timestamp    time.Time   `json:"timestamp"`
+	Hash         string      `json:"hash"`
+	Sender       *Address    `json:"sender,omitempty"`
+	Counter      uint64      `json:"counter"`
+	GasLimit     uint64      `json:"gasLimit"`
+	GasUsed      uint64      `json:"gasUsed"`
+	StorageLimit uint64      `json:"storageLimit"`
+	BakerFee     uint64      `json:"bakerFee"`
+	Status       string      `json:"status"`
+	Rollup       *Address    `json:"rollup,omitempty"`
+	Game         *SrGameInfo `json:"game"`
+	Move         string      `json:"move"`
+	GameStatus   string      `json:"gameStatus"`
+}
+
+// SrGameInfo -
+type SrGameInfo struct {
+	ID                  uint64            `json:"id"`
+	Initiator           *Address          `json:"initiator,omitempty"`
+	InitiatorCommitment *SrCommitmentInfo `json:"initiatorCommitment,omitempty"`
+	Opponent            *Address          `json:"opponent,omitempty"`
+	OpponentCommitment  *SrCommitmentInfo `json:"opponentCommitment,omitempty"`
+	InitiatorReward     uint64            `json:"initiatorReward"`
+	InitiatorLoss       uint64            `json:"initiatorLoss"`
+	OpponentReward      uint64            `json:"opponentReward"`
+	OpponentLoss        uint64            `json:"opponentLoss"`
 }

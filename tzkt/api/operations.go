@@ -215,3 +215,45 @@ func (tzkt *API) GetDrainDelegates(ctx context.Context, filters map[string]strin
 	err = tzkt.json(ctx, "/v1/operations/drain_delegate", filters, false, &operations)
 	return
 }
+
+// GetSmartRollupAddMessages -
+func (tzkt *API) GetSmartRollupAddMessages(ctx context.Context, filters map[string]string) (operations []data.SmartRollupAddMessage, err error) {
+	err = tzkt.json(ctx, "/v1/operations/sr_add_messages", filters, false, &operations)
+	return
+}
+
+// GetSmartRollupCement -
+func (tzkt *API) GetSmartRollupCement(ctx context.Context, filters map[string]string) (operations []data.SmartRollupCement, err error) {
+	err = tzkt.json(ctx, "/v1/operations/sr_cement", filters, false, &operations)
+	return
+}
+
+// GetSmartRollupExecute -
+func (tzkt *API) GetSmartRollupExecute(ctx context.Context, filters map[string]string) (operations []data.SmartRollupExecute, err error) {
+	err = tzkt.json(ctx, "/v1/operations/sr_execute", filters, false, &operations)
+	return
+}
+
+// GetSmartRollupOriginate -
+func (tzkt *API) GetSmartRollupOriginate(ctx context.Context, filters map[string]string) (operations []data.SmartRollupOriginate, err error) {
+	err = tzkt.json(ctx, "/v1/operations/sr_originate", filters, false, &operations)
+	return
+}
+
+// GetSmartRollupPublish -
+func (tzkt *API) GetSmartRollupPublish(ctx context.Context, filters map[string]string) (operations []data.SmartRollupPublish, err error) {
+	err = tzkt.json(ctx, "/v1/operations/sr_publish", filters, false, &operations)
+	return
+}
+
+// GetSmartRollupRecoverBond -
+func (tzkt *API) GetSmartRollupRecoverBond(ctx context.Context, filters map[string]string) (operations []data.SmartRollupRecoverBond, err error) {
+	err = tzkt.json(ctx, "/v1/operations/sr_recover_bond", filters, false, &operations)
+	return
+}
+
+// GetSmartRollupRefute -
+func (tzkt *API) GetSmartRollupRefute(ctx context.Context, filters map[string]string) (operations []data.SmartRollupRefute, err error) {
+	err = tzkt.json(ctx, "/v1/operations/sr_refute", filters, false, &operations)
+	return
+}
