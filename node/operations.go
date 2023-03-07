@@ -16,7 +16,9 @@ type OperationConstraint interface {
 		Preendorsement | Event | VdfRevelation | TxRollupCommit | TxRollupOrigination |
 		TxRollupDispatchTickets | TxRollupFinalizeCommitment | TxRollupRejection |
 		TxRollupRemoveCommitment | TxRollupSubmitBatch | UpdateConsensusKey |
-		DrainDelegate
+		DrainDelegate | SmartRollupAddMessage | SmartRollupCement | SmartRollupExecute |
+		SmartRollupOriginate | SmartRollupPublish | SmartRollupRecoverBond |
+		SmartRollupRefute | SmartRollupTimeout
 }
 
 // OperationGroup -
@@ -98,6 +100,22 @@ func (op *Operation) UnmarshalJSON(data []byte) error {
 		err = parseOperation[UpdateConsensusKey](data, op)
 	case KindDrainDelegate:
 		err = parseOperation[DrainDelegate](data, op)
+	case KindSrAddMessages:
+		err = parseOperation[SmartRollupAddMessage](data, op)
+	case KindSrCement:
+		err = parseOperation[SmartRollupCement](data, op)
+	case KindSrExecute:
+		err = parseOperation[SmartRollupExecute](data, op)
+	case KindSrOriginate:
+		err = parseOperation[SmartRollupOriginate](data, op)
+	case KindSrPublish:
+		err = parseOperation[SmartRollupPublish](data, op)
+	case KindSrRecoverBond:
+		err = parseOperation[SmartRollupRecoverBond](data, op)
+	case KindSrRefute:
+		err = parseOperation[SmartRollupRefute](data, op)
+	case KindSrTimeout:
+		err = parseOperation[SmartRollupTimeout](data, op)
 
 	}
 	return err
@@ -650,4 +668,132 @@ type DrainDelegate struct {
 	Delegate     string                    `json:"delegate"`
 	Destination  string                    `json:"destination"`
 	Metadata     *ManagerOperationMetadata `json:"metadata,omitempty"`
+}
+
+// SmartRollupOriginate -
+type SmartRollupOriginate struct {
+	Kind             string                    `json:"kind"`
+	Source           string                    `json:"source"`
+	Fee              string                    `json:"fee"`
+	Counter          string                    `json:"counter"`
+	GasLimit         string                    `json:"gas_limit"`
+	StorageLimit     string                    `json:"storage_limit"`
+	PvmKind          string                    `json:"pvm_kind"`
+	Kernel           string                    `json:"kernel"`
+	OriginationProof string                    `json:"origination_proof"`
+	ParametersTy     string                    `json:"parameters_ty"`
+	Metadata         *ManagerOperationMetadata `json:"metadata,omitempty"`
+}
+
+// SmartRollupExecute -
+type SmartRollupExecute struct {
+	Kind               string                    `json:"kind"`
+	Source             string                    `json:"source"`
+	Fee                string                    `json:"fee"`
+	Counter            string                    `json:"counter"`
+	GasLimit           string                    `json:"gas_limit"`
+	StorageLimit       string                    `json:"storage_limit"`
+	Rollup             string                    `json:"rollup"`
+	CementedCommitment string                    `json:"cemented_commitment"`
+	OutputProof        string                    `json:"output_proof"`
+	Metadata           *ManagerOperationMetadata `json:"metadata,omitempty"`
+}
+
+// SmartRollupAddMessage -
+type SmartRollupAddMessage struct {
+	Kind         string                    `json:"kind"`
+	Source       string                    `json:"source"`
+	Fee          string                    `json:"fee"`
+	Counter      string                    `json:"counter"`
+	GasLimit     string                    `json:"gas_limit"`
+	StorageLimit string                    `json:"storage_limit"`
+	Message      []string                  `json:"message"`
+	Metadata     *ManagerOperationMetadata `json:"metadata,omitempty"`
+}
+
+// SmartRollupCement -
+type SmartRollupCement struct {
+	Kind         string                    `json:"kind"`
+	Source       string                    `json:"source"`
+	Fee          string                    `json:"fee"`
+	Counter      string                    `json:"counter"`
+	GasLimit     string                    `json:"gas_limit"`
+	StorageLimit string                    `json:"storage_limit"`
+	Rollup       string                    `json:"rollup"`
+	Commitment   string                    `json:"commitment"`
+	Metadata     *ManagerOperationMetadata `json:"metadata,omitempty"`
+}
+
+// SmartRollupPublish -
+type SmartRollupPublish struct {
+	Kind         string                    `json:"kind"`
+	Source       string                    `json:"source"`
+	Fee          string                    `json:"fee"`
+	Counter      string                    `json:"counter"`
+	GasLimit     string                    `json:"gas_limit"`
+	StorageLimit string                    `json:"storage_limit"`
+	Rollup       string                    `json:"rollup"`
+	Commitment   SrCommitmentInfo          `json:"commitment"`
+	Metadata     *ManagerOperationMetadata `json:"metadata,omitempty"`
+}
+
+// SmartRollupRecoverBond -
+type SmartRollupRecoverBond struct {
+	Kind         string                    `json:"kind"`
+	Source       string                    `json:"source"`
+	Fee          string                    `json:"fee"`
+	Counter      string                    `json:"counter"`
+	GasLimit     string                    `json:"gas_limit"`
+	StorageLimit string                    `json:"storage_limit"`
+	Rollup       string                    `json:"rollup"`
+	Staker       string                    `json:"staker"`
+	Metadata     *ManagerOperationMetadata `json:"metadata,omitempty"`
+}
+
+// SmartRollupRefute -
+type SmartRollupRefute struct {
+	Kind         string                    `json:"kind"`
+	Source       string                    `json:"source"`
+	Fee          string                    `json:"fee"`
+	Counter      string                    `json:"counter"`
+	GasLimit     string                    `json:"gas_limit"`
+	StorageLimit string                    `json:"storage_limit"`
+	Rollup       string                    `json:"rollup"`
+	Opponent     string                    `json:"opponent"`
+	Refutation   Refutation                `json:"refutation"`
+	Metadata     *ManagerOperationMetadata `json:"metadata,omitempty"`
+}
+
+// SmartRollupTimeout -
+type SmartRollupTimeout struct {
+	Kind         string                    `json:"kind"`
+	Source       string                    `json:"source"`
+	Fee          string                    `json:"fee"`
+	Counter      string                    `json:"counter"`
+	GasLimit     string                    `json:"gas_limit"`
+	StorageLimit string                    `json:"storage_limit"`
+	Rollup       string                    `json:"rollup"`
+	Stakers      Stakers                   `json:"stakers"`
+	Metadata     *ManagerOperationMetadata `json:"metadata,omitempty"`
+}
+
+// Stakers -
+type Stakers struct {
+	Alice string `json:"alice"`
+	Bob   string `json:"bob"`
+}
+
+// Refutation -
+type Refutation struct {
+	RefutationKind         string `json:"refutation_kind"`
+	PlayerCommitmentHash   string `json:"player_commitment_hash"`
+	OpponentCommitmentHash string `json:"opponent_commitment_hash"`
+}
+
+// SrCommitmentInfo -
+type SrCommitmentInfo struct {
+	CompressedState string `json:"compressed_state"`
+	InboxLevel      uint64 `json:"inbox_level"`
+	Predecessor     string `json:"predecessor"`
+	NumberOfTicks   string `json:"number_of_ticks"`
 }
