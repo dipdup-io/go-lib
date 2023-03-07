@@ -40,7 +40,7 @@ const (
 	KindSrOriginate              = "sr_originate"
 	KindSrPublish                = "sr_publish"
 	KindSrRecoverBond            = "sr_recover_bond"
-	KindSrRefute                 = "sr_recover_bond"
+	KindSrRefute                 = "sr_refute"
 )
 
 // urls
