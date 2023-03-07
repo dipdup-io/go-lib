@@ -36,6 +36,14 @@ const (
 	KindIncreasePaidStorage        = "Increase_paid_storage"
 	KindUpdateConsensusKey         = "update_consensus_key"
 	KindDrainDelegate              = "drain_delegate"
+	KindSrAddMessages              = "smart_rollup_add_messages"
+	KindSrOriginate                = "smart_rollup_originate"
+	KindSrExecute                  = "smart_rollup_execute_outbox_message"
+	KindSrRefute                   = "smart_rollup_refute"
+	KindSrPublish                  = "smart_rollup_publish"
+	KindSrRecoverBond              = "smart_rollup_recover_bond"
+	KindSrTimeout                  = "smart_rollup_timeout"
+	KindSrCement                   = "smart_rollup_cement"
 )
 
 const (

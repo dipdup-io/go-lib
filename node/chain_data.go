@@ -138,5 +138,9 @@ func IsManager(kind string) bool {
 	return kind == KindOrigination || kind == KindReveal || kind == KindTransaction || kind == KindSetDepositsLimit ||
 		kind == KindDelegation || kind == KindRegisterGlobalConstant || kind == KindTxRollupCommit || kind == KindTxRollupDispatchTickets ||
 		kind == KindTxRollupFinalizeCommitment || kind == KindTxRollupOrigination || kind == KindTxRollupRejection ||
-		kind == KindTxRollupRemoveCommitment || kind == KindTxRollupReturnBond || kind == KindTxRollupSubmitBatch
+		kind == KindTxRollupRemoveCommitment || kind == KindTxRollupReturnBond || kind == KindTxRollupSubmitBatch ||
+		kind == KindSrAddMessages || kind == KindSrCement || kind == KindSrExecute ||
+		kind == KindSrOriginate || kind == KindSrPublish || kind == KindSrRecoverBond ||
+		kind == KindSrRefute || kind == KindSrTimeout || kind == KindIncreasePaidStorage ||
+		kind == KindDrainDelegate || kind == KindUpdateConsensusKey
 }

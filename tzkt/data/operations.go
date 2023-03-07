@@ -512,9 +512,9 @@ type DoubleBaking struct {
 	Block                string    `json:"block"`
 	Hash                 string    `json:"hash"`
 	AccusedLevel         uint64    `json:"accusedLevel"`
-	Accuser              *Account  `json:"accuser"`
+	Accuser              *Address  `json:"accuser"`
 	AccuserReward        int64     `json:"accuserReward"`
-	Offender             *Account  `json:"offender"`
+	Offender             *Address  `json:"offender"`
 	OffenderLoss         int64     `json:"offenderLoss"`
 	Quote                *Quote    `json:"quote,omitempty"`
 	AccuserRewards       int64     `json:"accuserRewards,omitempty"`
@@ -532,9 +532,9 @@ type DoubleEndorsing struct {
 	Block                string    `json:"block"`
 	Hash                 string    `json:"hash"`
 	AccusedLevel         uint64    `json:"accusedLevel"`
-	Accuser              *Account  `json:"accuser"`
+	Accuser              *Address  `json:"accuser"`
 	AccuserReward        int64     `json:"accuserReward"`
-	Offender             *Account  `json:"offender"`
+	Offender             *Address  `json:"offender"`
 	OffenderLoss         int64     `json:"offenderLoss"`
 	Quote                *Quote    `json:"quote,omitempty"`
 	AccuserRewards       int64     `json:"accuserRewards,omitempty"`
@@ -567,15 +567,15 @@ type Baking struct {
 	Level        uint64    `json:"level"`
 	Timestamp    time.Time `json:"timestamp"`
 	Block        string    `json:"block"`
-	Proposer     *Account  `json:"proposer"`
-	Producer     *Account  `json:"producer"`
+	Proposer     *Address  `json:"proposer"`
+	Producer     *Address  `json:"producer"`
 	PayloadRound int       `json:"payloadRound"`
 	BlockRound   int       `json:"blockRound"`
 	Deposit      int64     `json:"deposit"`
 	Reward       int64     `json:"reward"`
 	Bonus        int64     `json:"bonus"`
 	Fees         int64     `json:"fees"`
-	Baker        Account   `json:"baker"`
+	Baker        Address   `json:"baker"`
 	Priority     int       `json:"priority"`
 	Quote        *Quote    `json:"quote,omitempty"`
 }
@@ -587,7 +587,7 @@ type EndorsingReward struct {
 	Level     uint64    `json:"level"`
 	Timestamp time.Time `json:"timestamp"`
 	Block     string    `json:"block"`
-	Baker     *Account  `json:"baker"`
+	Baker     *Address  `json:"baker"`
 	Expected  int64     `json:"expected"`
 	Received  int64     `json:"received"`
 	Quote     *Quote    `json:"quote,omitempty"`
@@ -600,7 +600,7 @@ type RevelationPenalty struct {
 	Level       uint64    `json:"level"`
 	Timestamp   time.Time `json:"timestamp"`
 	Block       string    `json:"block"`
-	Baker       *Account  `json:"baker"`
+	Baker       *Address  `json:"baker"`
 	MissedLevel int64     `json:"missedLevel"`
 	Loss        int64     `json:"loss"`
 	Quote       *Quote    `json:"quote,omitempty"`
@@ -615,9 +615,9 @@ type DoublePreendorsing struct {
 	Block                string    `json:"block"`
 	Hash                 string    `json:"hash"`
 	AccusedLevel         uint64    `json:"accusedLevel"`
-	Accuser              *Account  `json:"accuser"`
+	Accuser              *Address  `json:"accuser"`
 	AccuserReward        int64     `json:"accuserReward"`
-	Offender             *Account  `json:"offender"`
+	Offender             *Address  `json:"offender"`
 	OffenderLoss         int64     `json:"offenderLoss"`
 	Quote                *Quote    `json:"quote,omitempty"`
 	AccuserRewards       int64     `json:"accuserRewards,omitempty"`
@@ -634,7 +634,7 @@ type VdfRevelation struct {
 	Timestamp time.Time `json:"timestamp"`
 	Block     string    `json:"block"`
 	Hash      string    `json:"hash"`
-	Baker     *Account  `json:"baker"`
+	Baker     *Address  `json:"baker"`
 	Cycle     uint64    `json:"cycle"`
 	Solution  string    `json:"solution"`
 	Proof     string    `json:"proof"`
@@ -650,7 +650,7 @@ type IncreasePaidStorage struct {
 	Timestamp    time.Time       `json:"timestamp"`
 	Block        string          `json:"block"`
 	Hash         string          `json:"hash"`
-	Sender       Account         `json:"sender"`
+	Sender       Address         `json:"sender"`
 	Counter      uint64          `json:"counter"`
 	GasLimit     uint64          `json:"gasLimit"`
 	GasUsed      uint64          `json:"gasUsed"`
@@ -659,7 +659,7 @@ type IncreasePaidStorage struct {
 	BakerFee     uint64          `json:"bakerFee"`
 	StorageFee   uint64          `json:"storageFee"`
 	Status       string          `json:"status"`
-	Contract     Account         `json:"contract"`
+	Contract     Address         `json:"contract"`
 	Amount       decimal.Decimal `json:"amount"`
 }
 
@@ -671,7 +671,7 @@ type UpdateConsensusKey struct {
 	Timestamp       time.Time `json:"timestamp"`
 	Block           string    `json:"block"`
 	Hash            string    `json:"hash"`
-	Sender          Account   `json:"sender"`
+	Sender          Address   `json:"sender"`
 	Counter         uint64    `json:"counter"`
 	GasLimit        uint64    `json:"gasLimit"`
 	GasUsed         uint64    `json:"gasUsed"`
@@ -693,8 +693,8 @@ type DrainDelegate struct {
 	Timestamp time.Time `json:"timestamp"`
 	Block     string    `json:"block"`
 	Hash      string    `json:"hash"`
-	Delegate  Account   `json:"delegate"`
-	Target    Account   `json:"target"`
+	Delegate  Address   `json:"delegate"`
+	Target    Address   `json:"target"`
 	Amount    uint64    `json:"amount"`
 	Fee       uint64    `json:"fee"`
 	Quote     *Quote    `json:"quote,omitempty"`
@@ -763,7 +763,9 @@ type SmartRollupExecute struct {
 	GasLimit     uint64            `json:"gasLimit"`
 	GasUsed      uint64            `json:"gasUsed"`
 	StorageLimit uint64            `json:"storageLimit"`
+	StorageUsed  uint64            `json:"storageUsed"`
 	BakerFee     uint64            `json:"bakerFee"`
+	StorageFee   uint64            `json:"storageFee"`
 	Status       string            `json:"status"`
 	Rollup       *Address          `json:"rollup,omitempty"`
 	Commitment   *SrCommitmentInfo `json:"commitment,omitempty"`
@@ -783,7 +785,9 @@ type SmartRollupOriginate struct {
 	GasLimit      uint64             `json:"gasLimit"`
 	GasUsed       uint64             `json:"gasUsed"`
 	StorageLimit  uint64             `json:"storageLimit"`
+	StorageUsed   uint64             `json:"storageUsed"`
 	BakerFee      uint64             `json:"bakerFee"`
+	StorageFee    uint64             `json:"storageFee"`
 	Status        string             `json:"status"`
 	Rollup        *Address           `json:"rollup,omitempty"`
 	ParameterType stdJSON.RawMessage `json:"parameterType,omitempty"`
