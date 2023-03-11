@@ -54,16 +54,28 @@ type Database struct {
 type Hasura struct {
 	URL                string `yaml:"url" validate:"required,url"`
 	Secret             string `yaml:"admin_secret" validate:"required"`
-	Source             string `yaml:"source" validate:"omitempty"`
 	RowsLimit          uint64 `yaml:"select_limit" validate:"gt=0"`
 	EnableAggregations bool   `yaml:"allow_aggregation"`
 	AddSource          bool   `yaml:"add_source"`
-	Rest               *bool  `yaml:"rest"`
+	//Source             string `yaml:"source" validate:"omitempty"`
+	Source *HasuraSource `yaml:"source" validate:"omitempty"`
+	Rest   *bool         `yaml:"rest"`
+}
+
+type HasuraSource struct {
+	Name                  string `yaml:"name" validate:"required"`
+	DatabaseHost          string `yaml:"database_host" validate:"omitempty"`
+	UsePreparedStatements bool   `yaml:"use_prepared_statements"`
+	IsolationLevel        string `yaml:"isolation_level"`
 }
 
 // UnmarshalYAML -
 func (h *Hasura) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	h.Source = "default"
+	h.Source = &HasuraSource{
+		Name:                  "default",
+		UsePreparedStatements: true,
+		IsolationLevel:        "read-committed",
+	}
 
 	type plain Hasura
 	return unmarshal((*plain)(h))
