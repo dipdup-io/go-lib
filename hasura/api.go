@@ -124,7 +124,12 @@ func (api *API) Health(ctx context.Context) error {
 
 // AddSource -
 func (api *API) AddSource(ctx context.Context, hasura *config.Hasura, cfg config.Database) error {
-	databaseUrl := DatabaseUrl(fmt.Sprintf("postgresql://%s:%s@%s:%d/%s", cfg.User, cfg.Password, hasura.Source.DatabaseHost, cfg.Port, cfg.Database))
+	host := cfg.Host
+	if hasura.Source.DatabaseHost != "" {
+		host = hasura.Source.DatabaseHost
+	}
+
+	databaseUrl := DatabaseUrl(fmt.Sprintf("postgresql://%s:%s@%s:%d/%s", cfg.User, cfg.Password, host, cfg.Port, cfg.Database))
 
 	req := Request{
 		Type: "pg_add_source",
@@ -133,8 +138,8 @@ func (api *API) AddSource(ctx context.Context, hasura *config.Hasura, cfg config
 			"configuration": Configuration{
 				ConnectionInfo: ConnectionInfo{
 					DatabaseUrl:           databaseUrl,
-					UsePreparedStatements: hasura.Source.UsePreparedStatements, // true
-					IsolationLevel:        hasura.Source.IsolationLevel,        // "read-committed"
+					UsePreparedStatements: hasura.Source.UsePreparedStatements,
+					IsolationLevel:        hasura.Source.IsolationLevel,
 				},
 			},
 			"replace_configuration": true,
