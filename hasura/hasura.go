@@ -85,7 +85,7 @@ func Create(ctx context.Context, args GenerateArgs) error {
 	// Find our source in the existing metadata
 	var selectedSource *Source = nil
 	for idx := range export.Sources {
-		if export.Sources[idx].Name == args.Config.Source {
+		if export.Sources[idx].Name == args.Config.Source.Name {
 			selectedSource = &export.Sources[idx]
 			break
 		}
@@ -123,15 +123,15 @@ func Create(ctx context.Context, args GenerateArgs) error {
 
 	log.Info().Msg("Tracking views...")
 	for i := range args.Views {
-		if err := api.TrackTable(ctx, args.Views[i], args.Config.Source); err != nil {
+		if err := api.TrackTable(ctx, args.Views[i], args.Config.Source.Name); err != nil {
 			if !strings.Contains(err.Error(), "view/table already tracked") {
 				return err
 			}
 		}
-		if err := api.DropSelectPermissions(ctx, args.Views[i], args.Config.Source, "user"); err != nil {
+		if err := api.DropSelectPermissions(ctx, args.Views[i], args.Config.Source.Name, "user"); err != nil {
 			log.Warn().Err(err).Msg("")
 		}
-		if err := api.CreateSelectPermissions(ctx, args.Views[i], args.Config.Source, "user", Permission{
+		if err := api.CreateSelectPermissions(ctx, args.Views[i], args.Config.Source.Name, "user", Permission{
 			Limit:     args.Config.RowsLimit,
 			AllowAggs: args.Config.EnableAggregations,
 			Columns:   Columns{"*"},
@@ -155,7 +155,7 @@ func Create(ctx context.Context, args GenerateArgs) error {
 func Generate(hasura config.Hasura, cfg config.Database, models ...interface{}) (*Metadata, error) {
 	schema := getSchema(cfg)
 	source := Source{
-		Name:   hasura.Source,
+		Name:   hasura.Source.Name,
 		Tables: make([]Table, 0),
 	}
 	for _, model := range models {
