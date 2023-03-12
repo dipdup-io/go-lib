@@ -91,7 +91,7 @@ func Create(ctx context.Context, args GenerateArgs) error {
 		}
 	}
 	if selectedSource == nil {
-		return errors.Errorf("Source '%s' not found on exported metadata", args.Config.Source)
+		return errors.Errorf("Source '%s' not found on exported metadata", args.Config.Source.Name)
 	}
 
 	log.Info().Msg("Merging metadata...")

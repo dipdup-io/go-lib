@@ -52,14 +52,13 @@ type Database struct {
 
 // Hasura -
 type Hasura struct {
-	URL                string `yaml:"url" validate:"required,url"`
-	Secret             string `yaml:"admin_secret" validate:"required"`
-	RowsLimit          uint64 `yaml:"select_limit" validate:"gt=0"`
-	EnableAggregations bool   `yaml:"allow_aggregation"`
-	AddSource          bool   `yaml:"add_source"`
-	//Source             string `yaml:"source" validate:"omitempty"`
-	Source *HasuraSource `yaml:"source" validate:"omitempty"`
-	Rest   *bool         `yaml:"rest"`
+	URL                string        `yaml:"url" validate:"required,url"`
+	Secret             string        `yaml:"admin_secret" validate:"required"`
+	RowsLimit          uint64        `yaml:"select_limit" validate:"gt=0"`
+	EnableAggregations bool          `yaml:"allow_aggregation"`
+	AddSource          bool          `yaml:"add_source"`
+	Source             *HasuraSource `yaml:"source" validate:"omitempty"`
+	Rest               *bool         `yaml:"rest"`
 }
 
 type HasuraSource struct {
