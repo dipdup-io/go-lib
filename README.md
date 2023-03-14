@@ -234,3 +234,7 @@ if err != nil {
 	log.Panic(err)
 }
 ```
+
+### `hasura`
+
+Go wrapper for Hasura metadata methods, read docs [here](hasura/README.md)
