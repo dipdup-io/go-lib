@@ -66,7 +66,7 @@ func (api *API) get(ctx context.Context, endpoint string, args map[string]string
 	return api.client.Do(req)
 }
 
-//nolint
+// nolint
 func (api *API) post(ctx context.Context, endpoint string, args map[string]string, body interface{}, output interface{}) error {
 	url, err := api.buildURL(endpoint, args)
 	if err != nil {
@@ -124,15 +124,27 @@ func (api *API) Health(ctx context.Context) error {
 
 // AddSource -
 func (api *API) AddSource(ctx context.Context, hasura *config.Hasura, cfg config.Database) error {
+	host := cfg.Host
+	if hasura.Source.DatabaseHost != "" {
+		host = hasura.Source.DatabaseHost
+	}
+
+	databaseUrl := DatabaseUrl(fmt.Sprintf("postgresql://%s:%s@%s:%d/%s", cfg.User, cfg.Password, host, cfg.Port, cfg.Database))
+
+	isolationLevel := "read-committed"
+	if hasura.Source.IsolationLevel != "" {
+		isolationLevel = hasura.Source.IsolationLevel
+	}
+
 	req := Request{
 		Type: "pg_add_source",
 		Args: map[string]interface{}{
-			"name": hasura.Source,
+			"name": hasura.Source.Name,
 			"configuration": Configuration{
 				ConnectionInfo: ConnectionInfo{
-					DatabaseUrl:           DatabaseUrl(fmt.Sprintf("postgresql://%s:%s@%s:%d/%s", cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.Database)),
-					UsePreparedStatements: true,
-					IsolationLevel:        "read-committed",
+					DatabaseUrl:           databaseUrl,
+					UsePreparedStatements: hasura.Source.UsePreparedStatements,
+					IsolationLevel:        isolationLevel,
 				},
 			},
 			"replace_configuration": true,

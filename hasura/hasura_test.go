@@ -142,7 +142,11 @@ func TestGenerate(t *testing.T) {
 				hasura: config.Hasura{
 					EnableAggregations: true,
 					RowsLimit:          5,
-					Source:             "mysql",
+					Source: &config.HasuraSource{
+						Name:                  "mysql",
+						UsePreparedStatements: true,
+						IsolationLevel:        "read-committed",
+					},
 				},
 				models: []interface{}{
 					&testTable{}, &testTable2{}, &testTable3{}, &testTable4{},
