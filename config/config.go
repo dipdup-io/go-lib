@@ -56,7 +56,6 @@ type Hasura struct {
 	Secret             string        `yaml:"admin_secret" validate:"required"`
 	RowsLimit          uint64        `yaml:"select_limit" validate:"gt=0"`
 	EnableAggregations bool          `yaml:"allow_aggregation"`
-	AddSource          bool          `yaml:"add_source"`
 	Source             *HasuraSource `yaml:"source"`
 	Rest               *bool         `yaml:"rest"`
 }

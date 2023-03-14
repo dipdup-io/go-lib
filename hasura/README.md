@@ -15,6 +15,5 @@ hasura:
     database_host: string         # host of datasource, if omitted, used host from database config
     use_prepared_statements: bool # if set to true the server prepares statement before executing on the source database (default: false)
     isolation_level: bool         # The transaction isolation level in which the queries made to the source will be run with (options: read-committed | repeatable-read | serializable) (default: read-committed)
-  add_source: bool        # should data source be added?
   rest: bool              # should REST endpoints be created?
 ```

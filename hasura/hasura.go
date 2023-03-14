@@ -64,7 +64,7 @@ func Create(ctx context.Context, args GenerateArgs) error {
 
 	checkHealth(ctx, api)
 
-	if args.Config.AddSource {
+	if args.Config.Source != nil {
 		log.Info().Msg("Adding source...")
 		if err := api.AddSource(ctx, args.Config, args.DatabaseConfig); err != nil {
 			return err
