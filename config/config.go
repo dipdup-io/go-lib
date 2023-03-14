@@ -71,7 +71,7 @@ type HasuraSource struct {
 func (h *Hasura) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	h.Source = &HasuraSource{
 		Name:                  "default",
-		UsePreparedStatements: true,
+		UsePreparedStatements: false,
 		IsolationLevel:        "read-committed",
 	}
 
