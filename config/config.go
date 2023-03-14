@@ -57,15 +57,15 @@ type Hasura struct {
 	RowsLimit          uint64        `yaml:"select_limit" validate:"gt=0"`
 	EnableAggregations bool          `yaml:"allow_aggregation"`
 	AddSource          bool          `yaml:"add_source"`
-	Source             *HasuraSource `yaml:"source" validate:"omitempty"`
+	Source             *HasuraSource `yaml:"source"`
 	Rest               *bool         `yaml:"rest"`
 }
 
 type HasuraSource struct {
 	Name                  string `yaml:"name" validate:"required"`
-	DatabaseHost          string `yaml:"database_host" validate:"omitempty"`
-	UsePreparedStatements bool   `yaml:"use_prepared_statements"`
-	IsolationLevel        string `yaml:"isolation_level"`
+	DatabaseHost          string `yaml:"database_host"`
+	UsePreparedStatements bool   `yaml:"use_prepared_statements" validate:"required"`
+	IsolationLevel        string `yaml:"isolation_level" validate:"required"`
 }
 
 // UnmarshalYAML -
