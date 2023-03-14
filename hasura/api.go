@@ -131,6 +131,11 @@ func (api *API) AddSource(ctx context.Context, hasura *config.Hasura, cfg config
 
 	databaseUrl := DatabaseUrl(fmt.Sprintf("postgresql://%s:%s@%s:%d/%s", cfg.User, cfg.Password, host, cfg.Port, cfg.Database))
 
+	isolationLevel := "read-committed"
+	if hasura.Source.IsolationLevel != "" {
+		isolationLevel = hasura.Source.IsolationLevel
+	}
+
 	req := Request{
 		Type: "pg_add_source",
 		Args: map[string]interface{}{
@@ -139,7 +144,7 @@ func (api *API) AddSource(ctx context.Context, hasura *config.Hasura, cfg config
 				ConnectionInfo: ConnectionInfo{
 					DatabaseUrl:           databaseUrl,
 					UsePreparedStatements: hasura.Source.UsePreparedStatements,
-					IsolationLevel:        hasura.Source.IsolationLevel,
+					IsolationLevel:        isolationLevel,
 				},
 			},
 			"replace_configuration": true,

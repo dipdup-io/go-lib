@@ -64,8 +64,8 @@ type Hasura struct {
 type HasuraSource struct {
 	Name                  string `yaml:"name" validate:"required"`
 	DatabaseHost          string `yaml:"database_host"`
-	UsePreparedStatements bool   `yaml:"use_prepared_statements" validate:"required"`
-	IsolationLevel        string `yaml:"isolation_level" validate:"required"`
+	UsePreparedStatements bool   `yaml:"use_prepared_statements"`
+	IsolationLevel        string `yaml:"isolation_level"`
 }
 
 // UnmarshalYAML -
