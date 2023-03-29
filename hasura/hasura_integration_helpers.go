@@ -8,30 +8,16 @@ import (
 
 	"github.com/dipdup-net/go-lib/config"
 	"github.com/pkg/errors"
-	"github.com/rs/zerolog/log"
 	"gopkg.in/yaml.v3"
 )
-
-type IntegrationHelpers struct {
-	api    *API
-	config *config.Hasura
-}
 
 type ExpectedMetadata struct {
 	Tables []ExpectedTable `yaml:"tables" validate:"required"`
 }
 
 type ExpectedTable struct {
-	Name    string   `yaml:"name" validate:"reuired"`
+	Name    string   `yaml:"name" validate:"required"`
 	Columns []string `yaml:"columns" validate:"required"`
-}
-
-func NewIntegrationHelpers(config *config.Hasura) *IntegrationHelpers {
-	api := New(config.URL, config.Secret)
-	return &IntegrationHelpers{
-		api:    api,
-		config: config,
-	}
 }
 
 func TestExpectedMetadataWithActual(
@@ -41,20 +27,19 @@ func TestExpectedMetadataWithActual(
 ) {
 	var cfg config.Config
 	if err := config.Parse(configPath, &cfg); err != nil {
-		log.Err(err).Msg("") // or fail
-		return
+		t.Fatalf("Error with reading configuratoin file: %s", err)
 	}
 
-	integrationHelpers := NewIntegrationHelpers(cfg.Hasura)
+	api := New(cfg.Hasura.URL, cfg.Hasura.Secret)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-	ctx, _ := context.WithCancel(context.Background())
-
-	metadata, err := integrationHelpers.GetMetadata(ctx)
+	metadata, err := api.ExportMetadata(ctx)
 	if err != nil {
 		t.Fatalf("Error with getting hasura metadata %e", err)
 	}
 
-	expectedMetadata, err := integrationHelpers.ParseExpectedMetadata(expectedMetadataPath)
+	expectedMetadata, err := parseExpectedMetadata(expectedMetadataPath)
 	if err != nil {
 		t.Fatalf("Error with parsing expected metadata: %e", err)
 	}
@@ -62,9 +47,9 @@ func TestExpectedMetadataWithActual(
 	// Go through `expectedMetadata` and assert that each object
 	// in that array is in `metadata` with corresponding columns.
 	for _, expectedTable := range expectedMetadata.Tables {
-		metadataTableColumns, err := getTableColumns(metadata, expectedTable.Name, "user") // todo: read role from config
+		metadataTableColumns, err := getTableColumns(metadata, expectedTable.Name, "user")
 		if err != nil {
-			t.Fatalf("Error with searching expectedTable in metadata: %s\n%e", expectedTable.Name, err)
+			t.Fatalf("Error with searching expectedTable in metadata: %s\n%s", expectedTable.Name, err)
 		}
 
 		if !elementsMatch(expectedTable, metadataTableColumns) {
@@ -114,11 +99,7 @@ func getTableColumns(metadata Metadata, tableName string, role string) (Columns,
 	return nil, errors.Errorf("Table %s for role %s was not found", tableName, role)
 }
 
-func (i *IntegrationHelpers) GetMetadata(ctx context.Context) (Metadata, error) {
-	return i.api.ExportMetadata(ctx)
-}
-
-func (i *IntegrationHelpers) ParseExpectedMetadata(filename string) (*ExpectedMetadata, error) {
+func parseExpectedMetadata(filename string) (*ExpectedMetadata, error) {
 	buf, err := readFile(filename)
 	if err != nil {
 		return nil, err
@@ -129,7 +110,6 @@ func (i *IntegrationHelpers) ParseExpectedMetadata(filename string) (*ExpectedMe
 		return nil, err
 	}
 
-	//return validator.New().Struct(&output), nil
 	return &output, nil
 }
 
@@ -142,9 +122,6 @@ func readFile(filename string) (*bytes.Buffer, error) {
 	if err != nil {
 		return nil, errors.Wrapf(err, "reading file %s", filename)
 	}
-	//expanded, err := expandVariables(data)
-	//if err != nil {
-	//	return nil, err
-	//}
+
 	return bytes.NewBuffer(data), nil
 }
