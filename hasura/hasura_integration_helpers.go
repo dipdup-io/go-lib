@@ -68,10 +68,10 @@ func elementsMatch(expectedTable ExpectedTable, metadataTable Columns) bool {
 		return false
 	}
 
-	hasuraColumns := make(map[string]int)
+	hasuraColumns := make(map[string]struct{})
 
 	for _, columnName := range metadataTable {
-		hasuraColumns[columnName] = 0
+		hasuraColumns[columnName] = struct{}{}
 	}
 
 	for _, expectedColumn := range expectedTable.Columns {
