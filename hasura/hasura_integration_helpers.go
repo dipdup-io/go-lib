@@ -47,7 +47,7 @@ func TestExpectedMetadataWithActual(
 	// Go through `expectedMetadata` and assert that each object
 	// in that array is in `metadata` with corresponding columns.
 	for _, expectedTable := range expectedMetadata.Tables {
-		metadataTableColumns, err := getTableColumns(metadata, expectedTable.Name, "user")
+		metadataTableColumns, err := getTableColumns(metadata, expectedTable.Name, cfg.Hasura.Source.Name, "user")
 		if err != nil {
 			t.Fatalf("Error with searching expectedTable in metadata: %s\n%s", expectedTable.Name, err)
 		}
@@ -83,14 +83,20 @@ func elementsMatch(expectedTable ExpectedTable, metadataTable Columns) bool {
 	return true
 }
 
-func getTableColumns(metadata Metadata, tableName string, role string) (Columns, error) {
+func getTableColumns(metadata Metadata, tableName string, sourceName string, role string) (Columns, error) {
 	for _, source := range metadata.Sources {
+		if source.Name != sourceName {
+			continue
+		}
+
 		for _, table := range source.Tables {
-			if table.Schema.Name == tableName {
-				for _, selectPermission := range table.SelectPermissions {
-					if selectPermission.Role == role {
-						return selectPermission.Permission.Columns, nil
-					}
+			if table.Schema.Name != tableName {
+				continue
+			}
+
+			for _, selectPermission := range table.SelectPermissions {
+				if selectPermission.Role == role {
+					return selectPermission.Permission.Columns, nil
 				}
 			}
 		}
