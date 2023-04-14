@@ -62,11 +62,11 @@ func Test_getTableName(t *testing.T) {
 		}, {
 			name:  "Test 3",
 			model: &testTable3{},
-			want:  "test_table_3",
+			want:  "test_table3",
 		}, {
 			name:  "Test 4",
 			model: &testTable4{},
-			want:  "test_table_4",
+			want:  "test_table4",
 		},
 	}
 	for _, tt := range tests {
@@ -93,19 +93,19 @@ func Test_getColumns(t *testing.T) {
 		{
 			name:  "Test",
 			model: &testTable{},
-			want:  []string{"field_1", "field_2"},
+			want:  []string{"field1", "field2"},
 		}, {
 			name:  "Test 2",
 			model: &testTable2{},
-			want:  []string{"field_1", "field_2"},
+			want:  []string{"field1", "field2"},
 		}, {
 			name:  "Test 3",
 			model: &testTable3{},
-			want:  []string{"field_2"},
+			want:  []string{"field2"},
 		}, {
 			name:  "Test 4",
 			model: &testTable4{},
-			want:  []string{"field_2", "field_3"},
+			want:  []string{"field2", "field3"},
 		},
 	}
 	for _, tt := range tests {
@@ -152,7 +152,7 @@ func TestGenerate(t *testing.T) {
 					&testTable{}, &testTable2{}, &testTable3{}, &testTable4{},
 				},
 			},
-			want: `{"version":3,"sources":[{"name":"mysql","kind":"","tables":[{"object_relationships":[],"array_relationships":[],"select_permissions":[{"role":"user","permission":{"columns":["field_1","field_2"],"limit":5,"allow_aggregations":true,"filter":{}}}],"configuration":{"comment":null,"custom_root_fields":null,"custom_column_names":null},"table":{"schema":"public","name":"test_table"}},{"object_relationships":[],"array_relationships":[],"select_permissions":[{"role":"user","permission":{"columns":["field_1","field_2"],"limit":5,"allow_aggregations":true,"filter":{}}}],"configuration":{"comment":null,"custom_root_fields":null,"custom_column_names":null},"table":{"schema":"public","name":"fake_name"}},{"object_relationships":[],"array_relationships":[],"select_permissions":[{"role":"user","permission":{"columns":["field_2"],"limit":5,"allow_aggregations":true,"filter":{}}}],"configuration":{"comment":null,"custom_root_fields":null,"custom_column_names":null},"table":{"schema":"public","name":"test_table_3"}},{"object_relationships":[],"array_relationships":[],"select_permissions":[{"role":"user","permission":{"columns":["field_2","field_3"],"limit":5,"allow_aggregations":true,"filter":{}}}],"configuration":{"comment":null,"custom_root_fields":null,"custom_column_names":null},"table":{"schema":"public","name":"test_table_4"}}],"configuration":{"connection_info":{"use_prepared_statements":false,"isolation_level":"","database_url":""}}}]}`,
+			want: `{"version":3,"sources":[{"name":"mysql","kind":"","tables":[{"object_relationships":[],"array_relationships":[],"select_permissions":[{"role":"user","permission":{"columns":["field1","field2"],"limit":5,"allow_aggregations":true,"filter":{}}}],"configuration":{"comment":null,"custom_root_fields":null,"custom_column_names":null},"table":{"schema":"public","name":"test_table"}},{"object_relationships":[],"array_relationships":[],"select_permissions":[{"role":"user","permission":{"columns":["field1","field2"],"limit":5,"allow_aggregations":true,"filter":{}}}],"configuration":{"comment":null,"custom_root_fields":null,"custom_column_names":null},"table":{"schema":"public","name":"fake_name"}},{"object_relationships":[],"array_relationships":[],"select_permissions":[{"role":"user","permission":{"columns":["field2"],"limit":5,"allow_aggregations":true,"filter":{}}}],"configuration":{"comment":null,"custom_root_fields":null,"custom_column_names":null},"table":{"schema":"public","name":"test_table3"}},{"object_relationships":[],"array_relationships":[],"select_permissions":[{"role":"user","permission":{"columns":["field2","field3"],"limit":5,"allow_aggregations":true,"filter":{}}}],"configuration":{"comment":null,"custom_root_fields":null,"custom_column_names":null},"table":{"schema":"public","name":"test_table4"}}],"configuration":{"connection_info":{"use_prepared_statements":false,"isolation_level":"","database_url":""}}}]}`,
 		},
 	}
 	for _, tt := range tests {
