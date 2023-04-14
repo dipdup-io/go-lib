@@ -11,7 +11,6 @@ import (
 
 	"github.com/dipdup-net/go-lib/config"
 	"github.com/go-playground/validator/v10"
-	"github.com/iancoleman/strcase"
 	"github.com/pkg/errors"
 
 	"github.com/rs/zerolog/log"
@@ -227,14 +226,14 @@ func getTableName(value reflect.Value, typ reflect.Type) string {
 				}
 			}
 		}
-		return strcase.ToSnake(typ.Name())
+		return ToSnakeCase(typ.Name())
 	}
 	res := value.MethodByName("TableName").Call([]reflect.Value{})
 	if len(res) != 1 {
-		return strcase.ToSnake(typ.Name())
+		return ToSnakeCase(typ.Name())
 	}
 	if res[0].Kind() != reflect.String {
-		return strcase.ToSnake(typ.Name())
+		return ToSnakeCase(typ.Name())
 	}
 	return res[0].String()
 }
@@ -250,14 +249,14 @@ func getColumns(typ reflect.Type) []string {
 		if !field.Anonymous {
 			if tag := field.Tag.Get("gorm"); tag != "" {
 				if !strings.HasPrefix(tag, "-") {
-					columns = append(columns, strcase.ToSnake(field.Name))
+					columns = append(columns, ToSnakeCase(field.Name))
 				}
 			} else if tag := field.Tag.Get("pg"); tag != "" {
-				if !strings.HasPrefix(tag, "-") && field.Name != "tableName" {
-					columns = append(columns, strcase.ToSnake(field.Name))
+				if !strings.HasPrefix(tag, "-") && field.Name != "tableName" && !strings.Contains(tag, "rel:") {
+					columns = append(columns, ToSnakeCase(field.Name))
 				}
 			} else {
-				columns = append(columns, strcase.ToSnake(field.Name))
+				columns = append(columns, ToSnakeCase(field.Name))
 			}
 		} else {
 			cols := getColumns(field.Type)
