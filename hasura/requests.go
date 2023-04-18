@@ -87,17 +87,69 @@ type Source struct {
 
 // Table -
 type Table struct {
-	ObjectRelationships []interface{}      `json:"object_relationships"`
-	ArrayRelationships  []interface{}      `json:"array_relationships"`
+	ObjectRelationships []Relationship     `json:"object_relationships"`
+	ArrayRelationships  []Relationship     `json:"array_relationships"`
 	SelectPermissions   []SelectPermission `json:"select_permissions"`
 	Configuration       TableConfiguration `json:"configuration"`
 	Schema              TableSchema        `json:"table"`
 }
 
+// Relationship -
+type Relationship struct {
+	Table   PGTable           `json:"table"`
+	Name    string            `json:"name"`
+	Comment string            `json:"comment,omitempty"`
+	Using   RelationshipUsing `json:"using"`
+}
+
+// RelationshipUsing -
+type RelationshipUsing struct {
+	Manual *ManualRelationship `json:"manual_configuration,omitempty"`
+	FK     *FKRelationship     `json:"foreign_key_constraint_on,omitempty"`
+}
+
+// PGTable -
+type PGTable struct {
+	Name   string `json:"name"`
+	Schema string `json:"schema"`
+}
+
+// UnmarshalJSON -
+func (t *PGTable) UnmarshalJSON(data []byte) error {
+	type buf PGTable
+	if err := json.Unmarshal(data, (*buf)(t)); err == nil {
+		return err
+	}
+
+	return json.Unmarshal(data, &t.Name)
+}
+
+// MarshalJSON -
+func (t *PGTable) MarshalJSON() ([]byte, error) {
+	if t.Schema == "" {
+		return json.Marshal(t.Name)
+	}
+
+	type buf PGTable
+	return json.Marshal((*buf)(t))
+}
+
+// ManualRelationship -
+type ManualRelationship struct {
+	RemoteTable   PGTable           `json:"remote_table"`
+	ColumnMapping map[string]string `json:"column_mapping"`
+}
+
+// FKRelationship -
+type FKRelationship struct {
+	Table  string `json:"table"`
+	Column string `json:"column"`
+}
+
 func newMetadataTable(name, schema string) Table {
 	return Table{
-		ObjectRelationships: make([]interface{}, 0),
-		ArrayRelationships:  make([]interface{}, 0),
+		ObjectRelationships: make([]Relationship, 0),
+		ArrayRelationships:  make([]Relationship, 0),
 		SelectPermissions:   make([]SelectPermission, 0),
 		Schema: TableSchema{
 			Name:   name,
