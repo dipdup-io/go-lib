@@ -199,7 +199,78 @@ func generateOne(hasura config.Hasura, schema string, model interface{}) (table,
 
 	t.HasuraSchema.SelectPermissions = append(t.HasuraSchema.SelectPermissions, formatSelectPermissions(hasura.RowsLimit, hasura.EnableAggregations, t.Columns...))
 
+	if err := getRelationships(&t.HasuraSchema, t.Name, typ); err != nil {
+		return t, err
+	}
+
 	return t, nil
+}
+
+type rel struct {
+	tableName   string
+	remoteField string
+	field       string
+	name        string
+	typ         string
+	comment     string
+}
+
+func getRelationships(t *Table, name string, typ reflect.Type) error {
+	for i := 0; i < typ.NumField(); i++ {
+		field := typ.Field(i)
+		tag := field.Tag.Get("hasura")
+		if tag == "" {
+			continue
+		}
+
+		var r rel
+		attrs := strings.Split(tag, ",")
+		for i := range attrs {
+			keyValue := strings.Split(attrs[i], ":")
+			if len(keyValue) != 2 {
+				return errors.Errorf("invalid hasura tag: %s", tag)
+			}
+			switch keyValue[0] {
+			case "table":
+				r.tableName = keyValue[1]
+			case "field":
+				r.field = keyValue[1]
+			case "type":
+				r.typ = keyValue[1]
+			case "name":
+				r.name = keyValue[1]
+			case "comment":
+				r.comment = keyValue[1]
+			case "remote_field":
+				r.remoteField = keyValue[1]
+			}
+		}
+
+		relationship := Relationship{
+			Table: PGTable{
+				Name: name,
+			},
+			Name:    r.name,
+			Comment: r.comment,
+			Using: RelationshipUsing{
+				Manual: &ManualRelationship{
+					RemoteTable: PGTable{Name: r.tableName},
+					ColumnMapping: map[string]string{
+						r.field: r.remoteField,
+					},
+				},
+			},
+		}
+
+		switch r.typ {
+		case "oto":
+			t.ObjectRelationships = append(t.ObjectRelationships, relationship)
+		case "otm", "mtm":
+			t.ArrayRelationships = append(t.ArrayRelationships, relationship)
+		}
+	}
+
+	return nil
 }
 
 func formatSelectPermissions(limit uint64, allowAggs bool, columns ...string) SelectPermission {
