@@ -15,16 +15,27 @@ func expandVariables(data []byte) ([]byte, error) {
 // expandTransformer implements transform.Transformer
 type expandTransformer struct {
 	transform.NopResetter
+
+	tail *bytes.Buffer
 }
 
 func newExpandTransformer() *expandTransformer {
-	return &expandTransformer{}
+	return &expandTransformer{
+		tail: new(bytes.Buffer),
+	}
 }
 
 // Transform -
 func (t *expandTransformer) Transform(dst, src []byte, atEOF bool) (int, int, error) {
-	var buf bytes.Buffer
+	buf := new(bytes.Buffer)
 	var index int
+
+	srcLen := len(src)
+
+	if t.tail.Len() > 0 {
+		src = append(t.tail.Bytes(), src...)
+		t.tail.Reset()
+	}
 
 	startIndex := bytes.Index(src, []byte{'$', '{'})
 	for startIndex != -1 {
@@ -34,6 +45,13 @@ func (t *expandTransformer) Transform(dst, src []byte, atEOF bool) (int, int, er
 		var name, def string
 
 		endIndex := bytes.Index(src[startIndex+index:], []byte{'}'})
+		if endIndex == -1 {
+			if _, err := t.tail.Write(src[startIndex+index:]); err != nil {
+				return 0, 0, err
+			}
+			return copy(dst, buf.Bytes()), srcLen, nil
+		}
+
 		separatorIndex := bytes.Index(src[startIndex+index:startIndex+index+endIndex], []byte{':', '-'})
 		if separatorIndex == -1 {
 			name = string(src[startIndex+index+2 : startIndex+index+endIndex])
@@ -62,5 +80,5 @@ func (t *expandTransformer) Transform(dst, src []byte, atEOF bool) (int, int, er
 		return 0, 0, err
 	}
 
-	return copy(dst, buf.Bytes()), len(src), nil
+	return copy(dst, buf.Bytes()), srcLen, nil
 }
