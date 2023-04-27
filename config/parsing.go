@@ -32,7 +32,7 @@ func (t *expandTransformer) Transform(dst, src []byte, atEOF bool) (int, int, er
 
 	srcLen := len(src)
 
-	if t.tail.Len() > 0 {
+	if t.tail != nil && t.tail.Len() > 0 {
 		src = append(t.tail.Bytes(), src...)
 		t.tail.Reset()
 	}
