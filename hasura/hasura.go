@@ -22,10 +22,10 @@ const (
 
 func checkHealth(ctx context.Context, api *API) {
 	log.Info().Msg("Waiting hasura is up and running")
-	if err := api.Health(ctx); err != nil {
+	if err := api.Health(ctx); err == nil {
 		return
 	}
-	ticker := time.NewTicker(time.Second)
+	ticker := time.NewTicker(time.Second * 5)
 	for {
 		select {
 		case <-ctx.Done():
