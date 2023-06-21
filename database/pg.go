@@ -9,6 +9,14 @@ import (
 	"github.com/pkg/errors"
 )
 
+type PgGoConnection interface {
+	DB() PgDB
+}
+
+type PgDB interface {
+	ExecContext(c context.Context, query interface{}, params ...interface{}) (pg.Result, error)
+}
+
 // PgGo -
 type PgGo struct {
 	conn *pg.DB
