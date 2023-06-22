@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func makeComments(ctx context.Context, conn *PgGo, model interface{}) error {
+func makeComments(ctx context.Context, conn PgGoConnection, model interface{}) error {
 	typ := reflect.TypeOf(model)
 
 	// 1. go through fields

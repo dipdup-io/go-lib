@@ -3,7 +3,6 @@ package database
 import (
 	"context"
 	"fmt"
-
 	"github.com/dipdup-net/go-lib/config"
 	pg "github.com/go-pg/pg/v10"
 	"github.com/pkg/errors"
@@ -14,7 +13,63 @@ type PgGoConnection interface {
 }
 
 type PgDB interface {
+	/*
+		Begin() (*pg.Tx, error)
+		BeginContext(ctx context.Context) (*pg.Tx, error)
+		RunInTransaction(ctx context.Context, fn func(*pg.Tx) error) error
+		AddQueryHook(hook pg.QueryHook)
+		beforeQuery(ctx context.Context, ormDB orm.DB, model interface{}, query interface{}, params []interface{}, fmtedQuery []byte) (context.Context, *QueryEvent, error)
+		afterQuery(ctx context.Context, event *pg.QueryEvent, res pg.Result, err error) error
+		afterQueryFromIndex(ctx context.Context, event *pg.QueryEvent, hookIndex int) error
+		//startup(c context.Context, cn *pool.Conn, user string, password string, database string, appName string) error
+		//enableSSL(c context.Context, cn *pool.Conn, tlsConf *tls.Config) error
+		//auth(c context.Context, cn *pool.Conn, rd *pool.ReaderContext, user string, password string) error
+		//logStartupNotice(rd *pool.ReaderContext) error
+		//authCleartext(c context.Context, cn *pool.Conn, rd *pool.ReaderContext, password string) error
+		//authMD5(c context.Context, cn *pool.Conn, rd *pool.ReaderContext, user string, password string) error
+		//authSASL(c context.Context, cn *pool.Conn, rd *pool.ReaderContext, user string, password string) error
+		PoolStats() *pg.PoolStats
+		//clone() *baseDB
+		//withPool(p pool.Pooler) *baseDB
+		//WithTimeout(d time.Duration) *baseDB
+		//WithParam(param string, value interface{}) *baseDB
+		Param(param string) interface{}
+		retryBackoff(retry int) time.Duration
+		//getConn(ctx context.Context) (*pool.Conn, error)
+		//initConn(ctx context.Context, cn *pool.Conn) error
+		//releaseConn(ctx context.Context, cn *pool.Conn, err error)
+		//withConn(ctx context.Context, fn func(context.Context, *pool.Conn) error) error
+		shouldRetry(err error) bool
+		Close() error
+		Exec(query interface{}, params ...interface{}) (res pg.Result, err error)
+	*/
 	ExecContext(c context.Context, query interface{}, params ...interface{}) (pg.Result, error)
+	/*
+		//exec(ctx context.Context, query interface{}, params ...interface{}) (pg.Result, error)
+		ExecOne(query interface{}, params ...interface{}) (pg.Result, error)
+		ExecOneContext(ctx context.Context, query interface{}, params ...interface{}) (pg.Result, error)
+		execOne(c context.Context, query interface{}, params ...interface{}) (pg.Result, error)
+		Query(model interface{}, query interface{}, params ...interface{}) (res pg.Result, err error)
+		QueryContext(c context.Context, model interface{}, query interface{}, params ...interface{}) (pg.Result, error)
+		query(ctx context.Context, model interface{}, query interface{}, params ...interface{}) (pg.Result, error)
+		QueryOne(model interface{}, query interface{}, params ...interface{}) (pg.Result, error)
+		QueryOneContext(ctx context.Context, model interface{}, query interface{}, params ...interface{}) (pg.Result, error)
+		queryOne(ctx context.Context, model interface{}, query interface{}, params ...interface{}) (pg.Result, error)
+		CopyFrom(r io.Reader, query interface{}, params ...interface{}) (res pg.Result, err error)
+		//copyFrom(ctx context.Context, cn *pool.Conn, r io.Reader, query interface{}, params ...interface{}) (res Result, err error)
+		CopyTo(w io.Writer, query interface{}, params ...interface{}) (res pg.Result, err error)
+		//copyTo(ctx context.Context, cn *pool.Conn, w io.Writer, query interface{}, params ...interface{}) (res Result, err error)
+		Ping(ctx context.Context) error
+		Model(model ...interface{}) *pg.Query
+		ModelContext(c context.Context, model ...interface{}) *pg.Query
+		Formatter() orm.QueryFormatter
+		//cancelRequest(processID int32, secretKey int32) error
+		//simpleQuery(c context.Context, cn *pool.Conn, wb *pool.WriteBuffer) (*result, error)
+		//simpleQueryData(c context.Context, cn *pool.Conn, model interface{}, wb *pool.WriteBuffer) (*result, error)
+		Prepare(q string) (*pg.Stmt, error)
+		//prepare(c context.Context, cn *pool.Conn, q string) (string, []types.ColumnInfo, error)
+		//closeStmt(c context.Context, cn *pool.Conn, name string) error
+	*/
 }
 
 // PgGo -
@@ -28,7 +83,7 @@ func NewPgGo() *PgGo {
 }
 
 // DB -
-func (db *PgGo) DB() *pg.DB {
+func (db *PgGo) DB() PgDB {
 	return db.conn
 }
 
