@@ -51,7 +51,7 @@ func TestMakeCommentsWithTableName(t *testing.T) {
 	assert.Empty(t, err)
 }
 
-func TestMakeCommentsWithTableNameWithoutPgComment(t *testing.T) {
+func TestMakeCommentsWithoutPgComment(t *testing.T) {
 	type Ballot struct {
 		//nolint
 		tableName struct{} `pg:"ballots"`
@@ -64,11 +64,15 @@ func TestMakeCommentsWithTableNameWithoutPgComment(t *testing.T) {
 	model := Ballot{}
 
 	// Assert prepare
-	expectedParams := toInterfaceSlice([]pg.Safe{"ballots", "Ballot table"})
 	mockPgDB.
 		EXPECT().
-		ExecContext(ctx, "COMMENT ON TABLE ? IS ?",
-			gomock.Eq(expectedParams)).
+		ExecContext(ctx, "COMMENT ON TABLE ? IS ?", gomock.Any()).
+		Times(0).
+		Return(nil, nil)
+
+	mockPgDB.
+		EXPECT().
+		ExecContext(ctx, "COMMENT ON COLUMN ?.? IS ?", gomock.Any()).
 		Times(0).
 		Return(nil, nil)
 

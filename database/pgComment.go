@@ -58,16 +58,18 @@ func makeComments(ctx context.Context, conn PgGoConnection, model interface{}) e
 
 func getPgName(fieldType reflect.StructField) (name pg.Safe, ok bool) {
 	pgTag, ok := fieldType.Tag.Lookup("pg")
-	if ok {
-		tags := strings.Split(pgTag, ",")
-
-		if tags[0] != "" {
-			name = pg.Safe(tags[0])
-			ok = false
-		}
+	if !ok {
+		return "", false
 	}
 
-	return name, ok
+	tags := strings.Split(pgTag, ",")
+
+	if tags[0] != "" {
+		name = pg.Safe(tags[0])
+		return name, ok
+	}
+
+	return "", false
 }
 
 func getPgComment(fieldType reflect.StructField) (pg.Safe, bool) {
