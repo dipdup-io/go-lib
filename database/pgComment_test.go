@@ -5,6 +5,7 @@ import (
 	"github.com/dipdup-net/go-lib/mocks"
 	"github.com/go-pg/pg/v10"
 	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -30,21 +31,52 @@ func TestMakeCommentsWithTableName(t *testing.T) {
 	}
 
 	mockCtrl, mockPgDB, pgGo, ctx := createPgDbMock(t)
+	defer mockCtrl.Finish()
+
 	model := Ballot{}
 
-	// Assert params of ExecContext
+	// Assert prepare
 	expectedParams := toInterfaceSlice([]pg.Safe{"ballots", "Ballot table"})
 	mockPgDB.
 		EXPECT().
 		ExecContext(ctx, "COMMENT ON TABLE ? IS ?",
 			gomock.Eq(expectedParams)).
+		Times(1).
 		Return(nil, nil)
 
 	// Act
-	makeComments(ctx, pgGo, model)
+	err := makeComments(ctx, pgGo, model)
 
 	// Assert
+	assert.Empty(t, err)
+}
+
+func TestMakeCommentsWithTableNameWithoutPgComment(t *testing.T) {
+	type Ballot struct {
+		//nolint
+		tableName struct{} `pg:"ballots"`
+		Ballot    string   `json:"ballot"`
+	}
+
+	mockCtrl, mockPgDB, pgGo, ctx := createPgDbMock(t)
 	defer mockCtrl.Finish()
+
+	model := Ballot{}
+
+	// Assert prepare
+	expectedParams := toInterfaceSlice([]pg.Safe{"ballots", "Ballot table"})
+	mockPgDB.
+		EXPECT().
+		ExecContext(ctx, "COMMENT ON TABLE ? IS ?",
+			gomock.Eq(expectedParams)).
+		Times(0).
+		Return(nil, nil)
+
+	// Act
+	err := makeComments(ctx, pgGo, model)
+
+	// Assert
+	assert.Empty(t, err)
 }
 
 func createPgDbMock(t *testing.T) (*gomock.Controller, *mocks.MockPgDB, *PgGoMock, context.Context) {
