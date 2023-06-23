@@ -2,34 +2,24 @@ package database
 
 import (
 	"context"
+	"github.com/dipdup-net/go-lib/mocks"
 	"github.com/go-pg/pg/v10"
-	"github.com/stretchr/testify/mock"
-	"sort"
+	"github.com/golang/mock/gomock"
 	"testing"
 )
 
 type PgGoMock struct {
-	conn *PgDBMock
+	conn *mocks.MockPgDB
 }
 
 func (p *PgGoMock) DB() PgDB {
 	return p.conn
 }
 
-func newPgGoMock() *PgGoMock {
+func newPgGoMock(pgDB *mocks.MockPgDB) *PgGoMock {
 	return &PgGoMock{
-		conn: &PgDBMock{},
+		conn: pgDB,
 	}
-}
-
-type PgDBMock struct {
-	mock.Mock
-}
-
-func (db *PgDBMock) ExecContext(ctx context.Context, query interface{}, params ...interface{}) (pg.Result, error) {
-	args := db.Called(ctx, query, params)
-
-	return nil, args.Error(0)
 }
 
 func TestMakeCommentsWithTableName(t *testing.T) {
@@ -39,35 +29,39 @@ func TestMakeCommentsWithTableName(t *testing.T) {
 		Ballot    string   `json:"ballot"`
 	}
 
-	pgGo := newPgGoMock()
-	ctx := context.Background()
-	pgGo.conn.On("ExecContext",
-		ctx, mock.Anything, mock.Anything).Return(nil)
+	mockCtrl, mockPgDB, pgGo, ctx := createPgDbMock(t)
 	model := Ballot{}
 
+	// Assert params of ExecContext
+	expectedParams := toInterfaceSlice([]pg.Safe{"ballots", "Ballot table"})
+	mockPgDB.
+		EXPECT().
+		ExecContext(ctx, "COMMENT ON TABLE ? IS ?",
+			gomock.Eq(expectedParams)).
+		Return(nil, nil)
+
+	// Act
 	makeComments(ctx, pgGo, model)
 
-	// assert params of ExecContext
-	pgGo.conn.AssertCalled(t, "ExecContext",
-		ctx, "COMMENT ON TABLE ? IS ?", []pg.Safe{"ballots", "Ballot table"})
-
-	//paramsMatcher := mock.MatchedBy(func(params []string) bool {
-	//	return IsEqual(params, []string{"ballots", "Ballot table"})
-	//})
-	//pgGo.conn.AssertCalled(t, "ExecContext", paramsMatcher)
+	// Assert
+	defer mockCtrl.Finish()
 }
 
-func IsEqual(a1 []string, a2 []string) bool {
-	sort.Strings(a1)
-	sort.Strings(a2)
-	if len(a1) == len(a2) {
-		for i, v := range a1 {
-			if v != a2[i] {
-				return false
-			}
-		}
-	} else {
-		return false
+func createPgDbMock(t *testing.T) (*gomock.Controller, *mocks.MockPgDB, *PgGoMock, context.Context) {
+	mockCtrl := gomock.NewController(t)
+	mockPgDB := mocks.NewMockPgDB(mockCtrl)
+	pgGo := newPgGoMock(mockPgDB)
+	ctx := context.Background()
+
+	return mockCtrl, mockPgDB, pgGo, ctx
+}
+
+func toInterfaceSlice(origin []pg.Safe) []interface{} {
+	res := make([]interface{}, len(origin))
+
+	for i := range origin {
+		res[i] = origin[i]
 	}
-	return true
+
+	return res
 }

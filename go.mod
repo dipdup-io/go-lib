@@ -7,6 +7,7 @@ require (
 	github.com/ebellocchia/go-base58 v0.1.0
 	github.com/go-pg/pg/v10 v10.10.6
 	github.com/go-playground/validator/v10 v10.9.0
+	github.com/golang/mock v1.6.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/iancoleman/strcase v0.2.0
 	github.com/json-iterator/go v1.1.12
@@ -55,7 +56,6 @@ require (
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.26.0 // indirect
 	github.com/prometheus/procfs v0.6.0 // indirect
-	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
