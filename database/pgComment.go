@@ -8,18 +8,33 @@ import (
 	"strings"
 )
 
-func makeComments(ctx context.Context, conn PgGoConnection, model interface{}) error {
-	modelType := reflect.TypeOf(model)
-	var tableName pg.Safe
+func makeComments(ctx context.Context, conn PgGoConnection, models ...interface{}) error {
+	for _, model := range models {
+		modelType := reflect.TypeOf(model)
+		var tableName pg.Safe
 
-	for i := 0; i < modelType.NumField(); i++ {
-		fieldType := modelType.Field(i)
+		for i := 0; i < modelType.NumField(); i++ {
+			fieldType := modelType.Field(i)
 
-		if fieldType.Name == "tableName" {
-			var ok bool
-			tableName, ok = getPgName(fieldType)
-			if !ok {
-				tableName = pg.Safe(hasura.ToSnakeCase(modelType.Name()))
+			if fieldType.Name == "tableName" {
+				var ok bool
+				tableName, ok = getPgName(fieldType)
+				if !ok {
+					tableName = pg.Safe(hasura.ToSnakeCase(modelType.Name()))
+				}
+
+				pgCommentTag, ok := getPgComment(fieldType)
+				if !ok {
+					continue
+				}
+
+				if _, err := conn.DB().ExecContext(ctx,
+					`COMMENT ON TABLE ? IS ?`,
+					tableName, pgCommentTag); err != nil {
+					return err
+				}
+
+				continue
 			}
 
 			pgCommentTag, ok := getPgComment(fieldType)
@@ -27,32 +42,18 @@ func makeComments(ctx context.Context, conn PgGoConnection, model interface{}) e
 				continue
 			}
 
-			if _, err := conn.DB().ExecContext(ctx,
-				`COMMENT ON TABLE ? IS ?`,
-				tableName, pgCommentTag); err != nil {
-				return err
+			columnName, ok := getPgName(fieldType)
+			if !ok {
+				columnName = pg.Safe(hasura.ToSnakeCase(fieldType.Name))
 			}
 
-			continue
-		}
-
-		pgCommentTag, ok := getPgComment(fieldType)
-		if !ok {
-			continue
-		}
-
-		columnName, ok := getPgName(fieldType)
-		if !ok {
-			columnName = pg.Safe(hasura.ToSnakeCase(fieldType.Name))
-		}
-
-		if _, err := conn.DB().ExecContext(ctx,
-			`COMMENT ON COLUMN ?.? IS ?`,
-			tableName, columnName, pgCommentTag); err != nil {
-			return err
+			if _, err := conn.DB().ExecContext(ctx,
+				`COMMENT ON COLUMN ?.? IS ?`,
+				tableName, columnName, pgCommentTag); err != nil {
+				return err
+			}
 		}
 	}
-
 	return nil
 }
 
