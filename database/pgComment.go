@@ -16,10 +16,9 @@ func makeComments(ctx context.Context, conn PgGoConnection, model interface{}) e
 		fieldType := modelType.Field(i)
 
 		if fieldType.Name == "tableName" {
-
-			readFromModelName := true
-			tableName, readFromModelName = getPgName(fieldType)
-			if readFromModelName {
+			var ok bool
+			tableName, ok = getPgName(fieldType)
+			if !ok {
 				tableName = pg.Safe(hasura.ToSnakeCase(modelType.Name()))
 			}
 
@@ -42,8 +41,8 @@ func makeComments(ctx context.Context, conn PgGoConnection, model interface{}) e
 			continue
 		}
 
-		columnName, readFromFieldName := getPgName(fieldType)
-		if readFromFieldName {
+		columnName, ok := getPgName(fieldType)
+		if !ok {
 			columnName = pg.Safe(hasura.ToSnakeCase(fieldType.Name))
 		}
 
