@@ -89,3 +89,22 @@ func (db *PgGo) DeleteState(s *State) error {
 	_, err := db.conn.Model(s).Where("index_name = ?", s.IndexName).Delete()
 	return err
 }
+
+func (db *PgGo) MakeTableComment(ctx context.Context, name string, comment string) error {
+	_, err := db.conn.ExecContext(ctx,
+		`COMMENT ON TABLE ? IS ?`,
+		pg.Safe(name),
+		pg.Safe(comment))
+
+	return err
+}
+
+func (db *PgGo) MakeColumnComment(ctx context.Context, tableName string, columnName string, comment string) error {
+	_, err := db.conn.ExecContext(ctx,
+		`COMMENT ON COLUMN ?.? IS ?`,
+		pg.Safe(tableName),
+		pg.Safe(columnName),
+		pg.Safe(comment))
+
+	return err
+}
