@@ -1,5 +1,7 @@
 package database
 
+//go:generate mockgen -destination ../mocks/mock_SchemeCommenter.go -package mocks github.com/dipdup-net/go-lib/database SchemeCommenter
+
 import (
 	"context"
 	"fmt"
