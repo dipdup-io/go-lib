@@ -53,7 +53,6 @@ func TestMakeCommentsWithTableName(t *testing.T) {
 	assert.Empty(t, err)
 }
 
-/*
 func TestMakeCommentsWithoutPgComment(t *testing.T) {
 	type Ballot struct {
 		//nolint
@@ -61,31 +60,30 @@ func TestMakeCommentsWithoutPgComment(t *testing.T) {
 		Ballot    string   `json:"ballot"`
 	}
 
-	mockCtrl, mockPgDB, pgGo, ctx := createPgDbMock(t)
+	mockCtrl, mockSC, ctx := initMocks(t)
 	defer mockCtrl.Finish()
 
 	model := Ballot{}
 
 	// Assert prepare
-	mockPgDB.
+	mockSC.
 		EXPECT().
-		ExecContext(ctx, "COMMENT ON TABLE ? IS ?", gomock.Any()).
-		Times(0).
-		Return(nil, nil)
+		MakeTableComment(gomock.Any(), gomock.Any(), gomock.Any()).
+		Times(0)
 
-	mockPgDB.
+	mockSC.
 		EXPECT().
-		ExecContext(ctx, "COMMENT ON COLUMN ?.? IS ?", gomock.Any()).
-		Times(0).
-		Return(nil, nil)
+		MakeColumnComment(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+		Times(0)
 
 	// Act
-	err := makeComments(ctx, pgGo, model)
+	err := makeComments(ctx, mockSC, model)
 
 	// Assert
 	assert.Empty(t, err)
 }
 
+/*
 func TestMakeCommentsFieldWithPgComment(t *testing.T) {
 	type Ballot struct {
 		//nolint
@@ -113,6 +111,8 @@ func TestMakeCommentsFieldWithPgComment(t *testing.T) {
 	// Assert
 	assert.Empty(t, err)
 }
+
+/*
 
 func TestMakeCommentsWithTableNameAndFieldsWithPgComment(t *testing.T) {
 	type Ballot struct {
