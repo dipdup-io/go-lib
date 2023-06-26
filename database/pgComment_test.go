@@ -3,7 +3,6 @@ package database
 import (
 	"context"
 	"github.com/dipdup-net/go-lib/mocks"
-	"github.com/go-pg/pg/v10"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -15,16 +14,6 @@ func initMocks(t *testing.T) (*gomock.Controller, *mocks.MockSchemeCommenter, co
 	ctx := context.Background()
 
 	return mockCtrl, mockSchemeCommenter, ctx
-}
-
-func toInterfaceSlice(origin []pg.Safe) []interface{} {
-	res := make([]interface{}, len(origin))
-
-	for i := range origin {
-		res[i] = origin[i]
-	}
-
-	return res
 }
 
 func TestMakeCommentsWithTableName(t *testing.T) {
