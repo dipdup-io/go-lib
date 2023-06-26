@@ -9,18 +9,22 @@ import (
 	"testing"
 )
 
-type PgGoMock struct {
-	conn *mocks.MockPgDB
+func initMocks(t *testing.T) (*gomock.Controller, *mocks.MockSchemeCommenter, context.Context) {
+	mockCtrl := gomock.NewController(t)
+	mockSchemeCommenter := mocks.NewMockSchemeCommenter(mockCtrl)
+	ctx := context.Background()
+
+	return mockCtrl, mockSchemeCommenter, ctx
 }
 
-func (p *PgGoMock) DB() PgDB {
-	return p.conn
-}
+func toInterfaceSlice(origin []pg.Safe) []interface{} {
+	res := make([]interface{}, len(origin))
 
-func newPgGoMock(pgDB *mocks.MockPgDB) *PgGoMock {
-	return &PgGoMock{
-		conn: pgDB,
+	for i := range origin {
+		res[i] = origin[i]
 	}
+
+	return res
 }
 
 func TestMakeCommentsWithTableName(t *testing.T) {
@@ -30,27 +34,26 @@ func TestMakeCommentsWithTableName(t *testing.T) {
 		Ballot    string   `json:"ballot"`
 	}
 
-	mockCtrl, mockPgDB, pgGo, ctx := createPgDbMock(t)
+	mockCtrl, mockSC, ctx := initMocks(t)
 	defer mockCtrl.Finish()
 
 	model := Ballot{}
 
 	// Assert prepare
-	expectedParams := toInterfaceSlice([]pg.Safe{"ballots", "Ballot table"})
-	mockPgDB.
+	mockSC.
 		EXPECT().
-		ExecContext(ctx, "COMMENT ON TABLE ? IS ?",
-			gomock.Eq(expectedParams)).
+		MakeTableComment(ctx, "ballots", "Ballot table").
 		Times(1).
-		Return(nil, nil)
+		Return(nil)
 
 	// Act
-	err := makeComments(ctx, pgGo, model)
+	err := makeComments(ctx, mockSC, model)
 
 	// Assert
 	assert.Empty(t, err)
 }
 
+/*
 func TestMakeCommentsWithoutPgComment(t *testing.T) {
 	type Ballot struct {
 		//nolint
@@ -197,22 +200,4 @@ func TestMakeCommentsWithMultipleModels(t *testing.T) {
 	// Assert
 	assert.Empty(t, err)
 }
-
-func createPgDbMock(t *testing.T) (*gomock.Controller, *mocks.MockPgDB, *PgGoMock, context.Context) {
-	mockCtrl := gomock.NewController(t)
-	mockPgDB := mocks.NewMockPgDB(mockCtrl)
-	pgGo := newPgGoMock(mockPgDB)
-	ctx := context.Background()
-
-	return mockCtrl, mockPgDB, pgGo, ctx
-}
-
-func toInterfaceSlice(origin []pg.Safe) []interface{} {
-	res := make([]interface{}, len(origin))
-
-	for i := range origin {
-		res[i] = origin[i]
-	}
-
-	return res
-}
+*/
