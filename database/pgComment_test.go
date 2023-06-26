@@ -83,7 +83,6 @@ func TestMakeCommentsWithoutPgComment(t *testing.T) {
 	assert.Empty(t, err)
 }
 
-/*
 func TestMakeCommentsFieldWithPgComment(t *testing.T) {
 	type Ballot struct {
 		//nolint
@@ -91,22 +90,20 @@ func TestMakeCommentsFieldWithPgComment(t *testing.T) {
 		Ballot    string   `json:"ballot" pg-comment:"This is field comment"`
 	}
 
-	mockCtrl, mockPgDB, pgGo, ctx := createPgDbMock(t)
+	mockCtrl, mockSC, ctx := initMocks(t)
 	defer mockCtrl.Finish()
 
 	model := Ballot{}
 
 	// Assert prepare
-	expectedParams := toInterfaceSlice([]pg.Safe{"ballots", "ballot", "This is field comment"})
-	mockPgDB.
+	mockSC.
 		EXPECT().
-		ExecContext(ctx, "COMMENT ON COLUMN ?.? IS ?",
-			gomock.Eq(expectedParams)).
+		MakeColumnComment(ctx, "ballots", "ballot", "This is field comment").
 		Times(1).
-		Return(nil, nil)
+		Return(nil)
 
 	// Act
-	err := makeComments(ctx, pgGo, model)
+	err := makeComments(ctx, mockSC, model)
 
 	// Assert
 	assert.Empty(t, err)
