@@ -156,7 +156,6 @@ func TestMakeCommentsWithTableNameAndFieldsWithPgComment(t *testing.T) {
 	assert.Empty(t, err)
 }
 
-/*
 func TestMakeCommentsWithMultipleModels(t *testing.T) {
 	type Ballot struct {
 		//nolint
@@ -164,34 +163,29 @@ func TestMakeCommentsWithMultipleModels(t *testing.T) {
 		Ballot    string   `json:"ballot" pg-comment:"This is multiple field comment"`
 	}
 
-	mockCtrl, mockPgDB, pgGo, ctx := createPgDbMock(t)
+	mockCtrl, mockSC, ctx := initMocks(t)
 	defer mockCtrl.Finish()
 
 	models := []interface{}{Ballot{}, Ballot{}, Ballot{}}
 
 	// Assert prepare
-	expectedTableParams := toInterfaceSlice([]pg.Safe{"ballots", "This multiple table name comment"})
-	mockPgDB.
+	mockSC.
 		EXPECT().
-		ExecContext(ctx, "COMMENT ON TABLE ? IS ?",
-			gomock.Eq(expectedTableParams)).
+		MakeTableComment(ctx, "ballots", "This multiple table name comment").
 		Times(3).
-		Return(nil, nil)
+		Return(nil)
 
 	// Be aware: there is on issue with default order in checking
 	// methods call: https://github.com/golang/mock/issues/653
-	expectedParams := toInterfaceSlice([]pg.Safe{"ballots", "ballot", "This is multiple field comment"})
-	mockPgDB.
+	mockSC.
 		EXPECT().
-		ExecContext(ctx, "COMMENT ON COLUMN ?.? IS ?",
-			gomock.Eq(expectedParams)).
+		MakeColumnComment(ctx, "ballots", "ballot", "This is multiple field comment").
 		Times(3).
-		Return(nil, nil)
+		Return(nil)
 
 	// Act
-	err := makeComments(ctx, pgGo, models...)
+	err := makeComments(ctx, mockSC, models...)
 
 	// Assert
 	assert.Empty(t, err)
 }
-*/
