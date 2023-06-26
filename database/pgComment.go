@@ -3,15 +3,14 @@ package database
 import (
 	"context"
 	"github.com/dipdup-net/go-lib/hasura"
-	"github.com/go-pg/pg/v10"
 	"reflect"
 	"strings"
 )
 
-func makeComments(ctx context.Context, conn PgGoConnection, models ...interface{}) error {
+func makeComments(ctx context.Context, sc SchemeCommenter, models ...interface{}) error {
 	for _, model := range models {
 		modelType := reflect.TypeOf(model)
-		var tableName pg.Safe
+		var tableName string
 
 		for i := 0; i < modelType.NumField(); i++ {
 			fieldType := modelType.Field(i)
@@ -20,7 +19,7 @@ func makeComments(ctx context.Context, conn PgGoConnection, models ...interface{
 				var ok bool
 				tableName, ok = getPgName(fieldType)
 				if !ok {
-					tableName = pg.Safe(hasura.ToSnakeCase(modelType.Name()))
+					tableName = hasura.ToSnakeCase(modelType.Name())
 				}
 
 				pgCommentTag, ok := getPgComment(fieldType)
@@ -28,9 +27,7 @@ func makeComments(ctx context.Context, conn PgGoConnection, models ...interface{
 					continue
 				}
 
-				if _, err := conn.DB().ExecContext(ctx,
-					`COMMENT ON TABLE ? IS ?`,
-					tableName, pgCommentTag); err != nil {
+				if err := sc.MakeTableComment(ctx, tableName, pgCommentTag); err != nil {
 					return err
 				}
 
@@ -44,12 +41,10 @@ func makeComments(ctx context.Context, conn PgGoConnection, models ...interface{
 
 			columnName, ok := getPgName(fieldType)
 			if !ok {
-				columnName = pg.Safe(hasura.ToSnakeCase(fieldType.Name))
+				columnName = hasura.ToSnakeCase(fieldType.Name)
 			}
 
-			if _, err := conn.DB().ExecContext(ctx,
-				`COMMENT ON COLUMN ?.? IS ?`,
-				tableName, columnName, pgCommentTag); err != nil {
+			if err := sc.MakeColumnComment(ctx, tableName, columnName, pgCommentTag); err != nil {
 				return err
 			}
 		}
@@ -57,7 +52,7 @@ func makeComments(ctx context.Context, conn PgGoConnection, models ...interface{
 	return nil
 }
 
-func getPgName(fieldType reflect.StructField) (name pg.Safe, ok bool) {
+func getPgName(fieldType reflect.StructField) (name string, ok bool) {
 	pgTag, ok := fieldType.Tag.Lookup("pg")
 	if !ok {
 		return "", false
@@ -66,18 +61,18 @@ func getPgName(fieldType reflect.StructField) (name pg.Safe, ok bool) {
 	tags := strings.Split(pgTag, ",")
 
 	if tags[0] != "" {
-		name = pg.Safe(tags[0])
+		name = tags[0]
 		return name, ok
 	}
 
 	return "", false
 }
 
-func getPgComment(fieldType reflect.StructField) (pg.Safe, bool) {
+func getPgComment(fieldType reflect.StructField) (string, bool) {
 	pgCommentTag, ok := fieldType.Tag.Lookup("pg-comment")
 
 	if ok {
-		return pg.Safe(pgCommentTag), ok
+		return pgCommentTag, ok
 	}
 
 	return "", false
