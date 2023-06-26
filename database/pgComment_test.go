@@ -109,8 +109,6 @@ func TestMakeCommentsFieldWithPgComment(t *testing.T) {
 	assert.Empty(t, err)
 }
 
-/*
-
 func TestMakeCommentsWithTableNameAndFieldsWithPgComment(t *testing.T) {
 	type Ballot struct {
 		//nolint
@@ -132,34 +130,33 @@ func TestMakeCommentsWithTableNameAndFieldsWithPgComment(t *testing.T) {
 		Period          int64       `json:"period" pg-comment:"This is field comment"`
 	}
 
-	mockCtrl, mockPgDB, pgGo, ctx := createPgDbMock(t)
+	mockCtrl, mockSC, ctx := initMocks(t)
 	defer mockCtrl.Finish()
 
 	model := Ballot{}
 
 	// Assert prepare
-	expectedParams := toInterfaceSlice([]pg.Safe{"ballots", "Ballot table"})
-	commentOnTableCall := mockPgDB.
+	commentOnTableCall := mockSC.
 		EXPECT().
-		ExecContext(ctx, "COMMENT ON TABLE ? IS ?",
-			gomock.Eq(expectedParams)).
+		MakeTableComment(ctx, "ballots", "Ballot table").
 		Times(1).
-		Return(nil, nil)
+		Return(nil)
 
-	mockPgDB.
+	mockSC.
 		EXPECT().
-		ExecContext(ctx, "COMMENT ON COLUMN ?.? IS ?", gomock.Any()).
+		MakeColumnComment(ctx, "ballots", gomock.Any(), "This is field comment").
 		Times(15).
 		After(commentOnTableCall).
-		Return(nil, nil)
+		Return(nil)
 
 	// Act
-	err := makeComments(ctx, pgGo, model)
+	err := makeComments(ctx, mockSC, model)
 
 	// Assert
 	assert.Empty(t, err)
 }
 
+/*
 func TestMakeCommentsWithMultipleModels(t *testing.T) {
 	type Ballot struct {
 		//nolint
