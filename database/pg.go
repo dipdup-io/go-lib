@@ -8,6 +8,11 @@ import (
 	"github.com/pkg/errors"
 )
 
+type SchemeCommenter interface {
+	MakeTableComment(name string, comment string) error
+	MakeColumnComment(name string, comment string) error
+}
+
 type PgGoConnection interface {
 	DB() PgDB
 }
