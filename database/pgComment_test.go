@@ -36,7 +36,7 @@ func TestMakeCommentsWithTableName(t *testing.T) {
 		Return(nil)
 
 	// Act
-	err := makeComments(ctx, mockSC, model)
+	err := MakeComments(ctx, mockSC, model)
 
 	// Assert
 	assert.Empty(t, err)
@@ -66,7 +66,7 @@ func TestMakeCommentsWithoutPgComment(t *testing.T) {
 		Times(0)
 
 	// Act
-	err := makeComments(ctx, mockSC, model)
+	err := MakeComments(ctx, mockSC, model)
 
 	// Assert
 	assert.Empty(t, err)
@@ -92,7 +92,7 @@ func TestMakeCommentsFieldWithPgComment(t *testing.T) {
 		Return(nil)
 
 	// Act
-	err := makeComments(ctx, mockSC, model)
+	err := MakeComments(ctx, mockSC, model)
 
 	// Assert
 	assert.Empty(t, err)
@@ -139,7 +139,7 @@ func TestMakeCommentsWithTableNameAndFieldsWithPgComment(t *testing.T) {
 		Return(nil)
 
 	// Act
-	err := makeComments(ctx, mockSC, model)
+	err := MakeComments(ctx, mockSC, model)
 
 	// Assert
 	assert.Empty(t, err)
@@ -173,7 +173,7 @@ func TestMakeCommentsWithMultipleModels(t *testing.T) {
 		Return(nil)
 
 	// Act
-	err := makeComments(ctx, mockSC, models...)
+	err := MakeComments(ctx, mockSC, models...)
 
 	// Assert
 	assert.Empty(t, err)

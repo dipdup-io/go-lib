@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func makeComments(ctx context.Context, sc SchemeCommenter, models ...interface{}) error {
+func MakeComments(ctx context.Context, sc SchemeCommenter, models ...interface{}) error {
 	for _, model := range models {
 		modelType := reflect.TypeOf(model)
 		var tableName string
