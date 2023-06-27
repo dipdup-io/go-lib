@@ -147,6 +147,7 @@ func TestGenerate(t *testing.T) {
 						UsePreparedStatements: true,
 						IsolationLevel:        "read-committed",
 					},
+					UnauthorizedRole: "user",
 				},
 				models: []interface{}{
 					&testTable{}, &testTable2{}, &testTable3{}, &testTable4{},
