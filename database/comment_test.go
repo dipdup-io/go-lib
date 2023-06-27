@@ -19,7 +19,7 @@ func initMocks(t *testing.T) (*gomock.Controller, *mocks.MockSchemeCommenter, co
 func TestMakeCommentsWithTableName(t *testing.T) {
 	type Ballot struct {
 		//nolint
-		tableName struct{} `pg:"ballots" pg-comment:"Ballot table"`
+		tableName struct{} `pg:"ballots" comment:"Ballot table"`
 		Ballot    string   `json:"ballot"`
 	}
 
@@ -76,7 +76,7 @@ func TestMakeCommentsFieldWithPgComment(t *testing.T) {
 	type Ballot struct {
 		//nolint
 		tableName struct{} `pg:"ballots"`
-		Ballot    string   `json:"ballot" pg-comment:"This is field comment"`
+		Ballot    string   `json:"ballot" comment:"This is field comment"`
 	}
 
 	mockCtrl, mockSC, ctx := initMocks(t)
@@ -101,22 +101,22 @@ func TestMakeCommentsFieldWithPgComment(t *testing.T) {
 func TestMakeCommentsWithTableNameAndFieldsWithPgComment(t *testing.T) {
 	type Ballot struct {
 		//nolint
-		tableName       struct{}    `pg:"ballots" pg-comment:"Ballot table"`
-		CreatedAt       int64       `json:"-" pg-comment:"This is field comment"`
-		UpdatedAt       int64       `json:"-" pg-comment:"This is field comment"`
-		Network         string      `json:"network" pg:",pk" pg-comment:"This is field comment"`
-		Hash            string      `json:"hash" pg:",pk" pg-comment:"This is field comment"`
-		Branch          string      `json:"branch" pg-comment:"This is field comment"`
-		Status          string      `json:"status" pg-comment:"This is field comment"`
-		Kind            string      `json:"kind" pg-comment:"This is field comment"`
-		Signature       string      `json:"signature" pg-comment:"This is field comment"`
-		Protocol        string      `json:"protocol" pg-comment:"This is field comment"`
-		Level           uint64      `json:"level" pg-comment:"This is field comment"`
-		Errors          interface{} `json:"errors,omitempty" pg:"type:jsonb" pg-comment:"This is field comment"`
-		ExpirationLevel *uint64     `json:"expiration_level" pg-comment:"This is field comment"`
-		Raw             interface{} `json:"raw,omitempty" pg:"type:jsonb" pg-comment:"This is field comment"`
-		Ballot          string      `json:"ballot" pg-comment:"This is field comment"`
-		Period          int64       `json:"period" pg-comment:"This is field comment"`
+		tableName       struct{}    `pg:"ballots" comment:"Ballot table"`
+		CreatedAt       int64       `json:"-" comment:"This is field comment"`
+		UpdatedAt       int64       `json:"-" comment:"This is field comment"`
+		Network         string      `json:"network" pg:",pk" comment:"This is field comment"`
+		Hash            string      `json:"hash" pg:",pk" comment:"This is field comment"`
+		Branch          string      `json:"branch" comment:"This is field comment"`
+		Status          string      `json:"status" comment:"This is field comment"`
+		Kind            string      `json:"kind" comment:"This is field comment"`
+		Signature       string      `json:"signature" comment:"This is field comment"`
+		Protocol        string      `json:"protocol" comment:"This is field comment"`
+		Level           uint64      `json:"level" comment:"This is field comment"`
+		Errors          interface{} `json:"errors,omitempty" pg:"type:jsonb" comment:"This is field comment"`
+		ExpirationLevel *uint64     `json:"expiration_level" comment:"This is field comment"`
+		Raw             interface{} `json:"raw,omitempty" pg:"type:jsonb" comment:"This is field comment"`
+		Ballot          string      `json:"ballot" comment:"This is field comment"`
+		Period          int64       `json:"period" comment:"This is field comment"`
 	}
 
 	mockCtrl, mockSC, ctx := initMocks(t)
@@ -148,8 +148,8 @@ func TestMakeCommentsWithTableNameAndFieldsWithPgComment(t *testing.T) {
 func TestMakeCommentsWithMultipleModels(t *testing.T) {
 	type Ballot struct {
 		//nolint
-		tableName struct{} `pg:"ballots" pg-comment:"This multiple table name comment"`
-		Ballot    string   `json:"ballot" pg-comment:"This is multiple field comment"`
+		tableName struct{} `pg:"ballots" comment:"This multiple table name comment"`
+		Ballot    string   `json:"ballot" comment:"This is multiple field comment"`
 	}
 
 	mockCtrl, mockSC, ctx := initMocks(t)
@@ -182,8 +182,8 @@ func TestMakeCommentsWithMultipleModels(t *testing.T) {
 func TestMakeCommentsWithMultipleModelsByPointers(t *testing.T) {
 	type Ballot struct {
 		//nolint
-		tableName struct{} `pg:"ballots" pg-comment:"This multiple table name comment"`
-		Ballot    string   `json:"ballot" pg-comment:"This is multiple field comment"`
+		tableName struct{} `pg:"ballots" comment:"This multiple table name comment"`
+		Ballot    string   `json:"ballot" comment:"This is multiple field comment"`
 	}
 
 	mockCtrl, mockSC, ctx := initMocks(t)
