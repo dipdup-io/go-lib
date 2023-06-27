@@ -58,6 +58,7 @@ type Hasura struct {
 	EnableAggregations bool          `yaml:"allow_aggregation"`
 	Source             *HasuraSource `yaml:"source"`
 	Rest               *bool         `yaml:"rest"`
+	UnauthorizedRole   string        `yaml:"unauthorized_role"`
 }
 
 type HasuraSource struct {
@@ -74,6 +75,8 @@ func (h *Hasura) UnmarshalYAML(unmarshal func(interface{}) error) error {
 		UsePreparedStatements: false,
 		IsolationLevel:        "read-committed",
 	}
+
+	h.UnauthorizedRole = "user"
 
 	type plain Hasura
 	return unmarshal((*plain)(h))
