@@ -178,3 +178,37 @@ func TestMakeCommentsWithMultipleModels(t *testing.T) {
 	// Assert
 	assert.Empty(t, err)
 }
+
+func TestMakeCommentsWithMultipleModelsByPointers(t *testing.T) {
+	type Ballot struct {
+		//nolint
+		tableName struct{} `pg:"ballots" pg-comment:"This multiple table name comment"`
+		Ballot    string   `json:"ballot" pg-comment:"This is multiple field comment"`
+	}
+
+	mockCtrl, mockSC, ctx := initMocks(t)
+	defer mockCtrl.Finish()
+
+	models := []interface{}{&Ballot{}, &Ballot{}, &Ballot{}}
+
+	// Assert prepare
+	mockSC.
+		EXPECT().
+		MakeTableComment(ctx, "ballots", "This multiple table name comment").
+		Times(3).
+		Return(nil)
+
+	// Be aware: there is on issue with default order in checking
+	// methods call: https://github.com/golang/mock/issues/653
+	mockSC.
+		EXPECT().
+		MakeColumnComment(ctx, "ballots", "ballot", "This is multiple field comment").
+		Times(3).
+		Return(nil)
+
+	// Act
+	err := MakeComments(ctx, mockSC, models...)
+
+	// Assert
+	assert.Empty(t, err)
+}
