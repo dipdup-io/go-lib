@@ -10,6 +10,11 @@ import (
 func MakeComments(ctx context.Context, sc SchemeCommenter, models ...interface{}) error {
 	for _, model := range models {
 		modelType := reflect.TypeOf(model)
+
+		if reflect.ValueOf(model).Kind() == reflect.Ptr {
+			modelType = modelType.Elem()
+		}
+
 		var tableName string
 
 		for i := 0; i < modelType.NumField(); i++ {
