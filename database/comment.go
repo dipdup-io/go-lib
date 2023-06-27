@@ -10,6 +10,11 @@ import (
 func MakeComments(ctx context.Context, sc SchemeCommenter, models ...interface{}) error {
 	for _, model := range models {
 		modelType := reflect.TypeOf(model)
+
+		if reflect.ValueOf(model).Kind() == reflect.Ptr {
+			modelType = modelType.Elem()
+		}
+
 		var tableName string
 
 		for i := 0; i < modelType.NumField(); i++ {
@@ -22,19 +27,19 @@ func MakeComments(ctx context.Context, sc SchemeCommenter, models ...interface{}
 					tableName = hasura.ToSnakeCase(modelType.Name())
 				}
 
-				pgCommentTag, ok := getPgComment(fieldType)
+				comment, ok := getComment(fieldType)
 				if !ok {
 					continue
 				}
 
-				if err := sc.MakeTableComment(ctx, tableName, pgCommentTag); err != nil {
+				if err := sc.MakeTableComment(ctx, tableName, comment); err != nil {
 					return err
 				}
 
 				continue
 			}
 
-			pgCommentTag, ok := getPgComment(fieldType)
+			comment, ok := getComment(fieldType)
 			if !ok {
 				continue
 			}
@@ -44,7 +49,7 @@ func MakeComments(ctx context.Context, sc SchemeCommenter, models ...interface{}
 				columnName = hasura.ToSnakeCase(fieldType.Name)
 			}
 
-			if err := sc.MakeColumnComment(ctx, tableName, columnName, pgCommentTag); err != nil {
+			if err := sc.MakeColumnComment(ctx, tableName, columnName, comment); err != nil {
 				return err
 			}
 		}
@@ -68,11 +73,11 @@ func getPgName(fieldType reflect.StructField) (name string, ok bool) {
 	return "", false
 }
 
-func getPgComment(fieldType reflect.StructField) (string, bool) {
-	pgCommentTag, ok := fieldType.Tag.Lookup("pg-comment")
+func getComment(fieldType reflect.StructField) (string, bool) {
+	commentTag, ok := fieldType.Tag.Lookup("comment")
 
 	if ok {
-		return pgCommentTag, ok
+		return commentTag, ok
 	}
 
 	return "", false
