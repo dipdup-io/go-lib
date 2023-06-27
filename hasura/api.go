@@ -220,6 +220,7 @@ func (api *API) DropSelectPermissions(ctx context.Context, table, source string,
 			"source": source,
 		},
 	}
+
 	return api.post(ctx, "/v1/metadata", nil, req, nil)
 }
 

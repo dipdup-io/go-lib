@@ -32,3 +32,8 @@ func (e APIError) Error() string {
 func (e APIError) AlreadyExists() bool {
 	return e.Code == "already-exists"
 }
+
+// PermissionDenied -
+func (e APIError) PermissionDenied() bool {
+	return e.Code == "permission-denied"
+}

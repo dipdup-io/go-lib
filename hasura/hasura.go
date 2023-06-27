@@ -128,7 +128,9 @@ func Create(ctx context.Context, args GenerateArgs) error {
 			}
 		}
 		if err := api.DropSelectPermissions(ctx, args.Views[i], args.Config.Source.Name, args.Config.UnauthorizedRole); err != nil {
-			log.Warn().Err(err).Msg("")
+			if e, ok := err.(APIError); !ok || !e.PermissionDenied() {
+				log.Warn().Err(err).Msg("")
+			}
 		}
 		if err := api.CreateSelectPermissions(ctx, args.Views[i], args.Config.Source.Name, args.Config.UnauthorizedRole, Permission{
 			Limit:     args.Config.RowsLimit,
