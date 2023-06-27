@@ -127,10 +127,10 @@ func Create(ctx context.Context, args GenerateArgs) error {
 				return err
 			}
 		}
-		if err := api.DropSelectPermissions(ctx, args.Views[i], args.Config.Source.Name, "user"); err != nil {
+		if err := api.DropSelectPermissions(ctx, args.Views[i], args.Config.Source.Name, args.Config.UnauthorizedRole); err != nil {
 			log.Warn().Err(err).Msg("")
 		}
-		if err := api.CreateSelectPermissions(ctx, args.Views[i], args.Config.Source.Name, "user", Permission{
+		if err := api.CreateSelectPermissions(ctx, args.Views[i], args.Config.Source.Name, args.Config.UnauthorizedRole, Permission{
 			Limit:     args.Config.RowsLimit,
 			AllowAggs: args.Config.EnableAggregations,
 			Columns:   Columns{"*"},
@@ -197,7 +197,7 @@ func generateOne(hasura config.Hasura, schema string, model interface{}) (table,
 	t.HasuraSchema = newMetadataTable(t.Name, t.Schema)
 	t.Columns = getColumns(typ)
 
-	t.HasuraSchema.SelectPermissions = append(t.HasuraSchema.SelectPermissions, formatSelectPermissions(hasura.RowsLimit, hasura.EnableAggregations, t.Columns...))
+	t.HasuraSchema.SelectPermissions = append(t.HasuraSchema.SelectPermissions, formatSelectPermissions(hasura.RowsLimit, hasura.EnableAggregations, hasura.UnauthorizedRole, t.Columns...))
 
 	if err := getRelationships(&t.HasuraSchema, t.Name, typ); err != nil {
 		return t, err
@@ -273,12 +273,12 @@ func getRelationships(t *Table, name string, typ reflect.Type) error {
 	return nil
 }
 
-func formatSelectPermissions(limit uint64, allowAggs bool, columns ...string) SelectPermission {
+func formatSelectPermissions(limit uint64, allowAggs bool, role string, columns ...string) SelectPermission {
 	if limit == 0 {
 		limit = 10
 	}
 	return SelectPermission{
-		Role: "user",
+		Role: role,
 		Permission: Permission{
 			Columns:   columns,
 			Filter:    map[string]interface{}{},
