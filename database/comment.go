@@ -45,6 +45,11 @@ func MakeComments(ctx context.Context, sc SchemeCommenter, models ...interface{}
 			}
 
 			columnName, ok := getPgName(fieldType)
+
+			if columnName == "-" {
+				continue
+			}
+
 			if !ok {
 				columnName = hasura.ToSnakeCase(fieldType.Name)
 			}
