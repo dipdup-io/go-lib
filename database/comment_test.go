@@ -212,3 +212,28 @@ func TestMakeCommentsWithMultipleModelsByPointers(t *testing.T) {
 	// Assert
 	assert.Empty(t, err)
 }
+
+func TestMakeCommentsIgnoreFieldWithPgHyphen(t *testing.T) {
+	type Ballot struct {
+		//nolint
+		tableName struct{} `pg:"ballots"`
+		Ballot    string   `json:"ballot" pg:"-" comment:"This is field comment"`
+	}
+
+	mockCtrl, mockSC, ctx := initMocks(t)
+	defer mockCtrl.Finish()
+
+	model := Ballot{}
+
+	// Assert prepare
+	mockSC.
+		EXPECT().
+		MakeColumnComment(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+		Times(0)
+
+	// Act
+	err := MakeComments(ctx, mockSC, model)
+
+	// Assert
+	assert.Empty(t, err)
+}
