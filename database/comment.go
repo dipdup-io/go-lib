@@ -40,7 +40,7 @@ func MakeComments(ctx context.Context, sc SchemeCommenter, models ...interface{}
 			}
 
 			comment, ok := getComment(fieldType)
-			if !ok {
+			if !ok || comment == "" {
 				continue
 			}
 
