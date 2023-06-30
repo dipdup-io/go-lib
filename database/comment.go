@@ -8,7 +8,15 @@ import (
 )
 
 func MakeComments(ctx context.Context, sc SchemeCommenter, models ...interface{}) error {
+	if models == nil {
+		return nil
+	}
+
 	for _, model := range models {
+		if model == nil {
+			continue
+		}
+
 		modelType := reflect.TypeOf(model)
 
 		if reflect.ValueOf(model).Kind() == reflect.Ptr {
