@@ -67,6 +67,14 @@ func makeEmbeddedComments(ctx context.Context, sc SchemeCommenter, tableName str
 	for i := 0; i < t.NumField(); i++ {
 		fieldType := t.Field(i)
 
+		if fieldType.Anonymous {
+			if err := makeEmbeddedComments(ctx, sc, tableName, fieldType.Type); err != nil {
+				return err
+			}
+
+			continue
+		}
+
 		if fieldType.Name == "tableName" {
 			return errors.New("Embedded type must not have tableName field.")
 		}
