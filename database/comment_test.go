@@ -296,3 +296,64 @@ func TestMakeCommentsIgnoreNoModels(t *testing.T) {
 	// Assert
 	assert.Empty(t, err)
 }
+
+func TestMakeCommentsWithStructCompositionAndCorrectOrder(t *testing.T) {
+	type Operation struct {
+		CreatedAt int64  `json:"-" comment:"Date of creation in seconds since UNIX epoch."`
+		UpdatedAt int64  `json:"-" comment:"Date of last update in seconds since UNIX epoch."`
+		Network   string `json:"network" pg:",pk" comment:"Identifies belonging network."`
+	}
+
+	type Ballot struct {
+		//nolint
+		tableName struct{} `pg:"ballots" comment:"This multiple table name comment"`
+		Operation
+		Ballot string `json:"ballot" comment:"This is multiple field comment"`
+	}
+
+	mockCtrl, mockSC, ctx := initMocks(t)
+	defer mockCtrl.Finish()
+
+	model := Ballot{}
+
+	// Assert prepare
+	tableNameCall := mockSC.
+		EXPECT().
+		MakeTableComment(ctx, "ballots", "This multiple table name comment").
+		Times(1).
+		Return(nil)
+
+	createdAtCall := mockSC.
+		EXPECT().
+		MakeColumnComment(ctx, "ballots", "created_at", "Date of creation in seconds since UNIX epoch.").
+		After(tableNameCall).
+		Times(1).
+		Return(nil)
+
+	updatedAtCall := mockSC.
+		EXPECT().
+		MakeColumnComment(ctx, "ballots", "updated_at", "Date of last update in seconds since UNIX epoch.").
+		After(createdAtCall).
+		Times(1).
+		Return(nil)
+
+	networkCall := mockSC.
+		EXPECT().
+		MakeColumnComment(ctx, "ballots", "network", "Identifies belonging network.").
+		After(updatedAtCall).
+		Times(1).
+		Return(nil)
+
+	mockSC.
+		EXPECT().
+		MakeColumnComment(ctx, "ballots", "ballot", "This is multiple field comment").
+		After(networkCall).
+		Times(1).
+		Return(nil)
+
+	// Act
+	err := MakeComments(ctx, mockSC, model)
+
+	// Assert
+	assert.Empty(t, err)
+}
