@@ -262,3 +262,37 @@ func TestMakeCommentsIgnoreFieldsWithEmptyComment(t *testing.T) {
 	// Assert
 	assert.Empty(t, err)
 }
+
+func TestMakeCommentsIgnoreNilModel(t *testing.T) {
+	mockCtrl, mockSC, ctx := initMocks(t)
+	defer mockCtrl.Finish()
+
+	// Assert prepare
+	mockSC.
+		EXPECT().
+		MakeColumnComment(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+		Times(0)
+
+	// Act
+	err := MakeComments(ctx, mockSC, nil)
+
+	// Assert
+	assert.Empty(t, err)
+}
+
+func TestMakeCommentsIgnoreNoModels(t *testing.T) {
+	mockCtrl, mockSC, ctx := initMocks(t)
+	defer mockCtrl.Finish()
+
+	// Assert prepare
+	mockSC.
+		EXPECT().
+		MakeColumnComment(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+		Times(0)
+
+	// Act
+	err := MakeComments(ctx, mockSC)
+
+	// Assert
+	assert.Empty(t, err)
+}
