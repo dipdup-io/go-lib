@@ -52,24 +52,10 @@ func MakeComments(ctx context.Context, sc SchemeCommenter, models ...interface{}
 				if err := makeEmbeddedComments(ctx, sc, tableName, fieldType.Type); err != nil {
 					return err
 				}
-			}
-
-			comment, ok := getComment(fieldType)
-			if !ok || comment == "" {
 				continue
 			}
 
-			columnName, ok := getPgName(fieldType)
-
-			if columnName == "-" {
-				continue
-			}
-
-			if !ok {
-				columnName = hasura.ToSnakeCase(fieldType.Name)
-			}
-
-			if err := sc.MakeColumnComment(ctx, tableName, columnName, comment); err != nil {
+			if err := makeFieldComment(ctx, sc, tableName, fieldType); err != nil {
 				return err
 			}
 		}
@@ -85,24 +71,32 @@ func makeEmbeddedComments(ctx context.Context, sc SchemeCommenter, tableName str
 			return errors.New("Embedded type must not have tableName field.")
 		}
 
-		comment, ok := getComment(fieldType)
-		if !ok || comment == "" {
-			continue
-		}
-
-		columnName, ok := getPgName(fieldType)
-
-		if columnName == "-" {
-			continue
-		}
-
-		if !ok {
-			columnName = hasura.ToSnakeCase(fieldType.Name)
-		}
-
-		if err := sc.MakeColumnComment(ctx, tableName, columnName, comment); err != nil {
+		if err := makeFieldComment(ctx, sc, tableName, fieldType); err != nil {
 			return err
 		}
+	}
+
+	return nil
+}
+
+func makeFieldComment(ctx context.Context, sc SchemeCommenter, tableName string, fieldType reflect.StructField) error {
+	comment, ok := getComment(fieldType)
+	if !ok || comment == "" {
+		return nil
+	}
+
+	columnName, ok := getPgName(fieldType)
+
+	if columnName == "-" {
+		return nil
+	}
+
+	if !ok {
+		columnName = hasura.ToSnakeCase(fieldType.Name)
+	}
+
+	if err := sc.MakeColumnComment(ctx, tableName, columnName, comment); err != nil {
+		return err
 	}
 
 	return nil
