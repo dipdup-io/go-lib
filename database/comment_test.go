@@ -296,3 +296,168 @@ func TestMakeCommentsIgnoreNoModels(t *testing.T) {
 	// Assert
 	assert.Empty(t, err)
 }
+
+func TestMakeCommentsWithStructCompositionAndCorrectOrder(t *testing.T) {
+	type Operation struct {
+		CreatedAt int64  `json:"-" comment:"Date of creation in seconds since UNIX epoch."`
+		UpdatedAt int64  `json:"-" comment:"Date of last update in seconds since UNIX epoch."`
+		Network   string `json:"network" pg:",pk" comment:"Identifies belonging network."`
+	}
+
+	type Ballot struct {
+		//nolint
+		tableName struct{} `pg:"ballots" comment:"This table name comment"`
+		Operation
+		Ballot string `json:"ballot" comment:"This is field comment"`
+	}
+
+	mockCtrl, mockSC, ctx := initMocks(t)
+	defer mockCtrl.Finish()
+
+	model := Ballot{}
+
+	// Assert prepare
+	tableNameCall := mockSC.
+		EXPECT().
+		MakeTableComment(ctx, "ballots", "This table name comment").
+		Times(1).
+		Return(nil)
+
+	createdAtCall := mockSC.
+		EXPECT().
+		MakeColumnComment(ctx, "ballots", "created_at", "Date of creation in seconds since UNIX epoch.").
+		After(tableNameCall).
+		Times(1).
+		Return(nil)
+
+	updatedAtCall := mockSC.
+		EXPECT().
+		MakeColumnComment(ctx, "ballots", "updated_at", "Date of last update in seconds since UNIX epoch.").
+		After(createdAtCall).
+		Times(1).
+		Return(nil)
+
+	networkCall := mockSC.
+		EXPECT().
+		MakeColumnComment(ctx, "ballots", "network", "Identifies belonging network.").
+		After(updatedAtCall).
+		Times(1).
+		Return(nil)
+
+	mockSC.
+		EXPECT().
+		MakeColumnComment(ctx, "ballots", "ballot", "This is field comment").
+		After(networkCall).
+		Times(1).
+		Return(nil)
+
+	// Act
+	err := MakeComments(ctx, mockSC, model)
+
+	// Assert
+	assert.Empty(t, err)
+}
+
+func TestMakeCommentsWithDeepStructComposition(t *testing.T) {
+	type CreatedMetadata struct {
+		CreatedAt int64 `json:"-" comment:"Date of creation in seconds since UNIX epoch."`
+	}
+
+	type UpdatedMetadata struct {
+		CreatedMetadata
+		UpdatedAt int64 `json:"-" comment:"Date of last update in seconds since UNIX epoch."`
+	}
+
+	type Operation struct {
+		UpdatedMetadata
+		Network string `json:"network" pg:",pk" comment:"Identifies belonging network."`
+	}
+
+	type Ballot struct {
+		//nolint
+		tableName struct{} `pg:"ballots" comment:"This table name comment"`
+		Operation
+		Ballot string `json:"ballot" comment:"This is field comment"`
+	}
+
+	mockCtrl, mockSC, ctx := initMocks(t)
+	defer mockCtrl.Finish()
+
+	model := Ballot{}
+
+	// Assert prepare
+	tableNameCall := mockSC.
+		EXPECT().
+		MakeTableComment(ctx, "ballots", "This table name comment").
+		Times(1).
+		Return(nil)
+
+	createdAtCall := mockSC.
+		EXPECT().
+		MakeColumnComment(ctx, "ballots", "created_at", "Date of creation in seconds since UNIX epoch.").
+		After(tableNameCall).
+		Times(1).
+		Return(nil)
+
+	updatedAtCall := mockSC.
+		EXPECT().
+		MakeColumnComment(ctx, "ballots", "updated_at", "Date of last update in seconds since UNIX epoch.").
+		After(createdAtCall).
+		Times(1).
+		Return(nil)
+
+	networkCall := mockSC.
+		EXPECT().
+		MakeColumnComment(ctx, "ballots", "network", "Identifies belonging network.").
+		After(updatedAtCall).
+		Times(1).
+		Return(nil)
+
+	mockSC.
+		EXPECT().
+		MakeColumnComment(ctx, "ballots", "ballot", "This is field comment").
+		After(networkCall).
+		Times(1).
+		Return(nil)
+
+	// Act
+	err := MakeComments(ctx, mockSC, model)
+
+	// Assert
+	assert.Empty(t, err)
+}
+
+func TestMakeCommentsWithStructCompositionErrorOnEmbeddedTableName(t *testing.T) {
+	type Operation struct {
+		//nolint
+		tableName struct{} `pg:"operation" comment:"This embedded type tableName comment."`
+		CreatedAt int64    `json:"-" comment:"Date of creation in seconds since UNIX epoch."`
+		UpdatedAt int64    `json:"-" comment:"Date of last update in seconds since UNIX epoch."`
+		Network   string   `json:"network" pg:",pk" comment:"Identifies belonging network."`
+	}
+
+	type Ballot struct {
+		//nolint
+		tableName struct{} `pg:"ballots" comment:"This table name comment"`
+		Operation
+		Ballot string `json:"ballot" comment:"This is field comment"`
+	}
+
+	mockCtrl, mockSC, ctx := initMocks(t)
+	defer mockCtrl.Finish()
+
+	model := Ballot{}
+
+	// Assert prepare
+	mockSC.
+		EXPECT().
+		MakeTableComment(ctx, "ballots", "This table name comment").
+		Times(1).
+		Return(nil)
+
+	// Act
+	err := MakeComments(ctx, mockSC, model)
+
+	// Assert
+	assert.Error(t, err, "Embedded type must not have tableName field.")
+}

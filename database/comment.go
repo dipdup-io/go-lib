@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"github.com/dipdup-net/go-lib/hasura"
+	"github.com/pkg/errors"
 	"reflect"
 	"strings"
 )
@@ -47,26 +48,65 @@ func MakeComments(ctx context.Context, sc SchemeCommenter, models ...interface{}
 				continue
 			}
 
-			comment, ok := getComment(fieldType)
-			if !ok || comment == "" {
+			if fieldType.Anonymous {
+				if err := makeEmbeddedComments(ctx, sc, tableName, fieldType.Type); err != nil {
+					return err
+				}
 				continue
 			}
 
-			columnName, ok := getPgName(fieldType)
-
-			if columnName == "-" {
-				continue
-			}
-
-			if !ok {
-				columnName = hasura.ToSnakeCase(fieldType.Name)
-			}
-
-			if err := sc.MakeColumnComment(ctx, tableName, columnName, comment); err != nil {
+			if err := makeFieldComment(ctx, sc, tableName, fieldType); err != nil {
 				return err
 			}
 		}
 	}
+	return nil
+}
+
+func makeEmbeddedComments(ctx context.Context, sc SchemeCommenter, tableName string, t reflect.Type) error {
+	for i := 0; i < t.NumField(); i++ {
+		fieldType := t.Field(i)
+
+		if fieldType.Anonymous {
+			if err := makeEmbeddedComments(ctx, sc, tableName, fieldType.Type); err != nil {
+				return err
+			}
+
+			continue
+		}
+
+		if fieldType.Name == "tableName" {
+			return errors.New("Embedded type must not have tableName field.")
+		}
+
+		if err := makeFieldComment(ctx, sc, tableName, fieldType); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func makeFieldComment(ctx context.Context, sc SchemeCommenter, tableName string, fieldType reflect.StructField) error {
+	comment, ok := getComment(fieldType)
+	if !ok || comment == "" {
+		return nil
+	}
+
+	columnName, ok := getPgName(fieldType)
+
+	if columnName == "-" {
+		return nil
+	}
+
+	if !ok {
+		columnName = hasura.ToSnakeCase(fieldType.Name)
+	}
+
+	if err := sc.MakeColumnComment(ctx, tableName, columnName, comment); err != nil {
+		return err
+	}
+
 	return nil
 }
 
