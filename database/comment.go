@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"github.com/dipdup-net/go-lib/hasura"
+	"github.com/pkg/errors"
 	"reflect"
 	"strings"
 )
@@ -47,6 +48,12 @@ func MakeComments(ctx context.Context, sc SchemeCommenter, models ...interface{}
 				continue
 			}
 
+			if fieldType.Anonymous {
+				if err := makeEmbeddedComments(ctx, sc, tableName, fieldType.Type); err != nil {
+					return err
+				}
+			}
+
 			comment, ok := getComment(fieldType)
 			if !ok || comment == "" {
 				continue
@@ -67,6 +74,37 @@ func MakeComments(ctx context.Context, sc SchemeCommenter, models ...interface{}
 			}
 		}
 	}
+	return nil
+}
+
+func makeEmbeddedComments(ctx context.Context, sc SchemeCommenter, tableName string, t reflect.Type) error {
+	for i := 0; i < t.NumField(); i++ {
+		fieldType := t.Field(i)
+
+		if fieldType.Name == "tableName" {
+			return errors.New("Embedded type must not have tableName field.")
+		}
+
+		comment, ok := getComment(fieldType)
+		if !ok || comment == "" {
+			continue
+		}
+
+		columnName, ok := getPgName(fieldType)
+
+		if columnName == "-" {
+			continue
+		}
+
+		if !ok {
+			columnName = hasura.ToSnakeCase(fieldType.Name)
+		}
+
+		if err := sc.MakeColumnComment(ctx, tableName, columnName, comment); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
