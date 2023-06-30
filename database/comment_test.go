@@ -306,9 +306,9 @@ func TestMakeCommentsWithStructCompositionAndCorrectOrder(t *testing.T) {
 
 	type Ballot struct {
 		//nolint
-		tableName struct{} `pg:"ballots" comment:"This multiple table name comment"`
+		tableName struct{} `pg:"ballots" comment:"This table name comment"`
 		Operation
-		Ballot string `json:"ballot" comment:"This is multiple field comment"`
+		Ballot string `json:"ballot" comment:"This is field comment"`
 	}
 
 	mockCtrl, mockSC, ctx := initMocks(t)
@@ -319,7 +319,7 @@ func TestMakeCommentsWithStructCompositionAndCorrectOrder(t *testing.T) {
 	// Assert prepare
 	tableNameCall := mockSC.
 		EXPECT().
-		MakeTableComment(ctx, "ballots", "This multiple table name comment").
+		MakeTableComment(ctx, "ballots", "This table name comment").
 		Times(1).
 		Return(nil)
 
@@ -346,7 +346,7 @@ func TestMakeCommentsWithStructCompositionAndCorrectOrder(t *testing.T) {
 
 	mockSC.
 		EXPECT().
-		MakeColumnComment(ctx, "ballots", "ballot", "This is multiple field comment").
+		MakeColumnComment(ctx, "ballots", "ballot", "This is field comment").
 		After(networkCall).
 		Times(1).
 		Return(nil)
@@ -375,9 +375,9 @@ func TestMakeCommentsWithDeepStructComposition(t *testing.T) {
 
 	type Ballot struct {
 		//nolint
-		tableName struct{} `pg:"ballots" comment:"This multiple table name comment"`
+		tableName struct{} `pg:"ballots" comment:"This table name comment"`
 		Operation
-		Ballot string `json:"ballot" comment:"This is multiple field comment"`
+		Ballot string `json:"ballot" comment:"This is field comment"`
 	}
 
 	mockCtrl, mockSC, ctx := initMocks(t)
@@ -388,7 +388,7 @@ func TestMakeCommentsWithDeepStructComposition(t *testing.T) {
 	// Assert prepare
 	tableNameCall := mockSC.
 		EXPECT().
-		MakeTableComment(ctx, "ballots", "This multiple table name comment").
+		MakeTableComment(ctx, "ballots", "This table name comment").
 		Times(1).
 		Return(nil)
 
@@ -415,7 +415,7 @@ func TestMakeCommentsWithDeepStructComposition(t *testing.T) {
 
 	mockSC.
 		EXPECT().
-		MakeColumnComment(ctx, "ballots", "ballot", "This is multiple field comment").
+		MakeColumnComment(ctx, "ballots", "ballot", "This is field comment").
 		After(networkCall).
 		Times(1).
 		Return(nil)
@@ -425,4 +425,39 @@ func TestMakeCommentsWithDeepStructComposition(t *testing.T) {
 
 	// Assert
 	assert.Empty(t, err)
+}
+
+func TestMakeCommentsWithStructCompositionErrorOnEmbeddedTableName(t *testing.T) {
+	type Operation struct {
+		//nolint
+		tableName struct{} `pg:"operation" comment:"This embedded type tableName comment."`
+		CreatedAt int64    `json:"-" comment:"Date of creation in seconds since UNIX epoch."`
+		UpdatedAt int64    `json:"-" comment:"Date of last update in seconds since UNIX epoch."`
+		Network   string   `json:"network" pg:",pk" comment:"Identifies belonging network."`
+	}
+
+	type Ballot struct {
+		//nolint
+		tableName struct{} `pg:"ballots" comment:"This table name comment"`
+		Operation
+		Ballot string `json:"ballot" comment:"This is field comment"`
+	}
+
+	mockCtrl, mockSC, ctx := initMocks(t)
+	defer mockCtrl.Finish()
+
+	model := Ballot{}
+
+	// Assert prepare
+	mockSC.
+		EXPECT().
+		MakeTableComment(ctx, "ballots", "This table name comment").
+		Times(1).
+		Return(nil)
+
+	// Act
+	err := MakeComments(ctx, mockSC, model)
+
+	// Assert
+	assert.Error(t, err, "Embedded type must not have tableName field.")
 }
