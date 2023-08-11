@@ -3,20 +3,23 @@ package database
 import (
 	"context"
 	"time"
+
+	"github.com/uptrace/bun"
 )
 
 // State -
 type State struct {
 	//nolint
-	tableName struct{} `gorm:"-" pg:"dipdup_state" json:"-"`
+	tableName     struct{} `gorm:"-" pg:"dipdup_state" json:"-" comment:"Indexer state table"`
+	bun.BaseModel `bun:"table:dipdup_state"`
 
-	IndexName string    `gorm:"primaryKey" pg:",pk" json:"index_name"`
-	IndexType string    `json:"index_type"`
-	Hash      string    `json:"hash"`
-	Timestamp time.Time `json:"timestamp"`
-	Level     uint64    `json:"level"`
-	UpdatedAt int       `gorm:"autoUpdateTime"`
-	CreatedAt int       `gorm:"autoCreateTime"`
+	IndexName string    `gorm:"primaryKey" pg:",pk" json:"index_name" comment:"Index name"`
+	IndexType string    `json:"index_type" comment:"Index type"`
+	Hash      string    `json:"hash" comment:"Current hash"`
+	Timestamp time.Time `json:"timestamp" comment:"Current timestamp"`
+	Level     uint64    `json:"level" comment:"Index level"`
+	UpdatedAt int       `gorm:"autoUpdateTime" comment:"Last updated timestamp"`
+	CreatedAt int       `gorm:"autoCreateTime" comment:"Created timestamp"`
 }
 
 // BeforeInsert -
@@ -39,8 +42,8 @@ func (State) TableName() string {
 
 // StateRepository -
 type StateRepository interface {
-	State(name string) (*State, error)
-	UpdateState(state *State) error
-	CreateState(state *State) error
-	DeleteState(state *State) error
+	State(ctx context.Context, name string) (*State, error)
+	UpdateState(sctx context.Context, tate *State) error
+	CreateState(ctx context.Context, state *State) error
+	DeleteState(ctx context.Context, state *State) error
 }

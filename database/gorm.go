@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/dipdup-net/go-lib/config"
+	pg "github.com/go-pg/pg/v10"
 	"github.com/pkg/errors"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
@@ -105,23 +106,40 @@ func (db *Gorm) Ping(ctx context.Context) error {
 }
 
 // State -
-func (db *Gorm) State(indexName string) (*State, error) {
+func (db *Gorm) State(ctx context.Context, indexName string) (*State, error) {
 	var s State
-	err := db.conn.Where("index_name = ?", indexName).First(s).Error
+	err := db.conn.WithContext(ctx).Where("index_name = ?", indexName).First(s).Error
 	return &s, err
 }
 
 // CreateState -
-func (db *Gorm) CreateState(s *State) error {
-	return db.conn.Create(s).Error
+func (db *Gorm) CreateState(ctx context.Context, s *State) error {
+	return db.conn.WithContext(ctx).Create(s).Error
 }
 
 // UpdateState -
-func (db *Gorm) UpdateState(s *State) error {
-	return db.conn.Save(s).Error
+func (db *Gorm) UpdateState(ctx context.Context, s *State) error {
+	return db.conn.WithContext(ctx).Save(s).Error
 }
 
 // DeleteState -
-func (db *Gorm) DeleteState(s *State) error {
-	return db.conn.Delete(s).Error
+func (db *Gorm) DeleteState(ctx context.Context, s *State) error {
+	return db.conn.WithContext(ctx).Delete(s).Error
+}
+
+// MakeTableComment -
+func (db *Gorm) MakeTableComment(ctx context.Context, name string, comment string) error {
+	return db.conn.WithContext(ctx).Exec(
+		`COMMENT ON TABLE ? IS ?`,
+		pg.Safe(name),
+		comment).Error
+}
+
+// MakeColumnComment -
+func (db *Gorm) MakeColumnComment(ctx context.Context, tableName string, columnName string, comment string) error {
+	return db.conn.WithContext(ctx).Exec(
+		`COMMENT ON COLUMN ?.? IS ?`,
+		pg.Safe(tableName),
+		pg.Safe(columnName),
+		comment).Error
 }

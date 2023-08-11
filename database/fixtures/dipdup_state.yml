@@ -1,0 +1,7 @@
+- index_name: test_index
+  index_type: test
+  level: 100
+  hash: deadbeef
+  timestamp: 2023-01-01 12:30:12
+  updated_at: 1691767900
+  created_at: 1691767900

@@ -2,12 +2,14 @@ package database
 
 import (
 	"context"
-	"github.com/dipdup-net/go-lib/hasura"
-	"github.com/pkg/errors"
 	"reflect"
 	"strings"
+
+	"github.com/dipdup-net/go-lib/hasura"
+	"github.com/pkg/errors"
 )
 
+// MakeComments -
 func MakeComments(ctx context.Context, sc SchemeCommenter, models ...interface{}) error {
 	if models == nil {
 		return nil

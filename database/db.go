@@ -11,11 +11,18 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// SchemeCommenter -
+type SchemeCommenter interface {
+	MakeTableComment(ctx context.Context, name string, comment string) error
+	MakeColumnComment(ctx context.Context, tableName string, columnName string, comment string) error
+}
+
 // Database -
 type Database interface {
 	Connect(ctx context.Context, cfg config.Database) error
 
 	StateRepository
+	SchemeCommenter
 
 	driver.Pinger
 	io.Closer
