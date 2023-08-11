@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/dipdup-net/go-lib/config"
-	pg "github.com/go-pg/pg/v10"
 	"github.com/pkg/errors"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
@@ -131,7 +130,7 @@ func (db *Gorm) DeleteState(ctx context.Context, s *State) error {
 func (db *Gorm) MakeTableComment(ctx context.Context, name string, comment string) error {
 	return db.conn.WithContext(ctx).Exec(
 		`COMMENT ON TABLE ? IS ?`,
-		pg.Safe(name),
+		name,
 		comment).Error
 }
 
@@ -139,7 +138,7 @@ func (db *Gorm) MakeTableComment(ctx context.Context, name string, comment strin
 func (db *Gorm) MakeColumnComment(ctx context.Context, tableName string, columnName string, comment string) error {
 	return db.conn.WithContext(ctx).Exec(
 		`COMMENT ON COLUMN ?.? IS ?`,
-		pg.Safe(tableName),
-		pg.Safe(columnName),
+		tableName,
+		columnName,
 		comment).Error
 }
