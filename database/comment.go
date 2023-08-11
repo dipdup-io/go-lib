@@ -31,9 +31,9 @@ func MakeComments(ctx context.Context, sc SchemeCommenter, models ...interface{}
 		for i := 0; i < modelType.NumField(); i++ {
 			fieldType := modelType.Field(i)
 
-			if fieldType.Name == "tableName" {
+			if fieldType.Name == "tableName" || fieldType.Name == "BaseModel" {
 				var ok bool
-				tableName, ok = getPgName(fieldType)
+				tableName, ok = getDatabaseTagName(fieldType)
 				if !ok {
 					tableName = hasura.ToSnakeCase(modelType.Name())
 				}
@@ -95,7 +95,7 @@ func makeFieldComment(ctx context.Context, sc SchemeCommenter, tableName string,
 		return nil
 	}
 
-	columnName, ok := getPgName(fieldType)
+	columnName, ok := getDatabaseTagName(fieldType)
 
 	if columnName == "-" {
 		return nil
@@ -112,13 +112,26 @@ func makeFieldComment(ctx context.Context, sc SchemeCommenter, tableName string,
 	return nil
 }
 
-func getPgName(fieldType reflect.StructField) (name string, ok bool) {
-	pgTag, ok := fieldType.Tag.Lookup("pg")
-	if !ok {
+func getDatabaseTagName(fieldType reflect.StructField) (name string, ok bool) {
+	pgTag, pgOk := fieldType.Tag.Lookup("pg")
+	bunTag, bunOk := fieldType.Tag.Lookup("bun")
+	ok = pgOk || bunOk
+
+	var tag string
+	switch {
+	case !pgOk && !bunOk:
 		return "", false
+	case pgOk && pgTag != "-":
+		tag = pgTag
+	case bunOk && bunTag != "-":
+		tag = strings.TrimPrefix(bunTag, "table:")
+	case pgOk:
+		tag = pgTag
+	case bunOk:
+		tag = bunTag
 	}
 
-	tags := strings.Split(pgTag, ",")
+	tags := strings.Split(tag, ",")
 
 	if tags[0] != "" {
 		name = tags[0]

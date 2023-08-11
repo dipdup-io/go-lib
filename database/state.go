@@ -10,8 +10,8 @@ import (
 // State -
 type State struct {
 	//nolint
-	tableName     struct{} `gorm:"-" pg:"dipdup_state" json:"-" comment:"Indexer state table"`
-	bun.BaseModel `bun:"table:dipdup_state"`
+	tableName     struct{} `gorm:"-" bun:"-" pg:"dipdup_state" json:"-" comment:"Indexer state table"`
+	bun.BaseModel `gorm:"-" pg:"-" bun:"table:dipdup_state" json:"-" comment:"Indexer state table"`
 
 	IndexName string    `gorm:"primaryKey" pg:",pk" json:"index_name" comment:"Index name"`
 	IndexType string    `json:"index_type" comment:"Index type"`
