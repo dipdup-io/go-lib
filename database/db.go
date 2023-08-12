@@ -20,6 +20,7 @@ type SchemeCommenter interface {
 // Database -
 type Database interface {
 	Connect(ctx context.Context, cfg config.Database) error
+	Exec(ctx context.Context, query string, args ...any) (int64, error)
 
 	StateRepository
 	SchemeCommenter

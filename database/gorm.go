@@ -87,6 +87,15 @@ func (db *Gorm) Close() error {
 	return sql.Close()
 }
 
+// Exec -
+func (db *Gorm) Exec(ctx context.Context, query string, args ...any) (int64, error) {
+	tx := db.conn.WithContext(ctx).Exec(query, args...)
+	if tx.Error != nil {
+		return 0, tx.Error
+	}
+	return tx.RowsAffected, nil
+}
+
 // Ping -
 func (db *Gorm) Ping(ctx context.Context) error {
 	if db.conn == nil {

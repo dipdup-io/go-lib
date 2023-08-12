@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"runtime"
 
 	"github.com/dipdup-net/go-lib/config"
 	"github.com/pkg/errors"
@@ -46,6 +47,9 @@ func (db *Bun) Connect(ctx context.Context, cfg config.Database) error {
 		))
 		db.conn = bun.NewDB(db.sqldb, pgdialect.New())
 	}
+	maxOpenConns := 4 * runtime.GOMAXPROCS(0)
+	db.sqldb.SetMaxOpenConns(maxOpenConns)
+	db.sqldb.SetMaxIdleConns(maxOpenConns)
 	return nil
 }
 
@@ -55,6 +59,15 @@ func (db *Bun) Close() error {
 		return err
 	}
 	return db.sqldb.Close()
+}
+
+// Exec -
+func (db *Bun) Exec(ctx context.Context, query string, args ...any) (int64, error) {
+	result, err := db.conn.ExecContext(ctx, query, args...)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 // Ping -

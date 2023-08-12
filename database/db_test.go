@@ -64,8 +64,8 @@ func newDatabase(ctx context.Context, typ string, cfg config.Database) (Database
 	}
 }
 
-// TestSuite -
-type TestSuite struct {
+// DBTestSuite -
+type DBTestSuite struct {
 	suite.Suite
 	psqlContainer *PostgreSQLContainer
 	db            Database
@@ -73,7 +73,7 @@ type TestSuite struct {
 }
 
 // SetupSuite -
-func (s *TestSuite) SetupSuite() {
+func (s *DBTestSuite) SetupSuite() {
 	ctx, ctxCancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer ctxCancel()
 
@@ -98,7 +98,7 @@ func (s *TestSuite) SetupSuite() {
 	s.Require().NoError(err)
 }
 
-func (s *TestSuite) TearDownSuite() {
+func (s *DBTestSuite) TearDownSuite() {
 	ctx, ctxCancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer ctxCancel()
 
@@ -106,7 +106,7 @@ func (s *TestSuite) TearDownSuite() {
 	s.Require().NoError(s.psqlContainer.Terminate(ctx))
 }
 
-func (s *TestSuite) TestStateCreate() {
+func (s *DBTestSuite) TestStateCreate() {
 	db, err := sql.Open("postgres", s.psqlContainer.GetDSN())
 	s.Require().NoError(err)
 
@@ -137,7 +137,7 @@ func (s *TestSuite) TestStateCreate() {
 	s.Require().Equal(state.UpdatedAt, newState.UpdatedAt)
 }
 
-func (s *TestSuite) TestStateUpdate() {
+func (s *DBTestSuite) TestStateUpdate() {
 	db, err := sql.Open("postgres", s.psqlContainer.GetDSN())
 	s.Require().NoError(err)
 
@@ -167,7 +167,7 @@ func (s *TestSuite) TestStateUpdate() {
 	s.Require().Equal(state.UpdatedAt, newState.UpdatedAt)
 }
 
-func (s *TestSuite) TestState() {
+func (s *DBTestSuite) TestState() {
 	db, err := sql.Open("postgres", s.psqlContainer.GetDSN())
 	s.Require().NoError(err)
 
@@ -191,7 +191,7 @@ func (s *TestSuite) TestState() {
 	s.Require().Equal(state.IndexName, testIndex)
 }
 
-func (s *TestSuite) TestDeleteState() {
+func (s *DBTestSuite) TestDeleteState() {
 	db, err := sql.Open("postgres", s.psqlContainer.GetDSN())
 	s.Require().NoError(err)
 
@@ -215,22 +215,43 @@ func (s *TestSuite) TestDeleteState() {
 	s.Require().Error(err)
 }
 
-func (s *TestSuite) TestPing() {
+func (s *DBTestSuite) TestPing() {
 	ctx, ctxCancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer ctxCancel()
 
 	s.Require().NoError(s.db.Ping(ctx))
 }
 
-func (s *TestSuite) TestMakeComments() {
+func (s *DBTestSuite) TestMakeComments() {
 	ctx, ctxCancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer ctxCancel()
 
 	s.Require().NoError(MakeComments(ctx, s.db, &State{}))
 }
 
+func (s *DBTestSuite) TestExec() {
+	db, err := sql.Open("postgres", s.psqlContainer.GetDSN())
+	s.Require().NoError(err)
+
+	fixtures, err := testfixtures.New(
+		testfixtures.Database(db),
+		testfixtures.Dialect("postgres"),
+		testfixtures.Directory("fixtures"),
+	)
+	s.Require().NoError(err)
+	s.Require().NoError(fixtures.Load())
+	s.Require().NoError(db.Close())
+
+	ctx, ctxCancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer ctxCancel()
+
+	count, err := s.db.Exec(ctx, "delete from dipdup_state where index_name = ?", testIndex)
+	s.Require().NoError(err)
+	s.Require().EqualValues(1, count)
+}
+
 func TestSuite_Run(t *testing.T) {
-	ts := new(TestSuite)
+	ts := new(DBTestSuite)
 	for _, typ := range []string{"gorm", "pg-go", "bun"} {
 		ts.typ = typ
 	}

@@ -55,6 +55,12 @@ func (db *PgGo) Close() error {
 	return db.conn.Close()
 }
 
+// Exec -
+func (db *PgGo) Exec(ctx context.Context, query string, args ...any) (int64, error) {
+	result, err := db.conn.ExecContext(ctx, query, args...)
+	return int64(result.RowsAffected()), err
+}
+
 // Ping -
 func (db *PgGo) Ping(ctx context.Context) error {
 	if db.conn == nil {
