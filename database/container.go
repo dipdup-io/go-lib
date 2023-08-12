@@ -14,7 +14,7 @@ import (
 type (
 	PostgreSQLContainer struct {
 		testcontainers.Container
-		cfg        PostgreSQLContainerConfig
+		Config     PostgreSQLContainerConfig
 		mappedPort nat.Port
 	}
 
@@ -63,14 +63,14 @@ func NewPostgreSQLContainer(ctx context.Context, cfg PostgreSQLContainerConfig) 
 
 	return &PostgreSQLContainer{
 		Container:  container,
-		cfg:        cfg,
+		Config:     cfg,
 		mappedPort: mappedPort,
 	}, nil
 }
 
 // GetDSN -
 func (c PostgreSQLContainer) GetDSN() string {
-	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", c.cfg.User, c.cfg.Password, c.cfg.Host, c.mappedPort.Port(), c.cfg.Database)
+	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", c.Config.User, c.Config.Password, c.Config.Host, c.mappedPort.Port(), c.Config.Database)
 }
 
 // MappedPort -

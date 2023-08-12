@@ -89,10 +89,10 @@ func (s *TestSuite) SetupSuite() {
 
 	s.db, err = newDatabase(ctx, s.typ, config.Database{
 		Kind:     config.DBKindPostgres,
-		User:     s.psqlContainer.cfg.User,
-		Database: s.psqlContainer.cfg.Database,
-		Password: s.psqlContainer.cfg.Password,
-		Host:     s.psqlContainer.cfg.Host,
+		User:     s.psqlContainer.Config.User,
+		Database: s.psqlContainer.Config.Database,
+		Password: s.psqlContainer.Config.Password,
+		Host:     s.psqlContainer.Config.Host,
 		Port:     s.psqlContainer.MappedPort().Int(),
 	})
 	s.Require().NoError(err)
