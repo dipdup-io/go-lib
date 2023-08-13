@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"fmt"
+	"reflect"
 	"time"
 
 	"github.com/pkg/errors"
@@ -144,5 +145,44 @@ func (pm *RangePartitionManager) CreatePartitions(ctx context.Context, currentTi
 	}
 
 	pm.lastId = p.id
+	return nil
+}
+
+// CreateTables - creates tables by passed models. If partition tag is present table will be partitioned
+func CreateTables(ctx context.Context, conn Database, models ...any) error {
+	if len(models) == 0 {
+		return nil
+	}
+
+	for i := range models {
+		if models[i] == nil {
+			continue
+		}
+		modelType := reflect.TypeOf(models[i])
+		if reflect.ValueOf(models[i]).Kind() == reflect.Ptr {
+			modelType = modelType.Elem()
+		}
+
+		for j := 0; j < modelType.NumField(); j++ {
+			fieldType := modelType.Field(j)
+
+			if fieldType.Name != fieldTableName && fieldType.Name != fieldBaseModel {
+				continue
+			}
+
+			options := []CreateTableOption{
+				WithIfNotExists(),
+			}
+
+			partitionTag, ok := fieldType.Tag.Lookup("partition")
+			if ok {
+				options = append(options, WithPartitioning(partitionTag))
+			}
+			if err := conn.CreateTable(ctx, models[i], options...); err != nil {
+				return err
+			}
+		}
+	}
+
 	return nil
 }

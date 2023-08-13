@@ -8,6 +8,7 @@ import (
 
 	"github.com/dipdup-net/go-lib/config"
 	pg "github.com/go-pg/pg/v10"
+	"github.com/go-pg/pg/v10/orm"
 	"github.com/pkg/errors"
 )
 
@@ -113,4 +114,21 @@ func (db *PgGo) MakeColumnComment(ctx context.Context, tableName string, columnN
 		comment)
 
 	return err
+}
+
+// CreateTable -
+func (db *PgGo) CreateTable(ctx context.Context, model any, opts ...CreateTableOption) error {
+	if model == nil {
+		return nil
+	}
+	var options CreateTableOptions
+	for i := range opts {
+		opts[i](&options)
+	}
+
+	// option 'partitionBy' is ignored because it's work via tag in pg-go library
+	return db.DB().WithContext(ctx).Model(model).CreateTable(&orm.CreateTableOptions{
+		IfNotExists: options.ifNotExists,
+		Temp:        options.temporary,
+	})
 }

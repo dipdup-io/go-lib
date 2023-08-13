@@ -123,3 +123,33 @@ func (db *Bun) MakeColumnComment(ctx context.Context, tableName string, columnNa
 
 	return err
 }
+
+// CreateTable -
+func (db *Bun) CreateTable(ctx context.Context, model any, opts ...CreateTableOption) error {
+	if model == nil {
+		return nil
+	}
+	var options CreateTableOptions
+	for i := range opts {
+		opts[i](&options)
+	}
+
+	query := db.DB().
+		NewCreateTable().
+		Model(model)
+
+	if options.ifNotExists {
+		query = query.IfNotExists()
+	}
+
+	if options.partitionBy != "" {
+		query = query.PartitionBy(options.partitionBy)
+	}
+
+	if options.temporary {
+		query = query.Temp()
+	}
+
+	_, err := query.Exec(ctx)
+	return err
+}

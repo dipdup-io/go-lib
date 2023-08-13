@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-pg/pg/v10/orm"
 	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
 
@@ -22,43 +21,11 @@ const (
 func newDatabase(ctx context.Context, typ string, cfg config.Database) (Database, error) {
 	switch typ {
 	case "gorm":
-		db := NewGorm()
-		if err := db.Connect(ctx, cfg); err != nil {
-			return nil, err
-		}
-		if err := db.DB().AutoMigrate(&State{}); err != nil {
-			if err := db.Close(); err != nil {
-				return nil, err
-			}
-			return nil, err
-		}
-		return db, nil
+		return NewGorm(), nil
 	case "pg-go":
-		db := NewPgGo()
-		if err := db.Connect(ctx, cfg); err != nil {
-			return nil, err
-		}
-		if err := db.DB().WithContext(ctx).Model(&State{}).CreateTable(&orm.CreateTableOptions{
-			IfNotExists: true,
-		}); err != nil {
-			if err := db.Close(); err != nil {
-				return nil, err
-			}
-			return nil, err
-		}
-		return db, nil
+		return NewPgGo(), nil
 	case "bun":
-		db := NewBun()
-		if err := db.Connect(ctx, cfg); err != nil {
-			return nil, err
-		}
-		if _, err := db.DB().NewCreateTable().Model(&State{}).IfNotExists().Exec(ctx); err != nil {
-			if err := db.Close(); err != nil {
-				return nil, err
-			}
-			return nil, err
-		}
-		return db, nil
+		return NewBun(), nil
 	default:
 		return nil, errors.Errorf("unknown ORM: %s", typ)
 	}
@@ -87,14 +54,20 @@ func (s *DBTestSuite) SetupSuite() {
 	s.Require().NoError(err)
 	s.psqlContainer = psqlContainer
 
-	s.db, err = newDatabase(ctx, s.typ, config.Database{
+	cfg := config.Database{
 		Kind:     config.DBKindPostgres,
 		User:     s.psqlContainer.Config.User,
 		Database: s.psqlContainer.Config.Database,
 		Password: s.psqlContainer.Config.Password,
 		Host:     s.psqlContainer.Config.Host,
 		Port:     s.psqlContainer.MappedPort().Int(),
-	})
+	}
+
+	s.db, err = newDatabase(ctx, s.typ, cfg)
+	s.Require().NoError(err)
+	err = s.db.Connect(ctx, cfg)
+	s.Require().NoError(err)
+	err = s.db.CreateTable(ctx, &State{}, WithIfNotExists())
 	s.Require().NoError(err)
 }
 

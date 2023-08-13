@@ -21,6 +21,7 @@ type SchemeCommenter interface {
 type Database interface {
 	Connect(ctx context.Context, cfg config.Database) error
 	Exec(ctx context.Context, query string, args ...any) (int64, error)
+	CreateTable(ctx context.Context, model any, opts ...CreateTableOption) error
 
 	StateRepository
 	SchemeCommenter

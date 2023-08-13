@@ -11,7 +11,7 @@ import (
 )
 
 type logs struct {
-	bun.BaseModel `bun:"logs"`
+	bun.BaseModel `bun:"logs" partition:"RANGE(log_time)"`
 
 	Id        int       `pg:"id,pk"`
 	LogString string    `pg:"log_string"`
@@ -52,7 +52,7 @@ func (s *PartitionTestSuite) SetupSuite() {
 	})
 	s.Require().NoError(err)
 
-	_, err = s.db.DB().NewCreateTable().Model(&logs{}).PartitionBy("RANGE(log_time)").IfNotExists().Exec(ctx)
+	err = CreateTables(ctx, s.db, &State{}, &logs{})
 	s.Require().NoError(err)
 
 	s.pm = NewPartitionManager(s.db, PartitionByMonth)

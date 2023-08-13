@@ -151,3 +151,13 @@ func (db *Gorm) MakeColumnComment(ctx context.Context, tableName string, columnN
 		columnName,
 		comment).Error
 }
+
+// CreateTable -
+func (db *Gorm) CreateTable(ctx context.Context, model any, opts ...CreateTableOption) error {
+	if model == nil {
+		return nil
+	}
+
+	// options are ignored because it's not supported by gorm
+	return db.DB().WithContext(ctx).AutoMigrate(model)
+}

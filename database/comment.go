@@ -9,9 +9,14 @@ import (
 	"github.com/pkg/errors"
 )
 
+const (
+	fieldTableName = "tableName"
+	fieldBaseModel = "BaseModel"
+)
+
 // MakeComments -
 func MakeComments(ctx context.Context, sc SchemeCommenter, models ...interface{}) error {
-	if models == nil {
+	if len(models) == 0 {
 		return nil
 	}
 
@@ -31,7 +36,7 @@ func MakeComments(ctx context.Context, sc SchemeCommenter, models ...interface{}
 		for i := 0; i < modelType.NumField(); i++ {
 			fieldType := modelType.Field(i)
 
-			if fieldType.Name == "tableName" || fieldType.Name == "BaseModel" {
+			if fieldType.Name == fieldTableName || fieldType.Name == fieldBaseModel {
 				var ok bool
 				tableName, ok = getDatabaseTagName(fieldType)
 				if !ok {
@@ -77,7 +82,7 @@ func makeEmbeddedComments(ctx context.Context, sc SchemeCommenter, tableName str
 			continue
 		}
 
-		if fieldType.Name == "tableName" {
+		if fieldType.Name == fieldTableName {
 			return errors.New("Embedded type must not have tableName field.")
 		}
 
@@ -143,7 +148,6 @@ func getDatabaseTagName(fieldType reflect.StructField) (name string, ok bool) {
 
 func getComment(fieldType reflect.StructField) (string, bool) {
 	commentTag, ok := fieldType.Tag.Lookup("comment")
-
 	if ok {
 		return commentTag, ok
 	}
