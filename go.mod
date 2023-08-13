@@ -25,7 +25,6 @@ require (
 	github.com/tidwall/gjson v1.16.0
 	github.com/uptrace/bun v1.1.14
 	github.com/uptrace/bun/dialect/pgdialect v1.1.14
-	github.com/uptrace/bun/driver/pgdriver v1.1.14
 	github.com/yhirose/go-peg v0.0.0-20210804202551-de25d6753cf1
 	golang.org/x/crypto v0.12.0
 	golang.org/x/text v0.12.0

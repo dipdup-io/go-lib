@@ -10,7 +10,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/pgdialect"
-	"github.com/uptrace/bun/driver/pgdriver"
 )
 
 // Bun -
@@ -35,16 +34,26 @@ func (db *Bun) Connect(ctx context.Context, cfg config.Database) error {
 		return errors.Wrap(ErrUnsupportedDatabaseType, cfg.Kind)
 	}
 	if cfg.Path != "" {
-		db.sqldb = sql.OpenDB(pgdriver.NewConnector(pgdriver.WithDSN(cfg.Path)))
+		conn, err := sql.Open("postgres", cfg.Path)
+		if err != nil {
+			return err
+		}
+		db.sqldb = conn
 		db.conn = bun.NewDB(db.sqldb, pgdialect.New())
 	} else {
-		db.sqldb = sql.OpenDB(pgdriver.NewConnector(
-			pgdriver.WithAddr(fmt.Sprintf("%s:%d", cfg.Host, cfg.Port)),
-			pgdriver.WithDatabase(cfg.Database),
-			pgdriver.WithPassword(cfg.Password),
-			pgdriver.WithUser(cfg.User),
-			pgdriver.WithInsecure(true),
-		))
+		connStr := fmt.Sprintf(
+			"postgres://%s:%s@%s:%d/%s?sslmode=disable",
+			cfg.User,
+			cfg.Password,
+			cfg.Host,
+			cfg.Port,
+			cfg.Database,
+		)
+		conn, err := sql.Open("postgres", connStr)
+		if err != nil {
+			return err
+		}
+		db.sqldb = conn
 		db.conn = bun.NewDB(db.sqldb, pgdialect.New())
 	}
 	maxOpenConns := 4 * runtime.GOMAXPROCS(0)
