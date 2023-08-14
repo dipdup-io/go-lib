@@ -87,6 +87,15 @@ func (db *Gorm) Close() error {
 	return sql.Close()
 }
 
+// Exec -
+func (db *Gorm) Exec(ctx context.Context, query string, args ...any) (int64, error) {
+	tx := db.conn.WithContext(ctx).Exec(query, args...)
+	if tx.Error != nil {
+		return 0, tx.Error
+	}
+	return tx.RowsAffected, nil
+}
+
 // Ping -
 func (db *Gorm) Ping(ctx context.Context) error {
 	if db.conn == nil {
@@ -105,23 +114,50 @@ func (db *Gorm) Ping(ctx context.Context) error {
 }
 
 // State -
-func (db *Gorm) State(indexName string) (*State, error) {
+func (db *Gorm) State(ctx context.Context, indexName string) (*State, error) {
 	var s State
-	err := db.conn.Where("index_name = ?", indexName).First(s).Error
+	err := db.conn.WithContext(ctx).Where("index_name = ?", indexName).First(s).Error
 	return &s, err
 }
 
 // CreateState -
-func (db *Gorm) CreateState(s *State) error {
-	return db.conn.Create(s).Error
+func (db *Gorm) CreateState(ctx context.Context, s *State) error {
+	return db.conn.WithContext(ctx).Create(s).Error
 }
 
 // UpdateState -
-func (db *Gorm) UpdateState(s *State) error {
-	return db.conn.Save(s).Error
+func (db *Gorm) UpdateState(ctx context.Context, s *State) error {
+	return db.conn.WithContext(ctx).Save(s).Error
 }
 
 // DeleteState -
-func (db *Gorm) DeleteState(s *State) error {
-	return db.conn.Delete(s).Error
+func (db *Gorm) DeleteState(ctx context.Context, s *State) error {
+	return db.conn.WithContext(ctx).Delete(s).Error
+}
+
+// MakeTableComment -
+func (db *Gorm) MakeTableComment(ctx context.Context, name string, comment string) error {
+	return db.conn.WithContext(ctx).Exec(
+		`COMMENT ON TABLE ? IS ?`,
+		name,
+		comment).Error
+}
+
+// MakeColumnComment -
+func (db *Gorm) MakeColumnComment(ctx context.Context, tableName string, columnName string, comment string) error {
+	return db.conn.WithContext(ctx).Exec(
+		`COMMENT ON COLUMN ?.? IS ?`,
+		tableName,
+		columnName,
+		comment).Error
+}
+
+// CreateTable -
+func (db *Gorm) CreateTable(ctx context.Context, model any, opts ...CreateTableOption) error {
+	if model == nil {
+		return nil
+	}
+
+	// options are ignored because it's not supported by gorm
+	return db.DB().WithContext(ctx).AutoMigrate(model)
 }

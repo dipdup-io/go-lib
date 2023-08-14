@@ -5,15 +5,12 @@ package database
 import (
 	"context"
 	"fmt"
+
 	"github.com/dipdup-net/go-lib/config"
 	pg "github.com/go-pg/pg/v10"
+	"github.com/go-pg/pg/v10/orm"
 	"github.com/pkg/errors"
 )
-
-type SchemeCommenter interface {
-	MakeTableComment(ctx context.Context, name string, comment string) error
-	MakeColumnComment(ctx context.Context, tableName string, columnName string, comment string) error
-}
 
 // PgGo -
 type PgGo struct {
@@ -59,6 +56,12 @@ func (db *PgGo) Close() error {
 	return db.conn.Close()
 }
 
+// Exec -
+func (db *PgGo) Exec(ctx context.Context, query string, args ...any) (int64, error) {
+	result, err := db.conn.ExecContext(ctx, query, args...)
+	return int64(result.RowsAffected()), err
+}
+
 // Ping -
 func (db *PgGo) Ping(ctx context.Context) error {
 	if db.conn == nil {
@@ -68,30 +71,31 @@ func (db *PgGo) Ping(ctx context.Context) error {
 }
 
 // State -
-func (db *PgGo) State(indexName string) (*State, error) {
+func (db *PgGo) State(ctx context.Context, indexName string) (*State, error) {
 	var s State
-	err := db.conn.Model(&s).Where("index_name = ?", indexName).Limit(1).Select()
+	err := db.conn.ModelContext(ctx, &s).Where("index_name = ?", indexName).Limit(1).Select()
 	return &s, err
 }
 
 // CreateState -
-func (db *PgGo) CreateState(s *State) error {
-	_, err := db.conn.Model(s).Insert()
+func (db *PgGo) CreateState(ctx context.Context, s *State) error {
+	_, err := db.conn.ModelContext(ctx, s).Insert()
 	return err
 }
 
 // UpdateState -
-func (db *PgGo) UpdateState(s *State) error {
-	_, err := db.conn.Model(s).Where("index_name = ?", s.IndexName).Update()
+func (db *PgGo) UpdateState(ctx context.Context, s *State) error {
+	_, err := db.conn.ModelContext(ctx, s).Where("index_name = ?", s.IndexName).Update()
 	return err
 }
 
 // DeleteState -
-func (db *PgGo) DeleteState(s *State) error {
-	_, err := db.conn.Model(s).Where("index_name = ?", s.IndexName).Delete()
+func (db *PgGo) DeleteState(ctx context.Context, s *State) error {
+	_, err := db.conn.ModelContext(ctx, s).Where("index_name = ?", s.IndexName).Delete()
 	return err
 }
 
+// MakeTableComment -
 func (db *PgGo) MakeTableComment(ctx context.Context, name string, comment string) error {
 	_, err := db.conn.ExecContext(ctx,
 		`COMMENT ON TABLE ? IS ?`,
@@ -101,6 +105,7 @@ func (db *PgGo) MakeTableComment(ctx context.Context, name string, comment strin
 	return err
 }
 
+// MakeColumnComment -
 func (db *PgGo) MakeColumnComment(ctx context.Context, tableName string, columnName string, comment string) error {
 	_, err := db.conn.ExecContext(ctx,
 		`COMMENT ON COLUMN ?.? IS ?`,
@@ -109,4 +114,21 @@ func (db *PgGo) MakeColumnComment(ctx context.Context, tableName string, columnN
 		comment)
 
 	return err
+}
+
+// CreateTable -
+func (db *PgGo) CreateTable(ctx context.Context, model any, opts ...CreateTableOption) error {
+	if model == nil {
+		return nil
+	}
+	var options CreateTableOptions
+	for i := range opts {
+		opts[i](&options)
+	}
+
+	// option 'partitionBy' is ignored because it's work via tag in pg-go library
+	return db.DB().WithContext(ctx).Model(model).CreateTable(&orm.CreateTableOptions{
+		IfNotExists: options.ifNotExists,
+		Temp:        options.temporary,
+	})
 }
