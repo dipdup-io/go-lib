@@ -125,6 +125,14 @@ func TestIsAddress(t *testing.T) {
 			name: "tz1PUnJ3m435ZK4RTqhTEiSYF22YAUx5rEU1",
 			str:  "tz1PUnJ3m435ZK4RTqhTEiSYF22YAUx5rEU1",
 			want: true,
+		}, {
+			name: "sr1J1ECygUgzE7urU3Ayr5HZaty83hpjbs28",
+			str:  "sr1J1ECygUgzE7urU3Ayr5HZaty83hpjbs28",
+			want: true,
+		}, {
+			name: "txr1YNMEtkj5Vkqsbdmt7xaxBTMRZjzS96UA",
+			str:  "txr1YNMEtkj5Vkqsbdmt7xaxBTMRZjzS96UA",
+			want: false,
 		},
 	}
 	for _, tt := range tests {
