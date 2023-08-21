@@ -26,10 +26,11 @@ func (c *Config) Substitute() error {
 
 // DataSource -
 type DataSource struct {
-	Kind        string       `yaml:"kind"`
-	URL         string       `yaml:"url" validate:"required,url"`
-	Credentials *Credentials `yaml:"credentials,omitempty" validate:"omitempty"`
-	Timeout     uint         `yaml:"timeout" validate:"omitempty"`
+	Kind              string       `yaml:"kind"`
+	URL               string       `yaml:"url" validate:"required,url"`
+	Credentials       *Credentials `yaml:"credentials,omitempty" validate:"omitempty"`
+	Timeout           uint         `yaml:"timeout" validate:"omitempty"`
+	RequestsPerSecond int          `yaml:"rps" validate:"omitempty,min=1"`
 }
 
 // Contracts -
