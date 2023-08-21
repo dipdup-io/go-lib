@@ -298,6 +298,11 @@ func getTableName(value reflect.Value, typ reflect.Type) string {
 					return values[0]
 				}
 			}
+			if tag := field.Tag.Get("bun"); tag != "" {
+				if values := strings.Split(tag, ","); len(values) > 0 {
+					return values[0]
+				}
+			}
 		}
 		return ToSnakeCase(typ.Name())
 	}
@@ -326,6 +331,10 @@ func getColumns(typ reflect.Type) []string {
 				}
 			} else if tag := field.Tag.Get("pg"); tag != "" {
 				if !strings.HasPrefix(tag, "-") && field.Name != "tableName" && !strings.Contains(tag, "rel:") {
+					columns = append(columns, ToSnakeCase(field.Name))
+				}
+			} else if tag := field.Tag.Get("bun"); tag != "" {
+				if !strings.HasPrefix(tag, "-") && field.Name != "BaseModel" && !strings.Contains(tag, "rel:") {
 					columns = append(columns, ToSnakeCase(field.Name))
 				}
 			} else {
