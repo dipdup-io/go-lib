@@ -44,7 +44,10 @@ func NewPostgreSQLContainer(ctx context.Context, cfg PostgreSQLContainerConfig) 
 		postgres.WithDatabase(cfg.Database),
 		postgres.WithUsername(cfg.User),
 		postgres.WithPassword(cfg.Password),
-		testcontainers.WithWaitStrategy(wait.ForLog("database system is ready to accept connections").WithOccurrence(2).WithStartupTimeout(5*time.Second)),
+		testcontainers.WithWaitStrategy(
+			wait.ForLog("database system is ready to accept connections").
+				WithOccurrence(2).
+				WithStartupTimeout(30*time.Second)),
 	)
 	if err != nil {
 		return nil, err
