@@ -292,15 +292,10 @@ func formatSelectPermissions(limit uint64, allowAggs bool, role string, columns 
 
 func getTableName(value reflect.Value, typ reflect.Type) string {
 	if _, ok := typ.MethodByName("TableName"); !ok {
-		if field, exists := typ.FieldByName("tableName"); exists {
-			if tag := field.Tag.Get("pg"); tag != "" {
-				if values := strings.Split(tag, ","); len(values) > 0 {
-					return values[0]
-				}
-			}
+		if field, exists := typ.FieldByName("BaseModel"); exists {
 			if tag := field.Tag.Get("bun"); tag != "" {
 				if values := strings.Split(tag, ","); len(values) > 0 {
-					return values[0]
+					return strings.TrimPrefix(values[0], "table:")
 				}
 			}
 		}
