@@ -6,6 +6,7 @@ import (
 
 	"github.com/dipdup-net/go-lib/config"
 	"github.com/stretchr/testify/assert"
+	"github.com/uptrace/bun"
 )
 
 type testTable struct {
@@ -45,6 +46,10 @@ func (testTable4) TableName() int64 {
 	return 0
 }
 
+type testTable5 struct {
+	bun.BaseModel `bun:"table:test_name"`
+}
+
 func Test_getTableName(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -67,6 +72,10 @@ func Test_getTableName(t *testing.T) {
 			name:  "Test 4",
 			model: &testTable4{},
 			want:  "test_table4",
+		}, {
+			name:  "Test 5",
+			model: &testTable5{},
+			want:  "test_name",
 		},
 	}
 	for _, tt := range tests {
