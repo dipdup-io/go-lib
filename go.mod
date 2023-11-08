@@ -49,7 +49,7 @@ require (
 	github.com/cpuguy83/dockercfg v0.3.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/docker/distribution v2.8.2+incompatible // indirect
-	github.com/docker/docker v24.0.5+incompatible // indirect
+	github.com/docker/docker v24.0.7+incompatible // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/go-faster/city v1.0.1 // indirect
