@@ -59,5 +59,5 @@ If you want to write custom client or re-use SignalR in another package you can 
 ```golang
 import "github.com/dipdup-net/go-lib/tzkt/events/signalr"
 
-client := signalr.NewSignalR("https://api.tzkt.io/v1/events")
+client := signalr.NewSignalR("https://api.tzkt.io/v1/ws")
 ```

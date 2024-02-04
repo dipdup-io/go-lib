@@ -57,7 +57,7 @@ type {{.TypeName}} struct {
 func New(baseURL string) *{{.TypeName}}  {
 	return &{{.TypeName}} {
 		tzktAPI: api.New(baseURL),
-		tzktEvents: events.NewTzKT(fmt.Sprintf("%s/v1/events", baseURL)),
+		tzktEvents: events.NewTzKT(fmt.Sprintf("%s/v1/ws", baseURL)),
 		address: "{{ .Contract }}",
 		{{- range $key, $value := .EntrypointTypes }}
 		{{ $value.Var }}: make(chan {{ $value.Type }}Tx, 1024),

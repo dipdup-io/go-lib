@@ -28,7 +28,7 @@ type TzKT struct {
 	wg   sync.WaitGroup
 }
 
-// NewTzKT - constructor of `TzKT`. `url` is TzKT events base URL. If it's empty https://api.tzkt.io/v1/events is set.
+// NewTzKT - constructor of `TzKT`. `url` is TzKT events base URL. If it's empty https://api.tzkt.io/v1/ws is set.
 func NewTzKT(url string) *TzKT {
 	if url == "" {
 		url = tzktData.BaseEventsURL

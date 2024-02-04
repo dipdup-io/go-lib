@@ -46,5 +46,5 @@ const (
 // urls
 const (
 	BaseURL       = "https://api.tzkt.io"
-	BaseEventsURL = "https://api.tzkt.io/v1/events"
+	BaseEventsURL = "https://api.tzkt.io/v1/ws"
 )
