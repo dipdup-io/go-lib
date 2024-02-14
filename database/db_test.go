@@ -75,7 +75,7 @@ func (s *DBTestSuite) TearDownSuite() {
 	s.Require().NoError(s.psqlContainer.Terminate(ctx))
 }
 
-func (s *DBTestSuite) TestStateCreate() {
+func (s *DBTestSuite) BeforeTest(suiteName, testName string) {
 	db, err := sql.Open("postgres", s.psqlContainer.GetDSN())
 	s.Require().NoError(err)
 
@@ -87,7 +87,9 @@ func (s *DBTestSuite) TestStateCreate() {
 	s.Require().NoError(err)
 	s.Require().NoError(fixtures.Load())
 	s.Require().NoError(db.Close())
+}
 
+func (s *DBTestSuite) TestStateCreate() {
 	ctx, ctxCancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer ctxCancel()
 
@@ -107,18 +109,6 @@ func (s *DBTestSuite) TestStateCreate() {
 }
 
 func (s *DBTestSuite) TestStateUpdate() {
-	db, err := sql.Open("postgres", s.psqlContainer.GetDSN())
-	s.Require().NoError(err)
-
-	fixtures, err := testfixtures.New(
-		testfixtures.Database(db),
-		testfixtures.Dialect("postgres"),
-		testfixtures.Directory("fixtures"),
-	)
-	s.Require().NoError(err)
-	s.Require().NoError(fixtures.Load())
-	s.Require().NoError(db.Close())
-
 	ctx, ctxCancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer ctxCancel()
 
@@ -137,18 +127,6 @@ func (s *DBTestSuite) TestStateUpdate() {
 }
 
 func (s *DBTestSuite) TestState() {
-	db, err := sql.Open("postgres", s.psqlContainer.GetDSN())
-	s.Require().NoError(err)
-
-	fixtures, err := testfixtures.New(
-		testfixtures.Database(db),
-		testfixtures.Dialect("postgres"),
-		testfixtures.Directory("fixtures"),
-	)
-	s.Require().NoError(err)
-	s.Require().NoError(fixtures.Load())
-	s.Require().NoError(db.Close())
-
 	ctx, ctxCancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer ctxCancel()
 
@@ -161,18 +139,6 @@ func (s *DBTestSuite) TestState() {
 }
 
 func (s *DBTestSuite) TestDeleteState() {
-	db, err := sql.Open("postgres", s.psqlContainer.GetDSN())
-	s.Require().NoError(err)
-
-	fixtures, err := testfixtures.New(
-		testfixtures.Database(db),
-		testfixtures.Dialect("postgres"),
-		testfixtures.Directory("fixtures"),
-	)
-	s.Require().NoError(err)
-	s.Require().NoError(fixtures.Load())
-	s.Require().NoError(db.Close())
-
 	ctx, ctxCancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer ctxCancel()
 	newState := State{
@@ -180,7 +146,7 @@ func (s *DBTestSuite) TestDeleteState() {
 	}
 	s.Require().NoError(s.db.DeleteState(ctx, &newState))
 
-	_, err = s.db.State(ctx, testIndex)
+	_, err := s.db.State(ctx, testIndex)
 	s.Require().Error(err)
 }
 
@@ -199,18 +165,6 @@ func (s *DBTestSuite) TestMakeComments() {
 }
 
 func (s *DBTestSuite) TestExec() {
-	db, err := sql.Open("postgres", s.psqlContainer.GetDSN())
-	s.Require().NoError(err)
-
-	fixtures, err := testfixtures.New(
-		testfixtures.Database(db),
-		testfixtures.Dialect("postgres"),
-		testfixtures.Directory("fixtures"),
-	)
-	s.Require().NoError(err)
-	s.Require().NoError(fixtures.Load())
-	s.Require().NoError(db.Close())
-
 	ctx, ctxCancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer ctxCancel()
 
@@ -221,7 +175,7 @@ func (s *DBTestSuite) TestExec() {
 
 func TestSuite_Run(t *testing.T) {
 	ts := new(DBTestSuite)
-	for _, typ := range []string{"gorm", "pg-go", "bun"} {
+	for _, typ := range []string{"bun"} {
 		ts.typ = typ
 	}
 	suite.Run(t, ts)

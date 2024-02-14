@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"net/url"
 	"runtime"
 
 	"github.com/dipdup-net/go-lib/config"
@@ -41,14 +42,25 @@ func (db *Bun) Connect(ctx context.Context, cfg config.Database) error {
 		db.sqldb = conn
 		db.conn = bun.NewDB(db.sqldb, pgdialect.New())
 	} else {
+		values := make(url.Values)
+		values.Set("sslmode", "disable")
+		if cfg.ApplicationName != "" {
+			values.Set("application_name", cfg.ApplicationName)
+		}
+
 		connStr := fmt.Sprintf(
-			"postgres://%s:%s@%s:%d/%s?sslmode=disable",
+			"postgres://%s:%s@%s:%d/%s",
 			cfg.User,
 			cfg.Password,
 			cfg.Host,
 			cfg.Port,
 			cfg.Database,
 		)
+
+		if len(values) > 0 {
+			connStr = fmt.Sprintf("%s?%s", connStr, values.Encode())
+		}
+
 		conn, err := sql.Open("postgres", connStr)
 		if err != nil {
 			return err
