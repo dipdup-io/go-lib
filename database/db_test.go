@@ -20,10 +20,6 @@ const (
 
 func newDatabase(ctx context.Context, typ string, cfg config.Database) (Database, error) {
 	switch typ {
-	case "gorm":
-		return NewGorm(), nil
-	case "pg-go":
-		return NewPgGo(), nil
 	case "bun":
 		return NewBun(), nil
 	default:
