@@ -160,7 +160,7 @@ func (monitor *Monitor) pollingMempool(ctx context.Context, filter string) {
 		filter = filterApplied
 	}
 
-	url := fmt.Sprintf("/chains/main/mempool/monitor_operations?%s", filter)
+	url := fmt.Sprintf("/chains/main/mempool/monitor_operations?%s&version=0", filter)
 
 	ticker := time.NewTicker(time.Second)
 	defer ticker.Stop()
