@@ -18,7 +18,7 @@ type OperationConstraint interface {
 		TxRollupRemoveCommitment | TxRollupSubmitBatch | UpdateConsensusKey |
 		DrainDelegate | SmartRollupAddMessage | SmartRollupCement | SmartRollupExecute |
 		SmartRollupOriginate | SmartRollupPublish | SmartRollupRecoverBond |
-		SmartRollupRefute | SmartRollupTimeout
+		SmartRollupRefute | SmartRollupTimeout | DalPublishCommitment
 }
 
 // OperationGroup -
@@ -116,6 +116,8 @@ func (op *Operation) UnmarshalJSON(data []byte) error {
 		err = parseOperation[SmartRollupRefute](data, op)
 	case KindSrTimeout:
 		err = parseOperation[SmartRollupTimeout](data, op)
+	case KindDalPublishCommitment:
+		err = parseOperation[DalPublishCommitment](data, op)
 
 	}
 	return err
@@ -775,6 +777,24 @@ type SmartRollupTimeout struct {
 	Rollup       string                    `json:"rollup"`
 	Stakers      Stakers                   `json:"stakers"`
 	Metadata     *ManagerOperationMetadata `json:"metadata,omitempty"`
+}
+
+// DalPublishCommitment -
+type DalPublishCommitment struct {
+	Kind         string                    `json:"kind"`
+	Source       string                    `json:"source"`
+	Fee          string                    `json:"fee"`
+	Counter      string                    `json:"counter"`
+	GasLimit     string                    `json:"gas_limit"`
+	StorageLimit string                    `json:"storage_limit"`
+	SlotHeader   SlotHeader                `json:"slot_header"`
+	Metadata     *ManagerOperationMetadata `json:"metadata,omitempty"`
+}
+
+type SlotHeader struct {
+	SlotIndex       int    `json:"slot_index"`
+	Commitment      string `json:"commitment"`
+	CommitmentProof string `json:"commitment_proof"`
 }
 
 // Stakers -

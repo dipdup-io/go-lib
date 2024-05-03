@@ -16,7 +16,7 @@ type OperationConstraint interface {
 		TxRollupReturnBond | TxRollupSubmitBatch | NonceRevelation | DoubleBaking | DoubleEndorsing | SetDepositsLimit |
 		DoublePreendorsing | Baking | RevelationPenalty | EndorsingReward | VdfRevelation | IncreasePaidStorage |
 		DrainDelegate | UpdateConsensusKey | SmartRollupAddMessage | SmartRollupCement | SmartRollupExecute |
-		SmartRollupOriginate | SmartRollupPublish | SmartRollupRefute | SmartRollupRecoverBond
+		SmartRollupOriginate | SmartRollupPublish | SmartRollupRefute | SmartRollupRecoverBond | DalPublishCommitment
 }
 
 // Operation -
@@ -864,4 +864,21 @@ type SrGameInfo struct {
 	InitiatorLoss       uint64            `json:"initiatorLoss"`
 	OpponentReward      uint64            `json:"opponentReward"`
 	OpponentLoss        uint64            `json:"opponentLoss"`
+}
+
+type DalPublishCommitment struct {
+	Type         string   `json:"type"`
+	ID           uint64   `json:"id"`
+	Level        uint64   `json:"level"`
+	Timestamp    string   `json:"timestamp"`
+	Hash         string   `json:"hash"`
+	Sender       *Address `json:"sender"`
+	Counter      uint64   `json:"counter"`
+	GasLimit     uint64   `json:"gasLimit"`
+	GasUsed      uint64   `json:"gasUsed"`
+	StorageLimit uint64   `json:"storageLimit"`
+	BakerFee     uint64   `json:"bakerFee"`
+	Slot         int      `json:"slot"`
+	Commitment   string   `json:"commitment"`
+	Status       string   `json:"status"`
 }
