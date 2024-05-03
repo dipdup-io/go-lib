@@ -10,7 +10,7 @@ import (
 // OperationConstraint -
 type OperationConstraint interface {
 	AccountActivation | Ballot | Delegation | DoubleBakingEvidence |
-		DoubleEndorsementEvidence | Endorsement | EndorsementWithSlot |
+		DoubleEndorsementEvidence | Endorsement | EndorsementWithSlot | EndorsementWithDal |
 		Origination | Proposal | Reveal | SeedNonceRevelation | Transaction |
 		RegisterGlobalConstant | DoublePreendorsementEvidence | SetDepositsLimit |
 		Preendorsement | Event | VdfRevelation | TxRollupCommit | TxRollupOrigination |
@@ -60,6 +60,8 @@ func (op *Operation) UnmarshalJSON(data []byte) error {
 		err = parseOperation[Endorsement](data, op)
 	case KindEndorsementWithSlot:
 		err = parseOperation[EndorsementWithSlot](data, op)
+	case KindEndorsementWithDal:
+		err = parseOperation[EndorsementWithDal](data, op)
 	case KindOrigination:
 		err = parseOperation[Origination](data, op)
 	case KindProposal:
@@ -172,6 +174,17 @@ type EndorsementWithSlot struct {
 	Endorsement EndorsementWithSlotEntity `json:"endorsement"`
 	Slot        uint64                    `json:"slot"`
 	Metadata    *EndorsementMetadata      `json:"metadata,omitempty"`
+}
+
+// EndorsementWithDal -
+type EndorsementWithDal struct {
+	Kind             string               `json:"kind"`
+	Slot             uint64               `json:"slot"`
+	Level            uint64               `json:"level"`
+	Round            int64                `json:"round"`
+	BlockPayloadHash string               `json:"block_payload_hash"`
+	DalAttestation   string               `json:"dal_attestation"`
+	Metadata         *EndorsementMetadata `json:"metadata"`
 }
 
 // Preendorsement -
@@ -331,9 +344,9 @@ type OnlyBalanceUpdatesMetadata struct {
 
 // EndorsementMetadata -
 type EndorsementMetadata struct {
-	BalanceUpdates []BalanceUpdate `json:"balance_updates"`
-	Delegate       string          `json:"delegate"`
-	Slots          []int           `json:"slots"`
+	Delegate         string `json:"delegate"`
+	EndorsementPower int    `json:"endorsement_power"`
+	ConsensusKey     string `json:"consensus_key"`
 }
 
 // OperationResult -

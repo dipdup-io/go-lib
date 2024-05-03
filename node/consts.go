@@ -13,6 +13,7 @@ const (
 	KindDoubleEndorsing            = "double_endorsement_evidence"
 	KindEndorsement                = "endorsement"
 	KindEndorsementWithSlot        = "endorsement_with_slot"
+	KindEndorsementWithDal         = "endorsement_with_dal"
 	KindOrigination                = "origination"
 	KindProposal                   = "proposals"
 	KindReveal                     = "reveal"
