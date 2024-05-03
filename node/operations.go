@@ -344,9 +344,11 @@ type OnlyBalanceUpdatesMetadata struct {
 
 // EndorsementMetadata -
 type EndorsementMetadata struct {
-	Delegate         string `json:"delegate"`
-	EndorsementPower int    `json:"endorsement_power"`
-	ConsensusKey     string `json:"consensus_key"`
+	Delegate         string          `json:"delegate"`
+	EndorsementPower int             `json:"endorsement_power"`
+	ConsensusKey     string          `json:"consensus_key"`
+	BalanceUpdates   []BalanceUpdate `json:"balance_updates,omitempty"`
+	Slots            []int           `json:"slots,omitempty"`
 }
 
 // OperationResult -
