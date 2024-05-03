@@ -44,6 +44,7 @@ const (
 	KindSrRecoverBond              = "smart_rollup_recover_bond"
 	KindSrTimeout                  = "smart_rollup_timeout"
 	KindSrCement                   = "smart_rollup_cement"
+	KindDalPublishCommitment       = "dal_publish_commitment"
 )
 
 const (

@@ -369,6 +369,8 @@ func parseOperations(data []byte) (any, error) {
 			result = append(result, &tzktData.SmartRollupRecoverBond{})
 		case tzktData.KindSrRefute:
 			result = append(result, &tzktData.SmartRollupRefute{})
+		case tzktData.KindDalPublishCommitment:
+			result = append(result, &tzktData.DalPublishCommitment{})
 		default:
 			result = append(result, make(map[string]interface{}))
 		}

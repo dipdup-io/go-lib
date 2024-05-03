@@ -257,3 +257,9 @@ func (tzkt *API) GetSmartRollupRefute(ctx context.Context, filters map[string]st
 	err = tzkt.json(ctx, "/v1/operations/sr_refute", filters, false, &operations)
 	return
 }
+
+// GetDalPublishCommitment -
+func (tzkt *API) GetDalPublishCommitment(ctx context.Context, filters map[string]string) (operations []data.DalPublishCommitment, err error) {
+	err = tzkt.json(ctx, "/v1/operations/dal_publish_commitment", filters, false, &operations)
+	return
+}

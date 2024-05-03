@@ -142,5 +142,5 @@ func IsManager(kind string) bool {
 		kind == KindSrAddMessages || kind == KindSrCement || kind == KindSrExecute ||
 		kind == KindSrOriginate || kind == KindSrPublish || kind == KindSrRecoverBond ||
 		kind == KindSrRefute || kind == KindSrTimeout || kind == KindIncreasePaidStorage ||
-		kind == KindDrainDelegate || kind == KindUpdateConsensusKey
+		kind == KindDrainDelegate || kind == KindUpdateConsensusKey || kind == KindDalPublishCommitment
 }

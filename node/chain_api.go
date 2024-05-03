@@ -118,7 +118,7 @@ func (api *Chain) LevelsSavepoint(ctx context.Context) (Savepoint, error) {
 
 // PendingOperations -
 func (api *Chain) PendingOperations(ctx context.Context) (MempoolResponse, error) {
-	req, err := newGetRequest(api.baseURL, fmt.Sprintf("chains/%s/mempool/pending_operations", api.chainID), nil)
+	req, err := newGetRequest(api.baseURL, fmt.Sprintf("chains/%s/mempool/pending_operations?version=1", api.chainID), nil)
 	if err != nil {
 		return MempoolResponse{}, err
 	}
