@@ -41,7 +41,7 @@ const (
 	KindSrPublish                = "sr_publish"
 	KindSrRecoverBond            = "sr_recover_bond"
 	KindSrRefute                 = "sr_refute"
-	KindDalPublishCommitment       = "dal_publish_commitment"
+	KindDalPublishCommitment     = "dal_publish_commitment"
 )
 
 // urls
