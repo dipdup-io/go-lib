@@ -867,18 +867,18 @@ type SrGameInfo struct {
 }
 
 type DalPublishCommitment struct {
-	Type         string   `json:"type"`
-	ID           uint64   `json:"id"`
-	Level        uint64   `json:"level"`
-	Timestamp    string   `json:"timestamp"`
-	Hash         string   `json:"hash"`
-	Sender       *Address `json:"sender"`
-	Counter      uint64   `json:"counter"`
-	GasLimit     uint64   `json:"gasLimit"`
-	GasUsed      uint64   `json:"gasUsed"`
-	StorageLimit uint64   `json:"storageLimit"`
-	BakerFee     uint64   `json:"bakerFee"`
-	Slot         int      `json:"slot"`
-	Commitment   string   `json:"commitment"`
-	Status       string   `json:"status"`
+	Type         string    `json:"type"`
+	ID           uint64    `json:"id"`
+	Level        uint64    `json:"level"`
+	Timestamp    time.Time `json:"timestamp"`
+	Hash         string    `json:"hash"`
+	Sender       *Address  `json:"sender"`
+	Counter      uint64    `json:"counter"`
+	GasLimit     uint64    `json:"gasLimit"`
+	GasUsed      uint64    `json:"gasUsed"`
+	StorageLimit uint64    `json:"storageLimit"`
+	BakerFee     uint64    `json:"bakerFee"`
+	Slot         int       `json:"slot"`
+	Commitment   string    `json:"commitment"`
+	Status       string    `json:"status"`
 }
