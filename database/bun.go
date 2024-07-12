@@ -81,7 +81,7 @@ func (db *Bun) Connect(ctx context.Context, cfg config.Database) error {
 	}
 
 	if cfg.MaxLifetimeConnections > 0 {
-		maxLifetime = time.Duration(maxLifetime) * time.Second
+		maxLifetime = time.Duration(cfg.MaxLifetimeConnections) * time.Second
 	}
 
 	db.sqldb.SetMaxOpenConns(maxOpenConns)
