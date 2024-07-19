@@ -22,17 +22,18 @@ type State struct {
 	CreatedAt int       `gorm:"autoCreateTime" comment:"Created timestamp"`
 }
 
-// BeforeInsert -
-func (s *State) BeforeInsert(ctx context.Context) (context.Context, error) {
-	s.UpdatedAt = int(time.Now().Unix())
-	s.CreatedAt = s.UpdatedAt
-	return ctx, nil
-}
+var _ bun.BeforeAppendModelHook = (*State)(nil)
 
-// BeforeUpdate -
-func (s *State) BeforeUpdate(ctx context.Context) (context.Context, error) {
-	s.UpdatedAt = int(time.Now().Unix())
-	return ctx, nil
+func (s *State) BeforeAppendModel(ctx context.Context, query bun.Query) error {
+	switch query.(type) {
+	case *bun.InsertQuery:
+		s.UpdatedAt = int(time.Now().Unix())
+		s.CreatedAt = s.UpdatedAt
+
+	case *bun.UpdateQuery:
+		s.UpdatedAt = int(time.Now().Unix())
+	}
+	return nil
 }
 
 // TableName -
