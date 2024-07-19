@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/url"
 	"runtime"
+	"time"
 
 	"github.com/dipdup-net/go-lib/config"
 	"github.com/pkg/errors"
@@ -69,8 +70,23 @@ func (db *Bun) Connect(ctx context.Context, cfg config.Database) error {
 		db.conn = bun.NewDB(db.sqldb, pgdialect.New())
 	}
 	maxOpenConns := 4 * runtime.GOMAXPROCS(0)
+	maxIdleConns := maxOpenConns
+	maxLifetime := time.Minute
+	if cfg.MaxOpenConnections > 0 {
+		maxOpenConns = cfg.MaxOpenConnections
+	}
+
+	if cfg.MaxIdleConnections > 0 {
+		maxIdleConns = cfg.MaxIdleConnections
+	}
+
+	if cfg.MaxLifetimeConnections > 0 {
+		maxLifetime = time.Duration(cfg.MaxLifetimeConnections) * time.Second
+	}
+
 	db.sqldb.SetMaxOpenConns(maxOpenConns)
-	db.sqldb.SetMaxIdleConns(maxOpenConns)
+	db.sqldb.SetMaxIdleConns(maxIdleConns)
+	db.sqldb.SetConnMaxLifetime(maxLifetime)
 	return nil
 }
 
