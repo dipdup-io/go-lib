@@ -18,7 +18,7 @@ const (
 	testIndex = "test_index"
 )
 
-func newDatabase(ctx context.Context, typ string, cfg config.Database) (Database, error) {
+func newDatabase(_ context.Context, typ string, _ config.Database) (Database, error) {
 	switch typ {
 	case "bun":
 		return NewBun(), nil
