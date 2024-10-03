@@ -127,6 +127,26 @@ func Parse(filename string, output Configurable) error {
 	return validator.New().Struct(output)
 }
 
+// ParseWithValidator - parse config with custom validator. If validator is nil validation will be skipped.
+func ParseWithValidator(filename string, val *validator.Validate, output Configurable) error {
+	buf, err := readFile(filename)
+	if err != nil {
+		return err
+	}
+
+	if err := yaml.NewDecoder(buf).Decode(output); err != nil {
+		return err
+	}
+
+	if err := output.Substitute(); err != nil {
+		return err
+	}
+	if val != nil {
+		return val.Struct(output)
+	}
+	return nil
+}
+
 func readFile(filename string) (*bytes.Buffer, error) {
 	if filename == "" {
 		return nil, errors.Errorf("you have to provide configuration filename")
