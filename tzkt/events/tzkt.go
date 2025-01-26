@@ -90,7 +90,7 @@ func (tzkt *TzKT) SubscribeToBlocks() error {
 
 // SubscribeToOperations - subscribe to operations channel.
 // Sends operations of specified types or related to specified accounts, included into the blockchain.
-// Filters by `address` and list of `types` is appliable.
+// Filters by `address` and list of `types` is applicable.
 func (tzkt *TzKT) SubscribeToOperations(address string, types ...string) error {
 	args := make(map[string]interface{})
 	if len(types) > 0 {
