@@ -68,7 +68,7 @@ func Test_expandTransformer_Transform(t *testing.T) {
 				}
 			}()
 			for key, value := range tt.envs {
-				os.Setenv(key, value)
+				t.Setenv(key, value)
 			}
 
 			transformer := &expandTransformer{

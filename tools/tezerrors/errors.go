@@ -79,7 +79,7 @@ var errorsDescrs = `{
     },
     "WrongReconstructMode": {
         "title": "Wrong reconstruct mode",
-        "descr": "Reconstruction of contexts while importing is comptible with full mode snapshots only"
+        "descr": "Reconstruction of contexts while importing is compatible with full mode snapshots only"
     },
     "WrongSnapshotExport": {
         "title": "Wrong snapshot export",

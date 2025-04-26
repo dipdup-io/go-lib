@@ -10,5 +10,5 @@ linters:
     - ineffassign
     - typecheck
     - containedctx
-    - tenv
+    - usetesting
     - unused

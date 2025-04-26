@@ -1,7 +1,6 @@
 package database
 
 import (
-	"context"
 	"testing"
 
 	"github.com/dipdup-net/go-lib/mocks"
@@ -10,12 +9,11 @@ import (
 	"github.com/uptrace/bun"
 )
 
-func initMocks(t *testing.T) (*gomock.Controller, *mocks.MockSchemeCommenter, context.Context) {
+func initMocks(t *testing.T) (*gomock.Controller, *mocks.MockSchemeCommenter) {
 	mockCtrl := gomock.NewController(t)
 	mockSchemeCommenter := mocks.NewMockSchemeCommenter(mockCtrl)
-	ctx := context.Background()
 
-	return mockCtrl, mockSchemeCommenter, ctx
+	return mockCtrl, mockSchemeCommenter
 }
 
 func TestMakeCommentsWithTableName(t *testing.T) {
@@ -25,7 +23,7 @@ func TestMakeCommentsWithTableName(t *testing.T) {
 		Ballot    string   `json:"ballot"`
 	}
 
-	mockCtrl, mockSC, ctx := initMocks(t)
+	mockCtrl, mockSC := initMocks(t)
 	defer mockCtrl.Finish()
 
 	model := Ballot{}
@@ -33,12 +31,12 @@ func TestMakeCommentsWithTableName(t *testing.T) {
 	// Assert prepare
 	mockSC.
 		EXPECT().
-		MakeTableComment(ctx, "ballots", "Ballot table").
+		MakeTableComment(t.Context(), "ballots", "Ballot table").
 		Times(1).
 		Return(nil)
 
 	// Act
-	err := MakeComments(ctx, mockSC, model)
+	err := MakeComments(t.Context(), mockSC, model)
 
 	// Assert
 	require.NoError(t, err)
@@ -51,7 +49,7 @@ func TestMakeCommentsWithoutPgComment(t *testing.T) {
 		Ballot    string   `json:"ballot"`
 	}
 
-	mockCtrl, mockSC, ctx := initMocks(t)
+	mockCtrl, mockSC := initMocks(t)
 	defer mockCtrl.Finish()
 
 	model := Ballot{}
@@ -68,7 +66,7 @@ func TestMakeCommentsWithoutPgComment(t *testing.T) {
 		Times(0)
 
 	// Act
-	err := MakeComments(ctx, mockSC, model)
+	err := MakeComments(t.Context(), mockSC, model)
 
 	// Assert
 	require.NoError(t, err)
@@ -81,7 +79,7 @@ func TestMakeCommentsFieldWithPgComment(t *testing.T) {
 		Ballot    string   `json:"ballot" comment:"This is field comment"`
 	}
 
-	mockCtrl, mockSC, ctx := initMocks(t)
+	mockCtrl, mockSC := initMocks(t)
 	defer mockCtrl.Finish()
 
 	model := Ballot{}
@@ -89,12 +87,12 @@ func TestMakeCommentsFieldWithPgComment(t *testing.T) {
 	// Assert prepare
 	mockSC.
 		EXPECT().
-		MakeColumnComment(ctx, "ballots", "ballot", "This is field comment").
+		MakeColumnComment(t.Context(), "ballots", "ballot", "This is field comment").
 		Times(1).
 		Return(nil)
 
 	// Act
-	err := MakeComments(ctx, mockSC, model)
+	err := MakeComments(t.Context(), mockSC, model)
 
 	// Assert
 	require.NoError(t, err)
@@ -121,7 +119,7 @@ func TestMakeCommentsWithTableNameAndFieldsWithPgComment(t *testing.T) {
 		Period          int64       `json:"period" comment:"This is field comment"`
 	}
 
-	mockCtrl, mockSC, ctx := initMocks(t)
+	mockCtrl, mockSC := initMocks(t)
 	defer mockCtrl.Finish()
 
 	model := Ballot{}
@@ -129,19 +127,19 @@ func TestMakeCommentsWithTableNameAndFieldsWithPgComment(t *testing.T) {
 	// Assert prepare
 	commentOnTableCall := mockSC.
 		EXPECT().
-		MakeTableComment(ctx, "ballots", "Ballot table").
+		MakeTableComment(t.Context(), "ballots", "Ballot table").
 		Times(1).
 		Return(nil)
 
 	mockSC.
 		EXPECT().
-		MakeColumnComment(ctx, "ballots", gomock.Any(), "This is field comment").
+		MakeColumnComment(t.Context(), "ballots", gomock.Any(), "This is field comment").
 		Times(15).
 		After(commentOnTableCall).
 		Return(nil)
 
 	// Act
-	err := MakeComments(ctx, mockSC, model)
+	err := MakeComments(t.Context(), mockSC, model)
 
 	// Assert
 	require.NoError(t, err)
@@ -154,7 +152,7 @@ func TestMakeCommentsWithMultipleModels(t *testing.T) {
 		Ballot    string   `json:"ballot" comment:"This is multiple field comment"`
 	}
 
-	mockCtrl, mockSC, ctx := initMocks(t)
+	mockCtrl, mockSC := initMocks(t)
 	defer mockCtrl.Finish()
 
 	models := []interface{}{Ballot{}, Ballot{}, Ballot{}}
@@ -162,7 +160,7 @@ func TestMakeCommentsWithMultipleModels(t *testing.T) {
 	// Assert prepare
 	mockSC.
 		EXPECT().
-		MakeTableComment(ctx, "ballots", "This multiple table name comment").
+		MakeTableComment(t.Context(), "ballots", "This multiple table name comment").
 		Times(3).
 		Return(nil)
 
@@ -170,12 +168,12 @@ func TestMakeCommentsWithMultipleModels(t *testing.T) {
 	// methods call: https://github.com/golang/mock/issues/653
 	mockSC.
 		EXPECT().
-		MakeColumnComment(ctx, "ballots", "ballot", "This is multiple field comment").
+		MakeColumnComment(t.Context(), "ballots", "ballot", "This is multiple field comment").
 		Times(3).
 		Return(nil)
 
 	// Act
-	err := MakeComments(ctx, mockSC, models...)
+	err := MakeComments(t.Context(), mockSC, models...)
 
 	// Assert
 	require.NoError(t, err)
@@ -188,7 +186,7 @@ func TestMakeCommentsWithMultipleModelsByPointers(t *testing.T) {
 		Ballot    string   `json:"ballot" comment:"This is multiple field comment"`
 	}
 
-	mockCtrl, mockSC, ctx := initMocks(t)
+	mockCtrl, mockSC := initMocks(t)
 	defer mockCtrl.Finish()
 
 	models := []interface{}{&Ballot{}, &Ballot{}, &Ballot{}}
@@ -196,7 +194,7 @@ func TestMakeCommentsWithMultipleModelsByPointers(t *testing.T) {
 	// Assert prepare
 	mockSC.
 		EXPECT().
-		MakeTableComment(ctx, "ballots", "This multiple table name comment").
+		MakeTableComment(t.Context(), "ballots", "This multiple table name comment").
 		Times(3).
 		Return(nil)
 
@@ -204,12 +202,12 @@ func TestMakeCommentsWithMultipleModelsByPointers(t *testing.T) {
 	// methods call: https://github.com/golang/mock/issues/653
 	mockSC.
 		EXPECT().
-		MakeColumnComment(ctx, "ballots", "ballot", "This is multiple field comment").
+		MakeColumnComment(t.Context(), "ballots", "ballot", "This is multiple field comment").
 		Times(3).
 		Return(nil)
 
 	// Act
-	err := MakeComments(ctx, mockSC, models...)
+	err := MakeComments(t.Context(), mockSC, models...)
 
 	// Assert
 	require.NoError(t, err)
@@ -222,7 +220,7 @@ func TestMakeCommentsIgnoreFieldWithPgHyphen(t *testing.T) {
 		Ballot    string   `json:"ballot" pg:"-" comment:"This is field comment"`
 	}
 
-	mockCtrl, mockSC, ctx := initMocks(t)
+	mockCtrl, mockSC := initMocks(t)
 	defer mockCtrl.Finish()
 
 	model := Ballot{}
@@ -234,7 +232,7 @@ func TestMakeCommentsIgnoreFieldWithPgHyphen(t *testing.T) {
 		Times(0)
 
 	// Act
-	err := MakeComments(ctx, mockSC, model)
+	err := MakeComments(t.Context(), mockSC, model)
 
 	// Assert
 	require.NoError(t, err)
@@ -247,7 +245,7 @@ func TestMakeCommentsIgnoreFieldsWithEmptyComment(t *testing.T) {
 		Ballot    string   `json:"ballot" comment:""`
 	}
 
-	mockCtrl, mockSC, ctx := initMocks(t)
+	mockCtrl, mockSC := initMocks(t)
 	defer mockCtrl.Finish()
 
 	model := Ballot{}
@@ -259,14 +257,14 @@ func TestMakeCommentsIgnoreFieldsWithEmptyComment(t *testing.T) {
 		Times(0)
 
 	// Act
-	err := MakeComments(ctx, mockSC, model)
+	err := MakeComments(t.Context(), mockSC, model)
 
 	// Assert
 	require.NoError(t, err)
 }
 
 func TestMakeCommentsIgnoreNilModel(t *testing.T) {
-	mockCtrl, mockSC, ctx := initMocks(t)
+	mockCtrl, mockSC := initMocks(t)
 	defer mockCtrl.Finish()
 
 	// Assert prepare
@@ -276,14 +274,14 @@ func TestMakeCommentsIgnoreNilModel(t *testing.T) {
 		Times(0)
 
 	// Act
-	err := MakeComments(ctx, mockSC, nil)
+	err := MakeComments(t.Context(), mockSC, nil)
 
 	// Assert
 	require.NoError(t, err)
 }
 
 func TestMakeCommentsIgnoreNoModels(t *testing.T) {
-	mockCtrl, mockSC, ctx := initMocks(t)
+	mockCtrl, mockSC := initMocks(t)
 	defer mockCtrl.Finish()
 
 	// Assert prepare
@@ -293,7 +291,7 @@ func TestMakeCommentsIgnoreNoModels(t *testing.T) {
 		Times(0)
 
 	// Act
-	err := MakeComments(ctx, mockSC)
+	err := MakeComments(t.Context(), mockSC)
 
 	// Assert
 	require.NoError(t, err)
@@ -313,7 +311,7 @@ func TestMakeCommentsWithStructCompositionAndCorrectOrder(t *testing.T) {
 		Ballot string `json:"ballot" comment:"This is field comment"`
 	}
 
-	mockCtrl, mockSC, ctx := initMocks(t)
+	mockCtrl, mockSC := initMocks(t)
 	defer mockCtrl.Finish()
 
 	model := Ballot{}
@@ -321,40 +319,40 @@ func TestMakeCommentsWithStructCompositionAndCorrectOrder(t *testing.T) {
 	// Assert prepare
 	tableNameCall := mockSC.
 		EXPECT().
-		MakeTableComment(ctx, "ballots", "This table name comment").
+		MakeTableComment(t.Context(), "ballots", "This table name comment").
 		Times(1).
 		Return(nil)
 
 	createdAtCall := mockSC.
 		EXPECT().
-		MakeColumnComment(ctx, "ballots", "created_at", "Date of creation in seconds since UNIX epoch.").
+		MakeColumnComment(t.Context(), "ballots", "created_at", "Date of creation in seconds since UNIX epoch.").
 		After(tableNameCall).
 		Times(1).
 		Return(nil)
 
 	updatedAtCall := mockSC.
 		EXPECT().
-		MakeColumnComment(ctx, "ballots", "updated_at", "Date of last update in seconds since UNIX epoch.").
+		MakeColumnComment(t.Context(), "ballots", "updated_at", "Date of last update in seconds since UNIX epoch.").
 		After(createdAtCall).
 		Times(1).
 		Return(nil)
 
 	networkCall := mockSC.
 		EXPECT().
-		MakeColumnComment(ctx, "ballots", "network", "Identifies belonging network.").
+		MakeColumnComment(t.Context(), "ballots", "network", "Identifies belonging network.").
 		After(updatedAtCall).
 		Times(1).
 		Return(nil)
 
 	mockSC.
 		EXPECT().
-		MakeColumnComment(ctx, "ballots", "ballot", "This is field comment").
+		MakeColumnComment(t.Context(), "ballots", "ballot", "This is field comment").
 		After(networkCall).
 		Times(1).
 		Return(nil)
 
 	// Act
-	err := MakeComments(ctx, mockSC, model)
+	err := MakeComments(t.Context(), mockSC, model)
 
 	// Assert
 	require.NoError(t, err)
@@ -382,7 +380,7 @@ func TestMakeCommentsWithDeepStructComposition(t *testing.T) {
 		Ballot string `json:"ballot" comment:"This is field comment"`
 	}
 
-	mockCtrl, mockSC, ctx := initMocks(t)
+	mockCtrl, mockSC := initMocks(t)
 	defer mockCtrl.Finish()
 
 	model := Ballot{}
@@ -390,40 +388,40 @@ func TestMakeCommentsWithDeepStructComposition(t *testing.T) {
 	// Assert prepare
 	tableNameCall := mockSC.
 		EXPECT().
-		MakeTableComment(ctx, "ballots", "This table name comment").
+		MakeTableComment(t.Context(), "ballots", "This table name comment").
 		Times(1).
 		Return(nil)
 
 	createdAtCall := mockSC.
 		EXPECT().
-		MakeColumnComment(ctx, "ballots", "created_at", "Date of creation in seconds since UNIX epoch.").
+		MakeColumnComment(t.Context(), "ballots", "created_at", "Date of creation in seconds since UNIX epoch.").
 		After(tableNameCall).
 		Times(1).
 		Return(nil)
 
 	updatedAtCall := mockSC.
 		EXPECT().
-		MakeColumnComment(ctx, "ballots", "updated_at", "Date of last update in seconds since UNIX epoch.").
+		MakeColumnComment(t.Context(), "ballots", "updated_at", "Date of last update in seconds since UNIX epoch.").
 		After(createdAtCall).
 		Times(1).
 		Return(nil)
 
 	networkCall := mockSC.
 		EXPECT().
-		MakeColumnComment(ctx, "ballots", "network", "Identifies belonging network.").
+		MakeColumnComment(t.Context(), "ballots", "network", "Identifies belonging network.").
 		After(updatedAtCall).
 		Times(1).
 		Return(nil)
 
 	mockSC.
 		EXPECT().
-		MakeColumnComment(ctx, "ballots", "ballot", "This is field comment").
+		MakeColumnComment(t.Context(), "ballots", "ballot", "This is field comment").
 		After(networkCall).
 		Times(1).
 		Return(nil)
 
 	// Act
-	err := MakeComments(ctx, mockSC, model)
+	err := MakeComments(t.Context(), mockSC, model)
 
 	// Assert
 	require.NoError(t, err)
@@ -445,7 +443,7 @@ func TestMakeCommentsWithStructCompositionErrorOnEmbeddedTableName(t *testing.T)
 		Ballot string `json:"ballot" comment:"This is field comment"`
 	}
 
-	mockCtrl, mockSC, ctx := initMocks(t)
+	mockCtrl, mockSC := initMocks(t)
 	defer mockCtrl.Finish()
 
 	model := Ballot{}
@@ -453,12 +451,12 @@ func TestMakeCommentsWithStructCompositionErrorOnEmbeddedTableName(t *testing.T)
 	// Assert prepare
 	mockSC.
 		EXPECT().
-		MakeTableComment(ctx, "ballots", "This table name comment").
+		MakeTableComment(t.Context(), "ballots", "This table name comment").
 		Times(1).
 		Return(nil)
 
 	// Act
-	err := MakeComments(ctx, mockSC, model)
+	err := MakeComments(t.Context(), mockSC, model)
 
 	// Assert
 	require.Error(t, err, "Embedded type must not have tableName field.")
@@ -472,39 +470,39 @@ func TestMakeCommentsWithBunBaseModel(t *testing.T) {
 		Network       string `json:"network" bun:",pk" comment:"Identifies belonging network."`
 	}
 
-	mockCtrl, mockSC, ctx := initMocks(t)
+	mockCtrl, mockSC := initMocks(t)
 	defer mockCtrl.Finish()
 
 	// Assert prepare
 	tableNameCall := mockSC.
 		EXPECT().
-		MakeTableComment(ctx, "operation", "This is bun comment.").
+		MakeTableComment(t.Context(), "operation", "This is bun comment.").
 		Times(1).
 		Return(nil)
 
 	createdAtCall := mockSC.
 		EXPECT().
-		MakeColumnComment(ctx, "operation", "created_at", "Date of creation in seconds since UNIX epoch.").
+		MakeColumnComment(t.Context(), "operation", "created_at", "Date of creation in seconds since UNIX epoch.").
 		After(tableNameCall).
 		Times(1).
 		Return(nil)
 
 	updatedAtCall := mockSC.
 		EXPECT().
-		MakeColumnComment(ctx, "operation", "updated_at", "Date of last update in seconds since UNIX epoch.").
+		MakeColumnComment(t.Context(), "operation", "updated_at", "Date of last update in seconds since UNIX epoch.").
 		After(createdAtCall).
 		Times(1).
 		Return(nil)
 
 	mockSC.
 		EXPECT().
-		MakeColumnComment(ctx, "operation", "network", "Identifies belonging network.").
+		MakeColumnComment(t.Context(), "operation", "network", "Identifies belonging network.").
 		After(updatedAtCall).
 		Times(1).
 		Return(nil)
 
 	// Act
-	err := MakeComments(ctx, mockSC, Operation{})
+	err := MakeComments(t.Context(), mockSC, Operation{})
 
 	// Assert
 	require.NoError(t, err, "Bun model comments was failed")

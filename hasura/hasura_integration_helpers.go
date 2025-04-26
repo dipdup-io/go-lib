@@ -27,11 +27,11 @@ func TestExpectedMetadataWithActual(
 ) {
 	var cfg config.Config
 	if err := config.Parse(configPath, &cfg); err != nil {
-		t.Fatalf("Error with reading configuratoin file: %s", err)
+		t.Fatalf("Error with reading configuration file: %s", err)
 	}
 
 	api := New(cfg.Hasura.URL, cfg.Hasura.Secret)
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(t.Context())
 	defer cancel()
 
 	metadata, err := api.ExportMetadata(ctx)

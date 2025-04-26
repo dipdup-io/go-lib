@@ -39,8 +39,7 @@ func NewPostgreSQLContainer(ctx context.Context, cfg PostgreSQLContainerConfig) 
 		cfg.Image = "postgres:15"
 	}
 
-	container, err := postgres.RunContainer(ctx,
-		testcontainers.WithImage(cfg.Image),
+	container, err := postgres.Run(ctx, cfg.Image,
 		postgres.WithDatabase(cfg.Database),
 		postgres.WithUsername(cfg.User),
 		postgres.WithPassword(cfg.Password),

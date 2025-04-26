@@ -1,4 +1,7 @@
 name: Release
+permissions:
+  contents: write
+  pull-requests: read
 on:
   push:
     tags:
@@ -8,11 +11,17 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    env:
+      ACTIONS_ALLOW_UNSECURE_COMMANDS: true
     steps:
-      - uses: actions/checkout@master
-      - name: Set env
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
-      - uses: "marvinpinto/action-automatic-releases@latest"
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Set up environment
+        run: echo ::set-env name=RELEASE_VERSION::${GITHUB_REF#refs/*/}
+
+      - name: Publish GitHub release
+        uses: "marvinpinto/action-automatic-releases@v1.2.1"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: false
