@@ -80,6 +80,6 @@ func (t *Transport) Negotiate(version Version) (response NegotiateResponse, err 
 		}
 		return response, errors.Wrap(ErrNegotiate, e.Error)
 	default:
-		return response, errors.Wrapf(ErrInvalidStatusCode, resp.Status)
+		return response, errors.Wrap(ErrInvalidStatusCode, resp.Status)
 	}
 }

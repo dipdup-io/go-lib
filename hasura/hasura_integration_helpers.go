@@ -31,7 +31,7 @@ func TestExpectedMetadataWithActual(
 	}
 
 	api := New(cfg.Hasura.URL, cfg.Hasura.Secret)
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(t.Context())
 	defer cancel()
 
 	metadata, err := api.ExportMetadata(ctx)
