@@ -560,22 +560,26 @@ type Error struct {
 
 // Baking -
 type Baking struct {
-	Type         string    `json:"type"`
-	ID           uint64    `json:"id"`
-	Level        uint64    `json:"level"`
-	Timestamp    time.Time `json:"timestamp"`
-	Block        string    `json:"block"`
-	Proposer     *Address  `json:"proposer"`
-	Producer     *Address  `json:"producer"`
-	PayloadRound int       `json:"payloadRound"`
-	BlockRound   int       `json:"blockRound"`
-	Deposit      int64     `json:"deposit"`
-	Reward       int64     `json:"reward"`
-	Bonus        int64     `json:"bonus"`
-	Fees         int64     `json:"fees"`
-	Baker        Address   `json:"baker"`
-	Priority     int       `json:"priority"`
-	Quote        *Quote    `json:"quote,omitempty"`
+	Type               string    `json:"type"`
+	ID                 uint64    `json:"id"`
+	Level              uint64    `json:"level"`
+	Timestamp          time.Time `json:"timestamp"`
+	Block              string    `json:"block"`
+	Proposer           *Address  `json:"proposer"`
+	Producer           *Address  `json:"producer"`
+	PayloadRound       int       `json:"payloadRound"`
+	BlockRound         int       `json:"blockRound"`
+	Deposit            int64     `json:"deposit"`
+	RewardDelegated    int64     `json:"rewardDelegated"`
+	RewardStakedOwn    int64     `json:"rewardStakedOwn"`
+	RewardStakedEdge   int64     `json:"rewardStakedEdge"`
+	RewardStakedShared int64     `json:"rewardStakedShared"`
+	BonusDelegated     int64     `json:"bonusDelegated"`
+	BonusStakedOwn     int64     `json:"bonusStakedOwn"`
+	BonusStakedEdge    int64     `json:"bonusStakedEdge"`
+	BonusStakedShared  int64     `json:"bonusStakedShared"`
+	Fees               int64     `json:"fees"`
+	Quote              *Quote    `json:"quote,omitempty"`
 }
 
 // EndorsingReward -
