@@ -179,7 +179,6 @@ type Ballot struct {
 	Delegate    Address       `json:"delegate"`
 	VotingPower int64         `json:"votingPower"`
 	Quote       *Quote        `json:"quote,omitempty"`
-	Rolls       int           `json:"rolls,omitempty"`
 }
 
 // Proposal -
