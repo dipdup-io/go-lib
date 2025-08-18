@@ -195,7 +195,6 @@ type Proposal struct {
 	VotingPower int64         `json:"votingPower"`
 	Duplicated  bool          `json:"duplicated"`
 	Quote       *Quote        `json:"quote,omitempty"`
-	Rolls       int           `json:"rolls,omitempty"`
 }
 
 // Activation -
