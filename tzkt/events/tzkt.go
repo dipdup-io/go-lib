@@ -187,7 +187,7 @@ func (tzkt *TzKT) listen(ctx context.Context) {
 		for {
 			select {
 			case <-ctx.Done():
-				tzkt.log.Debug().Msg("listenning was stopped")
+				tzkt.log.Debug().Msg("listening was stopped")
 				return
 			case msg := <-tzkt.s.Messages():
 				switch typ := msg.(type) {

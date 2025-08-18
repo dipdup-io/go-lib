@@ -9,9 +9,6 @@ type Delegate struct {
 	Address                string    `json:"address"`
 	PublicKey              string    `json:"publicKey"`
 	Balance                int64     `json:"balance"`
-	FrozenDeposits         int64     `json:"frozenDeposits"`
-	FrozenRewards          int64     `json:"frozenRewards"`
-	FrozenFees             int64     `json:"frozenFees"`
 	Counter                int64     `json:"counter"`
 	ActivationLevel        int64     `json:"activationLevel"`
 	StakingBalance         int64     `json:"stakingBalance"`
