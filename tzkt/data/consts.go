@@ -42,6 +42,7 @@ const (
 	KindSrRecoverBond            = "sr_recover_bond"
 	KindSrRefute                 = "sr_refute"
 	KindDalPublishCommitment     = "dal_publish_commitment"
+	KindStaking                  = "staking"
 )
 
 // urls

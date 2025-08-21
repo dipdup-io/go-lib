@@ -16,7 +16,8 @@ type OperationConstraint interface {
 		TxRollupReturnBond | TxRollupSubmitBatch | NonceRevelation | DoubleBaking | DoubleEndorsing | SetDepositsLimit |
 		DoublePreendorsing | Baking | RevelationPenalty | EndorsingReward | VdfRevelation | IncreasePaidStorage |
 		DrainDelegate | UpdateConsensusKey | SmartRollupAddMessage | SmartRollupCement | SmartRollupExecute |
-		SmartRollupOriginate | SmartRollupPublish | SmartRollupRefute | SmartRollupRecoverBond | DalPublishCommitment
+		SmartRollupOriginate | SmartRollupPublish | SmartRollupRefute | SmartRollupRecoverBond | DalPublishCommitment |
+		Staking
 }
 
 // Operation -
@@ -851,6 +852,7 @@ type SrGameInfo struct {
 	OpponentLoss        uint64            `json:"opponentLoss"`
 }
 
+// DalPublishCommitment -
 type DalPublishCommitment struct {
 	Type         string    `json:"type"`
 	ID           uint64    `json:"id"`
@@ -866,4 +868,28 @@ type DalPublishCommitment struct {
 	Slot         int       `json:"slot"`
 	Commitment   string    `json:"commitment"`
 	Status       string    `json:"status"`
+}
+
+// Staking -
+type Staking struct {
+	Type                string    `json:"type"`
+	ID                  uint64    `json:"id"`
+	Level               uint64    `json:"level"`
+	Timestamp           time.Time `json:"timestamp"`
+	Hash                string    `json:"hash"`
+	Sender              *Address  `json:"sender"`
+	Staker              *Address  `json:"staker"`
+	Counter             uint64    `json:"counter"`
+	GasLimit            uint64    `json:"gasLimit"`
+	GasUsed             uint64    `json:"gasUsed"`
+	StorageLimit        uint64    `json:"storageLimit"`
+	BakerFee            uint64    `json:"bakerFee"`
+	Action              string    `json:"action"`
+	RequestedAmount     uint64    `json:"requestedAmount"`
+	Amount              uint64    `json:"amount"`
+	Baker               *Address  `json:"baker"`
+	StakingUpdatesCount uint64    `json:"stakingUpdatesCount"`
+	Status              string    `json:"status"`
+	Errors              []Error   `json:"errors,omitempty"`
+	Quote               *Quote    `json:"quote,omitempty"`
 }

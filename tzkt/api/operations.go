@@ -263,3 +263,9 @@ func (tzkt *API) GetDalPublishCommitment(ctx context.Context, filters map[string
 	err = tzkt.json(ctx, "/v1/operations/dal_publish_commitment", filters, false, &operations)
 	return
 }
+
+// GetStaking -
+func (tzkt *API) GetStaking(ctx context.Context, filters map[string]string) (operations []data.Staking, err error) {
+	err = tzkt.json(ctx, "/v1/operations/staking", filters, false, &operations)
+	return
+}
