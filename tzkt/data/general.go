@@ -137,6 +137,5 @@ type Statistics struct {
 	TotalBanished     uint64    `json:"totalBanished"`
 	TotalFrozen       uint64    `json:"totalFrozen"`
 	TotalRollupBonds  uint64    `json:"totalRollupBonds"`
-	TotalVested       uint64    `json:"totalVested"`
 	Quote             *Quote    `json:"quote,omitempty"`
 }
