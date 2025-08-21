@@ -119,7 +119,7 @@ type ProtocolConstants struct {
 	Dictator                          string  `json:"dictator"`
 }
 
-// ProtocolConstants -
+// ProtocolMetadata -
 type ProtocolMetadata struct {
 	Docs  string `json:"docs"`
 	Alias string `json:"alias"`
