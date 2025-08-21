@@ -133,6 +133,7 @@ type Reveal struct {
 	GasLimit  uint64    `json:"gasLimit"`
 	GasUsed   uint64    `json:"gasUsed"`
 	BakerFee  uint64    `json:"bakerFee"`
+	PublicKey string    `json:"publicKey,omitempty"`
 	Nonce     *uint64   `json:"nonce,omitempty"`
 	Quote     *Quote    `json:"quote,omitempty"`
 }
