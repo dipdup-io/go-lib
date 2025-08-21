@@ -32,7 +32,7 @@ const (
 	KindAttestationReward        = "attestation_reward "
 	KindVdfRevelation            = "vdf_revelation"
 	KindIncreasePaidStorage      = "increase_paid_storage"
-	KindUpdateConsensusKey       = "update_consensus_key"
+	KindUpdateSecondaryKey       = "update_secondary_key"
 	KindDrainDelegate            = "drain_delegate"
 	KindSrAddMessages            = "sr_add_messages"
 	KindSrCement                 = "sr_cement"

@@ -15,7 +15,7 @@ type OperationConstraint interface {
 		TxRollupFinalizeCommitment | TxRollupOrigination | TxRollupRejection | TxRollupRemoveCommitment |
 		TxRollupReturnBond | TxRollupSubmitBatch | NonceRevelation | DoubleBaking | DoubleEndorsing | SetDepositsLimit |
 		DoublePreendorsing | Baking | RevelationPenalty | AttestationReward | VdfRevelation | IncreasePaidStorage |
-		DrainDelegate | UpdateConsensusKey | SmartRollupAddMessage | SmartRollupCement | SmartRollupExecute |
+		DrainDelegate | UpdateSecondaryKey | SmartRollupAddMessage | SmartRollupCement | SmartRollupExecute |
 		SmartRollupOriginate | SmartRollupPublish | SmartRollupRefute | SmartRollupRecoverBond | DalPublishCommitment |
 		Staking
 }
@@ -652,8 +652,8 @@ type IncreasePaidStorage struct {
 	Amount       decimal.Decimal `json:"amount"`
 }
 
-// UpdateConsensusKey -
-type UpdateConsensusKey struct {
+// UpdateSecondaryKey -
+type UpdateSecondaryKey struct {
 	Type            string    `json:"type"`
 	ID              uint64    `json:"id"`
 	Level           uint64    `json:"level"`

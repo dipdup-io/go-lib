@@ -351,8 +351,8 @@ func parseOperations(data []byte) (any, error) {
 			result = append(result, &tzktData.IncreasePaidStorage{})
 		case tzktData.KindVdfRevelation:
 			result = append(result, &tzktData.VdfRevelation{})
-		case tzktData.KindUpdateConsensusKey:
-			result = append(result, &tzktData.UpdateConsensusKey{})
+		case tzktData.KindUpdateSecondaryKey:
+			result = append(result, &tzktData.UpdateSecondaryKey{})
 		case tzktData.KindDrainDelegate:
 			result = append(result, &tzktData.DrainDelegate{})
 		case tzktData.KindSrAddMessages:

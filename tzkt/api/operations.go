@@ -204,9 +204,9 @@ func (tzkt *API) GetIncreasePaidStorage(ctx context.Context, filters map[string]
 	return
 }
 
-// GetUpdateConsensusKey -
-func (tzkt *API) GetUpdateConsensusKey(ctx context.Context, filters map[string]string) (operations []data.UpdateConsensusKey, err error) {
-	err = tzkt.json(ctx, "/v1/operations/update_consensus_key", filters, false, &operations)
+// GetUpdateSecondaryKey -
+func (tzkt *API) GetUpdateSecondaryKey(ctx context.Context, filters map[string]string) (operations []data.UpdateSecondaryKey, err error) {
+	err = tzkt.json(ctx, "/v1/operations/update_secondary_key", filters, false, &operations)
 	return
 }
 
