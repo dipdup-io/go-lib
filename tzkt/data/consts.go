@@ -4,7 +4,7 @@ package data
 const (
 	KindTransaction              = "transaction"
 	KindOrigination              = "origination"
-	KindEndorsement              = "endorsement"
+	KindAttestation              = "attestation"
 	KindPreendorsement           = "preendorsement"
 	KindBallot                   = "ballot"
 	KindProposal                 = "proposal"

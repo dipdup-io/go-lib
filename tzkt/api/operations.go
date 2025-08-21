@@ -9,9 +9,9 @@ import (
 	"github.com/pkg/errors"
 )
 
-// GetEndorsements -
-func (tzkt *API) GetEndorsements(ctx context.Context, filters map[string]string) (operations []data.Endorsement, err error) {
-	err = tzkt.json(ctx, "/v1/operations/endorsements", filters, false, &operations)
+// GetAttestations -
+func (tzkt *API) GetAttestations(ctx context.Context, filters map[string]string) (operations []data.Attestation, err error) {
+	err = tzkt.json(ctx, "/v1/operations/attestations", filters, false, &operations)
 	return
 }
 
