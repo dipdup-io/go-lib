@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGetEndorsingRewards_Integration(t *testing.T) {
+func TestGetEndorsingRewards(t *testing.T) {
 	api := New("https://staging.api.tzkt.io")
 
 	bakings, err := api.GetBakings(t.Context(), map[string]string{
@@ -19,7 +19,7 @@ func TestGetEndorsingRewards_Integration(t *testing.T) {
 	assert.NotEmpty(t, bakings[0].Level)
 }
 
-func TestGetStaking_Integration(t *testing.T) {
+func TestGetStaking(t *testing.T) {
 	api := New("https://staging.api.tzkt.io")
 
 	stakings, err := api.GetStaking(t.Context(), map[string]string{
@@ -29,4 +29,16 @@ func TestGetStaking_Integration(t *testing.T) {
 	require.NoError(t, err)
 	assert.Len(t, stakings, 1)
 	assert.Equal(t, uint64(9967034), stakings[0].Level)
+}
+
+func TestGetDoubleConsensus(t *testing.T) {
+	api := New("https://staging.api.tzkt.io")
+
+	doubleConsensus, err := api.GetDoubleConsensus(t.Context(), map[string]string{
+		"level": "554813",
+	})
+
+	require.NoError(t, err)
+	assert.Len(t, doubleConsensus, 1)
+	assert.Equal(t, "ooaLQnmRTDFf2JZa5skBcYVKUTUxrE6gtuejs31YFeRKXpxRawR", doubleConsensus[0].Hash)
 }

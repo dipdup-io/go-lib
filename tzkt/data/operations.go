@@ -13,11 +13,10 @@ type OperationConstraint interface {
 	Transaction | Origination | Delegation | Reveal | RegisterConstant | Attestation | Preattestation |
 		Ballot | Proposal | Activation | TransferTicket | TxRollupCommit | TxRollupDispatchTicket |
 		TxRollupFinalizeCommitment | TxRollupOrigination | TxRollupRejection | TxRollupRemoveCommitment |
-		TxRollupReturnBond | TxRollupSubmitBatch | NonceRevelation | DoubleBaking | DoubleEndorsing | SetDepositsLimit |
-		DoublePreendorsing | Baking | RevelationPenalty | AttestationReward | VdfRevelation | IncreasePaidStorage |
-		DrainDelegate | UpdateSecondaryKey | SmartRollupAddMessage | SmartRollupCement | SmartRollupExecute |
-		SmartRollupOriginate | SmartRollupPublish | SmartRollupRefute | SmartRollupRecoverBond | DalPublishCommitment |
-		Staking
+		TxRollupReturnBond | TxRollupSubmitBatch | NonceRevelation | DoubleBaking | DoubleConsensus | SetDepositsLimit |
+		Baking | RevelationPenalty | AttestationReward | VdfRevelation | IncreasePaidStorage | DrainDelegate |
+		UpdateSecondaryKey | SmartRollupAddMessage | SmartRollupCement | SmartRollupExecute | SmartRollupOriginate |
+		SmartRollupPublish | SmartRollupRefute | SmartRollupRecoverBond | DalPublishCommitment | Staking
 }
 
 // Operation -
@@ -514,8 +513,8 @@ type DoubleBaking struct {
 	Quote        *Quote    `json:"quote,omitempty"`
 }
 
-// DoubleEndorsing -
-type DoubleEndorsing struct {
+// DoubleConsensus -
+type DoubleConsensus struct {
 	Type         string    `json:"type"`
 	ID           uint64    `json:"id"`
 	Level        uint64    `json:"level"`
@@ -592,24 +591,6 @@ type RevelationPenalty struct {
 	MissedLevel int64     `json:"missedLevel"`
 	Loss        int64     `json:"loss"`
 	Quote       *Quote    `json:"quote,omitempty"`
-}
-
-// DoublePreendorsing -
-type DoublePreendorsing struct {
-	Type                 string    `json:"type"`
-	ID                   uint64    `json:"id"`
-	Level                uint64    `json:"level"`
-	Timestamp            time.Time `json:"timestamp"`
-	Block                string    `json:"block"`
-	Hash                 string    `json:"hash"`
-	AccusedLevel         uint64    `json:"accusedLevel"`
-	Accuser              *Address  `json:"accuser"`
-	Offender             *Address  `json:"offender"`
-	Quote                *Quote    `json:"quote,omitempty"`
-	AccuserRewards       int64     `json:"accuserRewards,omitempty"`
-	OffenderLostDeposits int64     `json:"offenderLostDeposits,omitempty"`
-	OffenderLostRewards  int64     `json:"offenderLostRewards,omitempty"`
-	OffenderLostFees     int64     `json:"offenderLostFees,omitempty"`
 }
 
 // VdfRevelation -

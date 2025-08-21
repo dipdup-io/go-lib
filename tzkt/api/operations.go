@@ -39,9 +39,9 @@ func (tzkt *API) GetDoubleBakings(ctx context.Context, filters map[string]string
 	return
 }
 
-// GetDoubleEndorsings -
-func (tzkt *API) GetDoubleEndorsings(ctx context.Context, filters map[string]string) (operations []data.DoubleEndorsing, err error) {
-	err = tzkt.json(ctx, "/v1/operations/double_endorsing", filters, false, &operations)
+// GetDoubleConsensus -
+func (tzkt *API) GetDoubleConsensus(ctx context.Context, filters map[string]string) (operations []data.DoubleConsensus, err error) {
+	err = tzkt.json(ctx, "/v1/operations/double_consensus", filters, false, &operations)
 	return
 }
 
@@ -183,12 +183,6 @@ func (tzkt *API) GetAttestationReward(ctx context.Context, filters map[string]st
 // GetRevelationPenalties -
 func (tzkt *API) GetRevelationPenalties(ctx context.Context, filters map[string]string) (operations []data.RevelationPenalty, err error) {
 	err = tzkt.json(ctx, "/v1/operations/revelation_penalties", filters, false, &operations)
-	return
-}
-
-// GetDoublePreendorsings -
-func (tzkt *API) GetDoublePreendorsings(ctx context.Context, filters map[string]string) (operations []data.DoublePreendorsing, err error) {
-	err = tzkt.json(ctx, "/v1/operations/double_preendorsing", filters, false, &operations)
 	return
 }
 
