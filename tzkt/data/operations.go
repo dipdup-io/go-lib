@@ -606,9 +606,7 @@ type DoublePreendorsing struct {
 	Hash                 string    `json:"hash"`
 	AccusedLevel         uint64    `json:"accusedLevel"`
 	Accuser              *Address  `json:"accuser"`
-	AccuserReward        int64     `json:"accuserReward"`
 	Offender             *Address  `json:"offender"`
-	OffenderLoss         int64     `json:"offenderLoss"`
 	Quote                *Quote    `json:"quote,omitempty"`
 	AccuserRewards       int64     `json:"accuserRewards,omitempty"`
 	OffenderLostDeposits int64     `json:"offenderLostDeposits,omitempty"`
