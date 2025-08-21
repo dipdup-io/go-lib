@@ -29,7 +29,7 @@ const (
 	KindSetDepositsLimit         = "set_deposits_limit"
 	KindRevelationPenalty        = "revelation_penalty"
 	KindBaking                   = "baking"
-	KindEndorsingReward          = "endorsing_reward"
+	KindAttestationReward        = "attestation_reward "
 	KindVdfRevelation            = "vdf_revelation"
 	KindIncreasePaidStorage      = "increase_paid_storage"
 	KindUpdateConsensusKey       = "update_consensus_key"

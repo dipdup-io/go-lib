@@ -174,9 +174,9 @@ func (tzkt *API) GetBakings(ctx context.Context, filters map[string]string) (ope
 	return
 }
 
-// GetEndorsingRewards -
-func (tzkt *API) GetEndorsingRewards(ctx context.Context, filters map[string]string) (operations []data.EndorsingReward, err error) {
-	err = tzkt.json(ctx, "/v1/operations/endorsing_rewards", filters, false, &operations)
+// GetAttestationReward -
+func (tzkt *API) GetAttestationReward(ctx context.Context, filters map[string]string) (operations []data.AttestationReward, err error) {
+	err = tzkt.json(ctx, "/v1/operations/attestation_rewards", filters, false, &operations)
 	return
 }
 

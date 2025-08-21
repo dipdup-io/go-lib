@@ -341,8 +341,8 @@ func parseOperations(data []byte) (any, error) {
 			result = append(result, &tzktData.TxRollupRemoveCommitment{})
 		case tzktData.KindRevelationPenalty:
 			result = append(result, &tzktData.RevelationPenalty{})
-		case tzktData.KindEndorsingReward:
-			result = append(result, &tzktData.EndorsingReward{})
+		case tzktData.KindAttestationReward:
+			result = append(result, &tzktData.AttestationReward{})
 		case tzktData.KindBaking:
 			result = append(result, &tzktData.Baking{})
 		case tzktData.KindDoublePreendorsing:

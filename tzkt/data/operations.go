@@ -14,7 +14,7 @@ type OperationConstraint interface {
 		Ballot | Proposal | Activation | TransferTicket | TxRollupCommit | TxRollupDispatchTicket |
 		TxRollupFinalizeCommitment | TxRollupOrigination | TxRollupRejection | TxRollupRemoveCommitment |
 		TxRollupReturnBond | TxRollupSubmitBatch | NonceRevelation | DoubleBaking | DoubleEndorsing | SetDepositsLimit |
-		DoublePreendorsing | Baking | RevelationPenalty | EndorsingReward | VdfRevelation | IncreasePaidStorage |
+		DoublePreendorsing | Baking | RevelationPenalty | AttestationReward | VdfRevelation | IncreasePaidStorage |
 		DrainDelegate | UpdateConsensusKey | SmartRollupAddMessage | SmartRollupCement | SmartRollupExecute |
 		SmartRollupOriginate | SmartRollupPublish | SmartRollupRefute | SmartRollupRecoverBond | DalPublishCommitment |
 		Staking
@@ -569,8 +569,8 @@ type Baking struct {
 	Quote              *Quote    `json:"quote,omitempty"`
 }
 
-// EndorsingReward -
-type EndorsingReward struct {
+// AttestationReward -
+type AttestationReward struct {
 	Type      string    `json:"type"`
 	ID        uint64    `json:"id"`
 	Level     uint64    `json:"level"`
