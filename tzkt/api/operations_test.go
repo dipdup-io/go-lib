@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGetEndorsingRewards(t *testing.T) {
+func TestGetBakings(t *testing.T) {
 	api := New("https://staging.api.tzkt.io")
 
 	bakings, err := api.GetBakings(t.Context(), map[string]string{

@@ -345,8 +345,6 @@ func parseOperations(data []byte) (any, error) {
 			result = append(result, &tzktData.AttestationReward{})
 		case tzktData.KindBaking:
 			result = append(result, &tzktData.Baking{})
-		case tzktData.KindDoublePreendorsing:
-			result = append(result, &tzktData.DoublePreendorsing{})
 		case tzktData.KindIncreasePaidStorage:
 			result = append(result, &tzktData.IncreasePaidStorage{})
 		case tzktData.KindVdfRevelation:
