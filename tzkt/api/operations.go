@@ -102,9 +102,9 @@ func (tzkt *API) GetTransactionsByHash(ctx context.Context, hash string, filters
 	return
 }
 
-// GetPreendorsement -
-func (tzkt *API) GetPreendorsement(ctx context.Context, filters map[string]string) (operations []data.Preendorsement, err error) {
-	err = tzkt.json(ctx, "/v1/operations/preendorsement", filters, false, &operations)
+// GetPreattestation -
+func (tzkt *API) GetPreattestation(ctx context.Context, filters map[string]string) (operations []data.Preattestation, err error) {
+	err = tzkt.json(ctx, "/v1/operations/preattestations", filters, false, &operations)
 	return
 }
 

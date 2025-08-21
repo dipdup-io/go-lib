@@ -10,7 +10,7 @@ import (
 
 // OperationConstraint -
 type OperationConstraint interface {
-	Transaction | Origination | Delegation | Reveal | RegisterConstant | Attestation | Preendorsement |
+	Transaction | Origination | Delegation | Reveal | RegisterConstant | Attestation | Preattestation |
 		Ballot | Proposal | Activation | TransferTicket | TxRollupCommit | TxRollupDispatchTicket |
 		TxRollupFinalizeCommitment | TxRollupOrigination | TxRollupRejection | TxRollupRemoveCommitment |
 		TxRollupReturnBond | TxRollupSubmitBatch | NonceRevelation | DoubleBaking | DoubleEndorsing | SetDepositsLimit |
@@ -153,8 +153,8 @@ type Attestation struct {
 	Quote     *Quote    `json:"quote,omitempty"`
 }
 
-// Preendorsement -
-type Preendorsement struct {
+// Preattestation -
+type Preattestation struct {
 	Type      string    `json:"type"`
 	Block     string    `json:"block"`
 	Hash      string    `json:"hash"`

@@ -5,7 +5,7 @@ const (
 	KindTransaction              = "transaction"
 	KindOrigination              = "origination"
 	KindAttestation              = "attestation"
-	KindPreendorsement           = "preendorsement"
+	KindPreattestations          = "preattestations"
 	KindBallot                   = "ballot"
 	KindProposal                 = "proposal"
 	KindDoubleBaking             = "double_baking"

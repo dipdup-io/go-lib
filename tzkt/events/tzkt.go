@@ -315,8 +315,8 @@ func parseOperations(data []byte) (any, error) {
 			result = append(result, &tzktData.NonceRevelation{})
 		case tzktData.KindProposal:
 			result = append(result, &tzktData.Proposal{})
-		case tzktData.KindPreendorsement:
-			result = append(result, &tzktData.Preendorsement{})
+		case tzktData.KindPreattestations:
+			result = append(result, &tzktData.Preattestation{})
 		case tzktData.KindRegisterGlobalConstant:
 			result = append(result, &tzktData.RegisterConstant{})
 		case tzktData.KindSetDepositsLimit:
