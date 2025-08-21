@@ -246,9 +246,7 @@ type NonceRevelation struct {
 	RevealedLevel int       `json:"revealedLevel"`
 	RevealedCycle int       `json:"revealedCycle"`
 	Nonce         string    `json:"nonce"`
-	Reward        int64     `json:"reward"`
 	Quote         *Quote    `json:"quote,omitempty"`
-	BakerRewards  int64     `json:"bakerRewards"`
 }
 
 // ProposalAlias -
@@ -579,7 +577,6 @@ type EndorsingReward struct {
 	Block     string    `json:"block"`
 	Baker     *Address  `json:"baker"`
 	Expected  int64     `json:"expected"`
-	Received  int64     `json:"received"`
 	Quote     *Quote    `json:"quote,omitempty"`
 }
 
