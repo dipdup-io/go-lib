@@ -503,42 +503,30 @@ type Migration struct {
 
 // DoubleBaking -
 type DoubleBaking struct {
-	Type                 string    `json:"type"`
-	ID                   uint64    `json:"id"`
-	Level                uint64    `json:"level"`
-	Timestamp            time.Time `json:"timestamp"`
-	Block                string    `json:"block"`
-	Hash                 string    `json:"hash"`
-	AccusedLevel         uint64    `json:"accusedLevel"`
-	Accuser              *Address  `json:"accuser"`
-	AccuserReward        int64     `json:"accuserReward"`
-	Offender             *Address  `json:"offender"`
-	OffenderLoss         int64     `json:"offenderLoss"`
-	Quote                *Quote    `json:"quote,omitempty"`
-	AccuserRewards       int64     `json:"accuserRewards,omitempty"`
-	OffenderLostDeposits int64     `json:"offenderLostDeposits,omitempty"`
-	OffenderLostRewards  int64     `json:"offenderLostRewards,omitempty"`
-	OffenderLostFees     int64     `json:"offenderLostFees,omitempty"`
+	Type         string    `json:"type"`
+	ID           uint64    `json:"id"`
+	Level        uint64    `json:"level"`
+	Timestamp    time.Time `json:"timestamp"`
+	Block        string    `json:"block"`
+	Hash         string    `json:"hash"`
+	AccusedLevel uint64    `json:"accusedLevel"`
+	Accuser      *Address  `json:"accuser"`
+	Offender     *Address  `json:"offender"`
+	Quote        *Quote    `json:"quote,omitempty"`
 }
 
 // DoubleEndorsing -
 type DoubleEndorsing struct {
-	Type                 string    `json:"type"`
-	ID                   uint64    `json:"id"`
-	Level                uint64    `json:"level"`
-	Timestamp            time.Time `json:"timestamp"`
-	Block                string    `json:"block"`
-	Hash                 string    `json:"hash"`
-	AccusedLevel         uint64    `json:"accusedLevel"`
-	Accuser              *Address  `json:"accuser"`
-	AccuserReward        int64     `json:"accuserReward"`
-	Offender             *Address  `json:"offender"`
-	OffenderLoss         int64     `json:"offenderLoss"`
-	Quote                *Quote    `json:"quote,omitempty"`
-	AccuserRewards       int64     `json:"accuserRewards,omitempty"`
-	OffenderLostDeposits int64     `json:"offenderLostDeposits,omitempty"`
-	OffenderLostRewards  int64     `json:"offenderLostRewards,omitempty"`
-	OffenderLostFees     int64     `json:"offenderLostFees,omitempty"`
+	Type         string    `json:"type"`
+	ID           uint64    `json:"id"`
+	Level        uint64    `json:"level"`
+	Timestamp    time.Time `json:"timestamp"`
+	Block        string    `json:"block"`
+	Hash         string    `json:"hash"`
+	AccusedLevel uint64    `json:"accusedLevel"`
+	Accuser      *Address  `json:"accuser"`
+	Offender     *Address  `json:"offender"`
+	Quote        *Quote    `json:"quote,omitempty"`
 }
 
 // Quote -

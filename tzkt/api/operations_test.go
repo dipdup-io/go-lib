@@ -1,7 +1,6 @@
 package api
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,12 +14,11 @@ func TestGetEndorsingRewards_Integration(t *testing.T) {
 
 	api := New("https://staging.api.tzkt.io")
 
-	bakings, err := api.GetBakings(context.Background(), map[string]string{
+	bakings, err := api.GetBakings(t.Context(), map[string]string{
 		"level": "9935996",
 	})
 
 	require.NoError(t, err)
-
 	assert.Len(t, bakings, 1)
 	assert.NotEmpty(t, bakings[0].Level)
 }
