@@ -614,18 +614,21 @@ type DoublePreendorsing struct {
 
 // VdfRevelation -
 type VdfRevelation struct {
-	Type      string    `json:"type"`
-	ID        uint64    `json:"id"`
-	Level     uint64    `json:"level"`
-	Timestamp time.Time `json:"timestamp"`
-	Block     string    `json:"block"`
-	Hash      string    `json:"hash"`
-	Baker     *Address  `json:"baker"`
-	Cycle     uint64    `json:"cycle"`
-	Solution  string    `json:"solution"`
-	Proof     string    `json:"proof"`
-	Reward    uint64    `json:"reward"`
-	Quote     *Quote    `json:"quote,omitempty"`
+	Type               string    `json:"type"`
+	ID                 uint64    `json:"id"`
+	Level              uint64    `json:"level"`
+	Timestamp          time.Time `json:"timestamp"`
+	Block              string    `json:"block"`
+	Hash               string    `json:"hash"`
+	Baker              *Address  `json:"baker"`
+	Cycle              uint64    `json:"cycle"`
+	Solution           string    `json:"solution"`
+	Proof              string    `json:"proof"`
+	RewardDelegated    int64     `json:"rewardDelegated"`
+	RewardStakedOwn    int64     `json:"rewardStakedOwn"`
+	RewardStakedEdge   int64     `json:"rewardStakedEdge"`
+	RewardStakedShared int64     `json:"rewardStakedShared"`
+	Quote              *Quote    `json:"quote,omitempty"`
 }
 
 // IncreasePaidStorage -
