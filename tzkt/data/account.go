@@ -9,21 +9,18 @@ type Delegate struct {
 	Address                string    `json:"address"`
 	PublicKey              string    `json:"publicKey"`
 	Balance                int64     `json:"balance"`
-	FrozenDeposits         int64     `json:"frozenDeposits"`
-	FrozenRewards          int64     `json:"frozenRewards"`
-	FrozenFees             int64     `json:"frozenFees"`
 	Counter                int64     `json:"counter"`
 	ActivationLevel        int64     `json:"activationLevel"`
 	StakingBalance         int64     `json:"stakingBalance"`
 	NumContracts           int64     `json:"numContracts"`
 	NumDelegators          int64     `json:"numDelegators"`
 	NumBlocks              int64     `json:"numBlocks"`
-	NumEndorsements        int64     `json:"numEndorsements"`
+	NumAttestations        int64     `json:"numAttestations"`
 	NumBallots             int64     `json:"numBallots"`
 	NumProposals           int64     `json:"numProposals"`
 	NumActivations         int64     `json:"numActivations"`
 	NumDoubleBaking        int64     `json:"numDoubleBaking"`
-	NumDoubleEndorsing     int64     `json:"numDoubleEndorsing"`
+	NumDoubleConsensus     int64     `json:"numDoubleConsensus"`
 	NumNonceRevelations    int64     `json:"numNonceRevelations"`
 	NumRevelationPenalties int64     `json:"numRevelationPenalties"`
 	NumDelegations         int64     `json:"numDelegations"`

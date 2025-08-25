@@ -4,13 +4,12 @@ package data
 const (
 	KindTransaction              = "transaction"
 	KindOrigination              = "origination"
-	KindEndorsement              = "endorsement"
-	KindPreendorsement           = "preendorsement"
+	KindAttestation              = "attestation"
+	KindPreattestations          = "preattestations"
 	KindBallot                   = "ballot"
 	KindProposal                 = "proposal"
 	KindDoubleBaking             = "double_baking"
-	KindDoubleEndorsing          = "double_endorsing"
-	KindDoublePreendorsing       = "double_preendorsing"
+	KindDoubleConsensus          = "double_consensus"
 	KindActivation               = "activation"
 	KindMigration                = "migration"
 	KindNonceRevelation          = "nonce_revelation"
@@ -29,10 +28,10 @@ const (
 	KindSetDepositsLimit         = "set_deposits_limit"
 	KindRevelationPenalty        = "revelation_penalty"
 	KindBaking                   = "baking"
-	KindEndorsingReward          = "endorsing_reward"
+	KindAttestationReward        = "attestation_reward "
 	KindVdfRevelation            = "vdf_revelation"
 	KindIncreasePaidStorage      = "increase_paid_storage"
-	KindUpdateConsensusKey       = "update_consensus_key"
+	KindUpdateSecondaryKey       = "update_secondary_key"
 	KindDrainDelegate            = "drain_delegate"
 	KindSrAddMessages            = "sr_add_messages"
 	KindSrCement                 = "sr_cement"
@@ -42,6 +41,7 @@ const (
 	KindSrRecoverBond            = "sr_recover_bond"
 	KindSrRefute                 = "sr_refute"
 	KindDalPublishCommitment     = "dal_publish_commitment"
+	KindStaking                  = "staking"
 )
 
 // urls

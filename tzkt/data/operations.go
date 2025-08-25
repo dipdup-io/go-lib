@@ -10,13 +10,13 @@ import (
 
 // OperationConstraint -
 type OperationConstraint interface {
-	Transaction | Origination | Delegation | Reveal | RegisterConstant | Endorsement | Preendorsement |
+	Transaction | Origination | Delegation | Reveal | RegisterConstant | Attestation | Preattestation |
 		Ballot | Proposal | Activation | TransferTicket | TxRollupCommit | TxRollupDispatchTicket |
 		TxRollupFinalizeCommitment | TxRollupOrigination | TxRollupRejection | TxRollupRemoveCommitment |
-		TxRollupReturnBond | TxRollupSubmitBatch | NonceRevelation | DoubleBaking | DoubleEndorsing | SetDepositsLimit |
-		DoublePreendorsing | Baking | RevelationPenalty | EndorsingReward | VdfRevelation | IncreasePaidStorage |
-		DrainDelegate | UpdateConsensusKey | SmartRollupAddMessage | SmartRollupCement | SmartRollupExecute |
-		SmartRollupOriginate | SmartRollupPublish | SmartRollupRefute | SmartRollupRecoverBond | DalPublishCommitment
+		TxRollupReturnBond | TxRollupSubmitBatch | NonceRevelation | DoubleBaking | DoubleConsensus | SetDepositsLimit |
+		Baking | RevelationPenalty | AttestationReward | VdfRevelation | IncreasePaidStorage | DrainDelegate |
+		UpdateSecondaryKey | SmartRollupAddMessage | SmartRollupCement | SmartRollupExecute | SmartRollupOriginate |
+		SmartRollupPublish | SmartRollupRefute | SmartRollupRecoverBond | DalPublishCommitment | Staking
 }
 
 // Operation -
@@ -133,12 +133,13 @@ type Reveal struct {
 	GasLimit  uint64    `json:"gasLimit"`
 	GasUsed   uint64    `json:"gasUsed"`
 	BakerFee  uint64    `json:"bakerFee"`
+	PublicKey string    `json:"publicKey,omitempty"`
 	Nonce     *uint64   `json:"nonce,omitempty"`
 	Quote     *Quote    `json:"quote,omitempty"`
 }
 
-// Endorsement -
-type Endorsement struct {
+// Attestation -
+type Attestation struct {
 	Type      string    `json:"type"`
 	Block     string    `json:"block"`
 	Hash      string    `json:"hash"`
@@ -152,8 +153,8 @@ type Endorsement struct {
 	Quote     *Quote    `json:"quote,omitempty"`
 }
 
-// Preendorsement -
-type Preendorsement struct {
+// Preattestation -
+type Preattestation struct {
 	Type      string    `json:"type"`
 	Block     string    `json:"block"`
 	Hash      string    `json:"hash"`
@@ -179,7 +180,6 @@ type Ballot struct {
 	Delegate    Address       `json:"delegate"`
 	VotingPower int64         `json:"votingPower"`
 	Quote       *Quote        `json:"quote,omitempty"`
-	Rolls       int           `json:"rolls,omitempty"`
 }
 
 // Proposal -
@@ -196,7 +196,6 @@ type Proposal struct {
 	VotingPower int64         `json:"votingPower"`
 	Duplicated  bool          `json:"duplicated"`
 	Quote       *Quote        `json:"quote,omitempty"`
-	Rolls       int           `json:"rolls,omitempty"`
 }
 
 // Activation -
@@ -237,20 +236,22 @@ type RegisterConstant struct {
 
 // NonceRevelation -
 type NonceRevelation struct {
-	Type          string    `json:"type"`
-	ID            uint64    `json:"id"`
-	Level         uint64    `json:"level"`
-	Timestamp     time.Time `json:"timestamp"`
-	Block         string    `json:"block"`
-	Hash          string    `json:"hash"`
-	Baker         Address   `json:"baker"`
-	Sender        Address   `json:"sender"`
-	RevealedLevel int       `json:"revealedLevel"`
-	RevealedCycle int       `json:"revealedCycle"`
-	Nonce         string    `json:"nonce"`
-	Reward        int64     `json:"reward"`
-	Quote         *Quote    `json:"quote,omitempty"`
-	BakerRewards  int64     `json:"bakerRewards"`
+	Type               string    `json:"type"`
+	ID                 uint64    `json:"id"`
+	Level              uint64    `json:"level"`
+	Timestamp          time.Time `json:"timestamp"`
+	Block              string    `json:"block"`
+	Hash               string    `json:"hash"`
+	Baker              Address   `json:"baker"`
+	Sender             Address   `json:"sender"`
+	RevealedLevel      int       `json:"revealedLevel"`
+	RevealedCycle      int       `json:"revealedCycle"`
+	Nonce              string    `json:"nonce"`
+	RewardDelegated    int64     `json:"rewardDelegated"`
+	RewardStakedOwn    int64     `json:"rewardStakedOwn"`
+	RewardStakedEdge   int64     `json:"rewardStakedEdge"`
+	RewardStakedShared int64     `json:"rewardStakedShared"`
+	Quote              *Quote    `json:"quote,omitempty"`
 }
 
 // ProposalAlias -
@@ -512,19 +513,19 @@ type DoubleBaking struct {
 	Block                string    `json:"block"`
 	Hash                 string    `json:"hash"`
 	AccusedLevel         uint64    `json:"accusedLevel"`
+	SlashedLevel         uint64    `json:"slashedLevel"`
 	Accuser              *Address  `json:"accuser"`
-	AccuserReward        int64     `json:"accuserReward"`
+	Reward               uint64    `json:"reward"`
 	Offender             *Address  `json:"offender"`
-	OffenderLoss         int64     `json:"offenderLoss"`
+	LostStaked           uint64    `json:"lostStaked"`
+	LostUnstaked         uint64    `json:"lostUnstaked"`
+	LostExternalStaked   uint64    `json:"lostExternalStaked"`
+	LostExternalUnstaked uint64    `json:"lostExternalUnstaked"`
 	Quote                *Quote    `json:"quote,omitempty"`
-	AccuserRewards       int64     `json:"accuserRewards,omitempty"`
-	OffenderLostDeposits int64     `json:"offenderLostDeposits,omitempty"`
-	OffenderLostRewards  int64     `json:"offenderLostRewards,omitempty"`
-	OffenderLostFees     int64     `json:"offenderLostFees,omitempty"`
 }
 
-// DoubleEndorsing -
-type DoubleEndorsing struct {
+// DoubleConsensus -
+type DoubleConsensus struct {
 	Type                 string    `json:"type"`
 	ID                   uint64    `json:"id"`
 	Level                uint64    `json:"level"`
@@ -533,14 +534,13 @@ type DoubleEndorsing struct {
 	Hash                 string    `json:"hash"`
 	AccusedLevel         uint64    `json:"accusedLevel"`
 	Accuser              *Address  `json:"accuser"`
-	AccuserReward        int64     `json:"accuserReward"`
+	Reward               uint64    `json:"reward"`
 	Offender             *Address  `json:"offender"`
-	OffenderLoss         int64     `json:"offenderLoss"`
+	LostStaked           uint64    `json:"lostStaked"`
+	LostUnstaked         uint64    `json:"lostUnstaked"`
+	LostExternalStaked   uint64    `json:"lostExternalStaked"`
+	LostExternalUnstaked uint64    `json:"lostExternalUnstaked"`
 	Quote                *Quote    `json:"quote,omitempty"`
-	AccuserRewards       int64     `json:"accuserRewards,omitempty"`
-	OffenderLostDeposits int64     `json:"offenderLostDeposits,omitempty"`
-	OffenderLostRewards  int64     `json:"offenderLostRewards,omitempty"`
-	OffenderLostFees     int64     `json:"offenderLostFees,omitempty"`
 }
 
 // Quote -
@@ -562,35 +562,42 @@ type Error struct {
 
 // Baking -
 type Baking struct {
-	Type         string    `json:"type"`
-	ID           uint64    `json:"id"`
-	Level        uint64    `json:"level"`
-	Timestamp    time.Time `json:"timestamp"`
-	Block        string    `json:"block"`
-	Proposer     *Address  `json:"proposer"`
-	Producer     *Address  `json:"producer"`
-	PayloadRound int       `json:"payloadRound"`
-	BlockRound   int       `json:"blockRound"`
-	Deposit      int64     `json:"deposit"`
-	Reward       int64     `json:"reward"`
-	Bonus        int64     `json:"bonus"`
-	Fees         int64     `json:"fees"`
-	Baker        Address   `json:"baker"`
-	Priority     int       `json:"priority"`
-	Quote        *Quote    `json:"quote,omitempty"`
+	Type               string    `json:"type"`
+	ID                 uint64    `json:"id"`
+	Level              uint64    `json:"level"`
+	Timestamp          time.Time `json:"timestamp"`
+	Block              string    `json:"block"`
+	Proposer           *Address  `json:"proposer"`
+	Producer           *Address  `json:"producer"`
+	PayloadRound       int       `json:"payloadRound"`
+	BlockRound         int       `json:"blockRound"`
+	Deposit            int64     `json:"deposit"`
+	RewardDelegated    int64     `json:"rewardDelegated"`
+	RewardStakedOwn    int64     `json:"rewardStakedOwn"`
+	RewardStakedEdge   int64     `json:"rewardStakedEdge"`
+	RewardStakedShared int64     `json:"rewardStakedShared"`
+	BonusDelegated     int64     `json:"bonusDelegated"`
+	BonusStakedOwn     int64     `json:"bonusStakedOwn"`
+	BonusStakedEdge    int64     `json:"bonusStakedEdge"`
+	BonusStakedShared  int64     `json:"bonusStakedShared"`
+	Fees               int64     `json:"fees"`
+	Quote              *Quote    `json:"quote,omitempty"`
 }
 
-// EndorsingReward -
-type EndorsingReward struct {
-	Type      string    `json:"type"`
-	ID        uint64    `json:"id"`
-	Level     uint64    `json:"level"`
-	Timestamp time.Time `json:"timestamp"`
-	Block     string    `json:"block"`
-	Baker     *Address  `json:"baker"`
-	Expected  int64     `json:"expected"`
-	Received  int64     `json:"received"`
-	Quote     *Quote    `json:"quote,omitempty"`
+// AttestationReward -
+type AttestationReward struct {
+	Type               string    `json:"type"`
+	ID                 uint64    `json:"id"`
+	Level              uint64    `json:"level"`
+	Timestamp          time.Time `json:"timestamp"`
+	Block              string    `json:"block"`
+	Baker              *Address  `json:"baker"`
+	Expected           int64     `json:"expected"`
+	RewardDelegated    int64     `json:"rewardDelegated"`
+	RewardStakedOwn    int64     `json:"rewardStakedOwn"`
+	RewardStakedEdge   int64     `json:"rewardStakedEdge"`
+	RewardStakedShared int64     `json:"rewardStakedShared"`
+	Quote              *Quote    `json:"quote,omitempty"`
 }
 
 // RevelationPenalty -
@@ -606,40 +613,23 @@ type RevelationPenalty struct {
 	Quote       *Quote    `json:"quote,omitempty"`
 }
 
-// DoublePreendorsing -
-type DoublePreendorsing struct {
-	Type                 string    `json:"type"`
-	ID                   uint64    `json:"id"`
-	Level                uint64    `json:"level"`
-	Timestamp            time.Time `json:"timestamp"`
-	Block                string    `json:"block"`
-	Hash                 string    `json:"hash"`
-	AccusedLevel         uint64    `json:"accusedLevel"`
-	Accuser              *Address  `json:"accuser"`
-	AccuserReward        int64     `json:"accuserReward"`
-	Offender             *Address  `json:"offender"`
-	OffenderLoss         int64     `json:"offenderLoss"`
-	Quote                *Quote    `json:"quote,omitempty"`
-	AccuserRewards       int64     `json:"accuserRewards,omitempty"`
-	OffenderLostDeposits int64     `json:"offenderLostDeposits,omitempty"`
-	OffenderLostRewards  int64     `json:"offenderLostRewards,omitempty"`
-	OffenderLostFees     int64     `json:"offenderLostFees,omitempty"`
-}
-
 // VdfRevelation -
 type VdfRevelation struct {
-	Type      string    `json:"type"`
-	ID        uint64    `json:"id"`
-	Level     uint64    `json:"level"`
-	Timestamp time.Time `json:"timestamp"`
-	Block     string    `json:"block"`
-	Hash      string    `json:"hash"`
-	Baker     *Address  `json:"baker"`
-	Cycle     uint64    `json:"cycle"`
-	Solution  string    `json:"solution"`
-	Proof     string    `json:"proof"`
-	Reward    uint64    `json:"reward"`
-	Quote     *Quote    `json:"quote,omitempty"`
+	Type               string    `json:"type"`
+	ID                 uint64    `json:"id"`
+	Level              uint64    `json:"level"`
+	Timestamp          time.Time `json:"timestamp"`
+	Block              string    `json:"block"`
+	Hash               string    `json:"hash"`
+	Baker              *Address  `json:"baker"`
+	Cycle              uint64    `json:"cycle"`
+	Solution           string    `json:"solution"`
+	Proof              string    `json:"proof"`
+	RewardDelegated    int64     `json:"rewardDelegated"`
+	RewardStakedOwn    int64     `json:"rewardStakedOwn"`
+	RewardStakedEdge   int64     `json:"rewardStakedEdge"`
+	RewardStakedShared int64     `json:"rewardStakedShared"`
+	Quote              *Quote    `json:"quote,omitempty"`
 }
 
 // IncreasePaidStorage -
@@ -663,8 +653,8 @@ type IncreasePaidStorage struct {
 	Amount       decimal.Decimal `json:"amount"`
 }
 
-// UpdateConsensusKey -
-type UpdateConsensusKey struct {
+// UpdateSecondaryKey -
+type UpdateSecondaryKey struct {
 	Type            string    `json:"type"`
 	ID              uint64    `json:"id"`
 	Level           uint64    `json:"level"`
@@ -866,6 +856,7 @@ type SrGameInfo struct {
 	OpponentLoss        uint64            `json:"opponentLoss"`
 }
 
+// DalPublishCommitment -
 type DalPublishCommitment struct {
 	Type         string    `json:"type"`
 	ID           uint64    `json:"id"`
@@ -881,4 +872,28 @@ type DalPublishCommitment struct {
 	Slot         int       `json:"slot"`
 	Commitment   string    `json:"commitment"`
 	Status       string    `json:"status"`
+}
+
+// Staking -
+type Staking struct {
+	Type                string    `json:"type"`
+	ID                  uint64    `json:"id"`
+	Level               uint64    `json:"level"`
+	Timestamp           time.Time `json:"timestamp"`
+	Hash                string    `json:"hash"`
+	Sender              *Address  `json:"sender"`
+	Staker              *Address  `json:"staker"`
+	Counter             uint64    `json:"counter"`
+	GasLimit            uint64    `json:"gasLimit"`
+	GasUsed             uint64    `json:"gasUsed"`
+	StorageLimit        uint64    `json:"storageLimit"`
+	BakerFee            uint64    `json:"bakerFee"`
+	Action              string    `json:"action"`
+	RequestedAmount     uint64    `json:"requestedAmount"`
+	Amount              uint64    `json:"amount"`
+	Baker               *Address  `json:"baker"`
+	StakingUpdatesCount uint64    `json:"stakingUpdatesCount"`
+	Status              string    `json:"status"`
+	Errors              []Error   `json:"errors,omitempty"`
+	Quote               *Quote    `json:"quote,omitempty"`
 }

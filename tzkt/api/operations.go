@@ -9,9 +9,9 @@ import (
 	"github.com/pkg/errors"
 )
 
-// GetEndorsements -
-func (tzkt *API) GetEndorsements(ctx context.Context, filters map[string]string) (operations []data.Endorsement, err error) {
-	err = tzkt.json(ctx, "/v1/operations/endorsements", filters, false, &operations)
+// GetAttestations -
+func (tzkt *API) GetAttestations(ctx context.Context, filters map[string]string) (operations []data.Attestation, err error) {
+	err = tzkt.json(ctx, "/v1/operations/attestations", filters, false, &operations)
 	return
 }
 
@@ -39,9 +39,9 @@ func (tzkt *API) GetDoubleBakings(ctx context.Context, filters map[string]string
 	return
 }
 
-// GetDoubleEndorsings -
-func (tzkt *API) GetDoubleEndorsings(ctx context.Context, filters map[string]string) (operations []data.DoubleEndorsing, err error) {
-	err = tzkt.json(ctx, "/v1/operations/double_endorsing", filters, false, &operations)
+// GetDoubleConsensus -
+func (tzkt *API) GetDoubleConsensus(ctx context.Context, filters map[string]string) (operations []data.DoubleConsensus, err error) {
+	err = tzkt.json(ctx, "/v1/operations/double_consensus", filters, false, &operations)
 	return
 }
 
@@ -102,9 +102,9 @@ func (tzkt *API) GetTransactionsByHash(ctx context.Context, hash string, filters
 	return
 }
 
-// GetPreendorsement -
-func (tzkt *API) GetPreendorsement(ctx context.Context, filters map[string]string) (operations []data.Preendorsement, err error) {
-	err = tzkt.json(ctx, "/v1/operations/preendorsement", filters, false, &operations)
+// GetPreattestation -
+func (tzkt *API) GetPreattestation(ctx context.Context, filters map[string]string) (operations []data.Preattestation, err error) {
+	err = tzkt.json(ctx, "/v1/operations/preattestations", filters, false, &operations)
 	return
 }
 
@@ -174,21 +174,15 @@ func (tzkt *API) GetBakings(ctx context.Context, filters map[string]string) (ope
 	return
 }
 
-// GetEndorsingRewards -
-func (tzkt *API) GetEndorsingRewards(ctx context.Context, filters map[string]string) (operations []data.EndorsingReward, err error) {
-	err = tzkt.json(ctx, "/v1/operations/endorsing_rewards", filters, false, &operations)
+// GetAttestationReward -
+func (tzkt *API) GetAttestationReward(ctx context.Context, filters map[string]string) (operations []data.AttestationReward, err error) {
+	err = tzkt.json(ctx, "/v1/operations/attestation_rewards", filters, false, &operations)
 	return
 }
 
 // GetRevelationPenalties -
 func (tzkt *API) GetRevelationPenalties(ctx context.Context, filters map[string]string) (operations []data.RevelationPenalty, err error) {
 	err = tzkt.json(ctx, "/v1/operations/revelation_penalties", filters, false, &operations)
-	return
-}
-
-// GetDoublePreendorsings -
-func (tzkt *API) GetDoublePreendorsings(ctx context.Context, filters map[string]string) (operations []data.DoublePreendorsing, err error) {
-	err = tzkt.json(ctx, "/v1/operations/double_preendorsing", filters, false, &operations)
 	return
 }
 
@@ -204,9 +198,9 @@ func (tzkt *API) GetIncreasePaidStorage(ctx context.Context, filters map[string]
 	return
 }
 
-// GetUpdateConsensusKey -
-func (tzkt *API) GetUpdateConsensusKey(ctx context.Context, filters map[string]string) (operations []data.UpdateConsensusKey, err error) {
-	err = tzkt.json(ctx, "/v1/operations/update_consensus_key", filters, false, &operations)
+// GetUpdateSecondaryKey -
+func (tzkt *API) GetUpdateSecondaryKey(ctx context.Context, filters map[string]string) (operations []data.UpdateSecondaryKey, err error) {
+	err = tzkt.json(ctx, "/v1/operations/update_secondary_key", filters, false, &operations)
 	return
 }
 
@@ -261,5 +255,11 @@ func (tzkt *API) GetSmartRollupRefute(ctx context.Context, filters map[string]st
 // GetDalPublishCommitment -
 func (tzkt *API) GetDalPublishCommitment(ctx context.Context, filters map[string]string) (operations []data.DalPublishCommitment, err error) {
 	err = tzkt.json(ctx, "/v1/operations/dal_publish_commitment", filters, false, &operations)
+	return
+}
+
+// GetStaking -
+func (tzkt *API) GetStaking(ctx context.Context, filters map[string]string) (operations []data.Staking, err error) {
+	err = tzkt.json(ctx, "/v1/operations/staking", filters, false, &operations)
 	return
 }

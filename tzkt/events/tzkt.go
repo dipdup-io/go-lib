@@ -187,7 +187,7 @@ func (tzkt *TzKT) listen(ctx context.Context) {
 		for {
 			select {
 			case <-ctx.Done():
-				tzkt.log.Debug().Msg("listenning was stopped")
+				tzkt.log.Debug().Msg("listening was stopped")
 				return
 			case msg := <-tzkt.s.Messages():
 				switch typ := msg.(type) {
@@ -307,16 +307,16 @@ func parseOperations(data []byte) (any, error) {
 			result = append(result, &tzktData.Ballot{})
 		case tzktData.KindDoubleBaking:
 			result = append(result, &tzktData.DoubleBaking{})
-		case tzktData.KindDoubleEndorsing:
-			result = append(result, &tzktData.DoubleEndorsing{})
-		case tzktData.KindEndorsement:
-			result = append(result, &tzktData.Endorsement{})
+		case tzktData.KindDoubleConsensus:
+			result = append(result, &tzktData.DoubleConsensus{})
+		case tzktData.KindAttestation:
+			result = append(result, &tzktData.Attestation{})
 		case tzktData.KindNonceRevelation:
 			result = append(result, &tzktData.NonceRevelation{})
 		case tzktData.KindProposal:
 			result = append(result, &tzktData.Proposal{})
-		case tzktData.KindPreendorsement:
-			result = append(result, &tzktData.Preendorsement{})
+		case tzktData.KindPreattestations:
+			result = append(result, &tzktData.Preattestation{})
 		case tzktData.KindRegisterGlobalConstant:
 			result = append(result, &tzktData.RegisterConstant{})
 		case tzktData.KindSetDepositsLimit:
@@ -341,18 +341,16 @@ func parseOperations(data []byte) (any, error) {
 			result = append(result, &tzktData.TxRollupRemoveCommitment{})
 		case tzktData.KindRevelationPenalty:
 			result = append(result, &tzktData.RevelationPenalty{})
-		case tzktData.KindEndorsingReward:
-			result = append(result, &tzktData.EndorsingReward{})
+		case tzktData.KindAttestationReward:
+			result = append(result, &tzktData.AttestationReward{})
 		case tzktData.KindBaking:
 			result = append(result, &tzktData.Baking{})
-		case tzktData.KindDoublePreendorsing:
-			result = append(result, &tzktData.DoublePreendorsing{})
 		case tzktData.KindIncreasePaidStorage:
 			result = append(result, &tzktData.IncreasePaidStorage{})
 		case tzktData.KindVdfRevelation:
 			result = append(result, &tzktData.VdfRevelation{})
-		case tzktData.KindUpdateConsensusKey:
-			result = append(result, &tzktData.UpdateConsensusKey{})
+		case tzktData.KindUpdateSecondaryKey:
+			result = append(result, &tzktData.UpdateSecondaryKey{})
 		case tzktData.KindDrainDelegate:
 			result = append(result, &tzktData.DrainDelegate{})
 		case tzktData.KindSrAddMessages:
@@ -371,6 +369,8 @@ func parseOperations(data []byte) (any, error) {
 			result = append(result, &tzktData.SmartRollupRefute{})
 		case tzktData.KindDalPublishCommitment:
 			result = append(result, &tzktData.DalPublishCommitment{})
+		case tzktData.KindStaking:
+			result = append(result, &tzktData.Staking{})
 		default:
 			result = append(result, make(map[string]interface{}))
 		}
