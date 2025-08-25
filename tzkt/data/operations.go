@@ -586,14 +586,18 @@ type Baking struct {
 
 // AttestationReward -
 type AttestationReward struct {
-	Type      string    `json:"type"`
-	ID        uint64    `json:"id"`
-	Level     uint64    `json:"level"`
-	Timestamp time.Time `json:"timestamp"`
-	Block     string    `json:"block"`
-	Baker     *Address  `json:"baker"`
-	Expected  int64     `json:"expected"`
-	Quote     *Quote    `json:"quote,omitempty"`
+	Type               string    `json:"type"`
+	ID                 uint64    `json:"id"`
+	Level              uint64    `json:"level"`
+	Timestamp          time.Time `json:"timestamp"`
+	Block              string    `json:"block"`
+	Baker              *Address  `json:"baker"`
+	Expected           int64     `json:"expected"`
+	RewardDelegated    int64     `json:"rewardDelegated"`
+	RewardStakedOwn    int64     `json:"rewardStakedOwn"`
+	RewardStakedEdge   int64     `json:"rewardStakedEdge"`
+	RewardStakedShared int64     `json:"rewardStakedShared"`
+	Quote              *Quote    `json:"quote,omitempty"`
 }
 
 // RevelationPenalty -
