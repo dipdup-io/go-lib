@@ -236,18 +236,22 @@ type RegisterConstant struct {
 
 // NonceRevelation -
 type NonceRevelation struct {
-	Type          string    `json:"type"`
-	ID            uint64    `json:"id"`
-	Level         uint64    `json:"level"`
-	Timestamp     time.Time `json:"timestamp"`
-	Block         string    `json:"block"`
-	Hash          string    `json:"hash"`
-	Baker         Address   `json:"baker"`
-	Sender        Address   `json:"sender"`
-	RevealedLevel int       `json:"revealedLevel"`
-	RevealedCycle int       `json:"revealedCycle"`
-	Nonce         string    `json:"nonce"`
-	Quote         *Quote    `json:"quote,omitempty"`
+	Type               string    `json:"type"`
+	ID                 uint64    `json:"id"`
+	Level              uint64    `json:"level"`
+	Timestamp          time.Time `json:"timestamp"`
+	Block              string    `json:"block"`
+	Hash               string    `json:"hash"`
+	Baker              Address   `json:"baker"`
+	Sender             Address   `json:"sender"`
+	RevealedLevel      int       `json:"revealedLevel"`
+	RevealedCycle      int       `json:"revealedCycle"`
+	Nonce              string    `json:"nonce"`
+	RewardDelegated    int64     `json:"rewardDelegated"`
+	RewardStakedOwn    int64     `json:"rewardStakedOwn"`
+	RewardStakedEdge   int64     `json:"rewardStakedEdge"`
+	RewardStakedShared int64     `json:"rewardStakedShared"`
+	Quote              *Quote    `json:"quote,omitempty"`
 }
 
 // ProposalAlias -
