@@ -522,16 +522,21 @@ type DoubleBaking struct {
 
 // DoubleConsensus -
 type DoubleConsensus struct {
-	Type         string    `json:"type"`
-	ID           uint64    `json:"id"`
-	Level        uint64    `json:"level"`
-	Timestamp    time.Time `json:"timestamp"`
-	Block        string    `json:"block"`
-	Hash         string    `json:"hash"`
-	AccusedLevel uint64    `json:"accusedLevel"`
-	Accuser      *Address  `json:"accuser"`
-	Offender     *Address  `json:"offender"`
-	Quote        *Quote    `json:"quote,omitempty"`
+	Type                 string    `json:"type"`
+	ID                   uint64    `json:"id"`
+	Level                uint64    `json:"level"`
+	Timestamp            time.Time `json:"timestamp"`
+	Block                string    `json:"block"`
+	Hash                 string    `json:"hash"`
+	AccusedLevel         uint64    `json:"accusedLevel"`
+	Accuser              *Address  `json:"accuser"`
+	Reward               uint64    `json:"reward"`
+	Offender             *Address  `json:"offender"`
+	LostStaked           uint64    `json:"lostStaked"`
+	LostUnstaked         uint64    `json:"lostUnstaked"`
+	LostExternalStaked   uint64    `json:"lostExternalStaked"`
+	LostExternalUnstaked uint64    `json:"lostExternalUnstaked"`
+	Quote                *Quote    `json:"quote,omitempty"`
 }
 
 // Quote -
