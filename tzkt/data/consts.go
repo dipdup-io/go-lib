@@ -26,6 +26,7 @@ const (
 	KindRollupReturnBond         = "tx_rollup_return_bond"
 	KindRollupSubmitBatch        = "tx_rollup_submit_batch"
 	KindSetDepositsLimit         = "set_deposits_limit"
+	KindSetDelegateParameters    = "set_delegate_parameters"
 	KindRevelationPenalty        = "revelation_penalty"
 	KindBaking                   = "baking"
 	KindAttestationReward        = "attestation_reward "
@@ -41,6 +42,7 @@ const (
 	KindSrRecoverBond            = "sr_recover_bond"
 	KindSrRefute                 = "sr_refute"
 	KindDalPublishCommitment     = "dal_publish_commitment"
+	KindDalAttestationReward     = "dal_attestation_reward"
 	KindStaking                  = "staking"
 )
 

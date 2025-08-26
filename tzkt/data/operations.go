@@ -14,9 +14,10 @@ type OperationConstraint interface {
 		Ballot | Proposal | Activation | TransferTicket | TxRollupCommit | TxRollupDispatchTicket |
 		TxRollupFinalizeCommitment | TxRollupOrigination | TxRollupRejection | TxRollupRemoveCommitment |
 		TxRollupReturnBond | TxRollupSubmitBatch | NonceRevelation | DoubleBaking | DoubleConsensus | SetDepositsLimit |
-		Baking | RevelationPenalty | AttestationReward | VdfRevelation | IncreasePaidStorage | DrainDelegate |
-		UpdateSecondaryKey | SmartRollupAddMessage | SmartRollupCement | SmartRollupExecute | SmartRollupOriginate |
-		SmartRollupPublish | SmartRollupRefute | SmartRollupRecoverBond | DalPublishCommitment | Staking
+		SetDelegateParameters | Baking | RevelationPenalty | AttestationReward | VdfRevelation | IncreasePaidStorage |
+		DrainDelegate | UpdateSecondaryKey | SmartRollupAddMessage | SmartRollupCement | SmartRollupExecute |
+		SmartRollupOriginate | SmartRollupPublish | SmartRollupRefute | SmartRollupRecoverBond | DalPublishCommitment |
+		DalAttestationReward | Staking
 }
 
 // Operation -
@@ -492,6 +493,27 @@ type SetDepositsLimit struct {
 	Quote        *Quote    `json:"quote,omitempty"`
 }
 
+// SetDelegateParameters -
+type SetDelegateParameters struct {
+	ID                       uint64    `json:"id"`
+	Level                    uint64    `json:"level"`
+	Timestamp                time.Time `json:"timestamp"`
+	Type                     string    `json:"type"`
+	Hash                     string    `json:"hash"`
+	Sender                   Address   `json:"sender"`
+	Counter                  uint64    `json:"counter"`
+	GasLimit                 uint64    `json:"gasLimit"`
+	GasUsed                  uint64    `json:"gasUsed"`
+	StorageLimit             uint64    `json:"storageLimit"`
+	BakerFee                 uint64    `json:"bakerFee"`
+	LimitOfStakingOverBaking uint64    `json:"limitOfStakingOverBaking"`
+	EdgeOfBakingOverStaking  uint64    `json:"edgeOfBakingOverStaking"`
+	ActivationCycle          uint64    `json:"activationCycle"`
+	Status                   string    `json:"status"`
+	Errors                   []Error   `json:"errors,omitempty"`
+	Quote                    *Quote    `json:"quote,omitempty"`
+}
+
 // Migration -
 type Migration struct {
 	Type          string    `json:"type"`
@@ -872,6 +894,22 @@ type DalPublishCommitment struct {
 	Slot         int       `json:"slot"`
 	Commitment   string    `json:"commitment"`
 	Status       string    `json:"status"`
+}
+
+// DalAttestationReward -
+type DalAttestationReward struct {
+	Type               string    `json:"type"`
+	ID                 uint64    `json:"id"`
+	Level              uint64    `json:"level"`
+	Timestamp          time.Time `json:"timestamp"`
+	Block              string    `json:"block"`
+	Baker              *Address  `json:"baker"`
+	Expected           int64     `json:"expected"`
+	RewardDelegated    int64     `json:"rewardDelegated"`
+	RewardStakedOwn    int64     `json:"rewardStakedOwn"`
+	RewardStakedEdge   int64     `json:"rewardStakedEdge"`
+	RewardStakedShared int64     `json:"rewardStakedShared"`
+	Quote              *Quote    `json:"quote,omitempty"`
 }
 
 // Staking -

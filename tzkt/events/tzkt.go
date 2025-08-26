@@ -321,6 +321,8 @@ func parseOperations(data []byte) (any, error) {
 			result = append(result, &tzktData.RegisterConstant{})
 		case tzktData.KindSetDepositsLimit:
 			result = append(result, &tzktData.SetDepositsLimit{})
+		case tzktData.KindSetDelegateParameters:
+			result = append(result, &tzktData.SetDelegateParameters{})
 		case tzktData.KindRollupDispatchTickets:
 			result = append(result, &tzktData.TxRollupDispatchTicket{})
 		case tzktData.KindRollupFinalizeCommitment:
@@ -369,6 +371,8 @@ func parseOperations(data []byte) (any, error) {
 			result = append(result, &tzktData.SmartRollupRefute{})
 		case tzktData.KindDalPublishCommitment:
 			result = append(result, &tzktData.DalPublishCommitment{})
+		case tzktData.KindDalAttestationReward:
+			result = append(result, &tzktData.DalAttestationReward{})
 		case tzktData.KindStaking:
 			result = append(result, &tzktData.Staking{})
 		default:
