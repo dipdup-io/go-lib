@@ -114,6 +114,12 @@ func (tzkt *API) GetSetDepositsLimit(ctx context.Context, filters map[string]str
 	return
 }
 
+// GetSetDelegateParameters -
+func (tzkt *API) GetSetDelegateParameters(ctx context.Context, filters map[string]string) (operations []data.SetDelegateParameters, err error) {
+	err = tzkt.json(ctx, "/v1/operations/set_delegate_parameters", filters, false, &operations)
+	return
+}
+
 // GetTxRollupCommit -
 func (tzkt *API) GetTxRollupCommit(ctx context.Context, filters map[string]string) (operations []data.TxRollupCommit, err error) {
 	err = tzkt.json(ctx, "/v1/operations/tx_rollup_commit", filters, false, &operations)
@@ -255,6 +261,12 @@ func (tzkt *API) GetSmartRollupRefute(ctx context.Context, filters map[string]st
 // GetDalPublishCommitment -
 func (tzkt *API) GetDalPublishCommitment(ctx context.Context, filters map[string]string) (operations []data.DalPublishCommitment, err error) {
 	err = tzkt.json(ctx, "/v1/operations/dal_publish_commitment", filters, false, &operations)
+	return
+}
+
+// GetDalAttestationReward -
+func (tzkt *API) GetDalAttestationReward(ctx context.Context, filters map[string]string) (operations []data.DalAttestationReward, err error) {
+	err = tzkt.json(ctx, "/v1/operations/dal_attestation_reward", filters, false, &operations)
 	return
 }
 
