@@ -1,6 +1,6 @@
 module github.com/dipdup-net/go-lib
 
-go 1.24.1
+go 1.25.7
 
 require (
 	github.com/dave/jennifer v1.7.1
@@ -25,8 +25,8 @@ require (
 	github.com/uptrace/bun v1.1.17
 	github.com/uptrace/bun/dialect/pgdialect v1.1.17
 	github.com/yhirose/go-peg v0.0.0-20210804202551-de25d6753cf1
-	golang.org/x/crypto v0.37.0
-	golang.org/x/text v0.24.0
+	golang.org/x/crypto v0.45.0
+	golang.org/x/text v0.31.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -120,10 +120,10 @@ require (
 	go.opentelemetry.io/otel/sdk v1.29.0 // indirect
 	go.opentelemetry.io/otel/sdk/metric v1.29.0 // indirect
 	go.opentelemetry.io/otel/trace v1.35.0 // indirect
-	golang.org/x/net v0.38.0 // indirect
-	golang.org/x/oauth2 v0.24.0 // indirect
-	golang.org/x/sync v0.13.0 // indirect
-	golang.org/x/sys v0.32.0 // indirect
+	golang.org/x/net v0.47.0 // indirect
+	golang.org/x/oauth2 v0.27.0 // indirect
+	golang.org/x/sync v0.18.0 // indirect
+	golang.org/x/sys v0.38.0 // indirect
 	golang.org/x/time v0.7.0 // indirect
 	google.golang.org/api v0.203.0 // indirect
 	google.golang.org/genproto v0.0.0-20241015192408-796eee8c2d53 // indirect
