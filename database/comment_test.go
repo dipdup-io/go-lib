@@ -19,7 +19,7 @@ func initMocks(t *testing.T) (*gomock.Controller, *mocks.MockSchemeCommenter) {
 func TestMakeCommentsWithTableName(t *testing.T) {
 	type Ballot struct {
 		//nolint
-		tableName struct{} `pg:"ballots" comment:"Ballot table"`
+		tableName struct{} `comment:"Ballot table" pg:"ballots"`
 		Ballot    string   `json:"ballot"`
 	}
 
@@ -76,7 +76,7 @@ func TestMakeCommentsFieldWithPgComment(t *testing.T) {
 	type Ballot struct {
 		//nolint
 		tableName struct{} `pg:"ballots"`
-		Ballot    string   `json:"ballot" comment:"This is field comment"`
+		Ballot    string   `comment:"This is field comment" json:"ballot"`
 	}
 
 	mockCtrl, mockSC := initMocks(t)
@@ -101,22 +101,22 @@ func TestMakeCommentsFieldWithPgComment(t *testing.T) {
 func TestMakeCommentsWithTableNameAndFieldsWithPgComment(t *testing.T) {
 	type Ballot struct {
 		//nolint
-		tableName       struct{}    `pg:"ballots" comment:"Ballot table"`
-		CreatedAt       int64       `json:"-" comment:"This is field comment"`
-		UpdatedAt       int64       `json:"-" comment:"This is field comment"`
-		Network         string      `json:"network" pg:",pk" comment:"This is field comment"`
-		Hash            string      `json:"hash" pg:",pk" comment:"This is field comment"`
-		Branch          string      `json:"branch" comment:"This is field comment"`
-		Status          string      `json:"status" comment:"This is field comment"`
-		Kind            string      `json:"kind" comment:"This is field comment"`
-		Signature       string      `json:"signature" comment:"This is field comment"`
-		Protocol        string      `json:"protocol" comment:"This is field comment"`
-		Level           uint64      `json:"level" comment:"This is field comment"`
-		Errors          interface{} `json:"errors,omitempty" pg:"type:jsonb" comment:"This is field comment"`
-		ExpirationLevel *uint64     `json:"expiration_level" comment:"This is field comment"`
-		Raw             interface{} `json:"raw,omitempty" pg:"type:jsonb" comment:"This is field comment"`
-		Ballot          string      `json:"ballot" comment:"This is field comment"`
-		Period          int64       `json:"period" comment:"This is field comment"`
+		tableName       struct{}    `comment:"Ballot table"          pg:"ballots"`
+		CreatedAt       int64       `comment:"This is field comment" json:"-"`
+		UpdatedAt       int64       `comment:"This is field comment" json:"-"`
+		Network         string      `comment:"This is field comment" json:"network"          pg:",pk"`
+		Hash            string      `comment:"This is field comment" json:"hash"             pg:",pk"`
+		Branch          string      `comment:"This is field comment" json:"branch"`
+		Status          string      `comment:"This is field comment" json:"status"`
+		Kind            string      `comment:"This is field comment" json:"kind"`
+		Signature       string      `comment:"This is field comment" json:"signature"`
+		Protocol        string      `comment:"This is field comment" json:"protocol"`
+		Level           uint64      `comment:"This is field comment" json:"level"`
+		Errors          interface{} `comment:"This is field comment" json:"errors,omitempty" pg:"type:jsonb"`
+		ExpirationLevel *uint64     `comment:"This is field comment" json:"expiration_level"`
+		Raw             interface{} `comment:"This is field comment" json:"raw,omitempty"    pg:"type:jsonb"`
+		Ballot          string      `comment:"This is field comment" json:"ballot"`
+		Period          int64       `comment:"This is field comment" json:"period"`
 	}
 
 	mockCtrl, mockSC := initMocks(t)
@@ -148,8 +148,8 @@ func TestMakeCommentsWithTableNameAndFieldsWithPgComment(t *testing.T) {
 func TestMakeCommentsWithMultipleModels(t *testing.T) {
 	type Ballot struct {
 		//nolint
-		tableName struct{} `pg:"ballots" comment:"This multiple table name comment"`
-		Ballot    string   `json:"ballot" comment:"This is multiple field comment"`
+		tableName struct{} `comment:"This multiple table name comment" pg:"ballots"`
+		Ballot    string   `comment:"This is multiple field comment"   json:"ballot"`
 	}
 
 	mockCtrl, mockSC := initMocks(t)
@@ -182,8 +182,8 @@ func TestMakeCommentsWithMultipleModels(t *testing.T) {
 func TestMakeCommentsWithMultipleModelsByPointers(t *testing.T) {
 	type Ballot struct {
 		//nolint
-		tableName struct{} `pg:"ballots" comment:"This multiple table name comment"`
-		Ballot    string   `json:"ballot" comment:"This is multiple field comment"`
+		tableName struct{} `comment:"This multiple table name comment" pg:"ballots"`
+		Ballot    string   `comment:"This is multiple field comment"   json:"ballot"`
 	}
 
 	mockCtrl, mockSC := initMocks(t)
@@ -217,7 +217,7 @@ func TestMakeCommentsIgnoreFieldWithPgHyphen(t *testing.T) {
 	type Ballot struct {
 		//nolint
 		tableName struct{} `pg:"ballots"`
-		Ballot    string   `json:"ballot" pg:"-" comment:"This is field comment"`
+		Ballot    string   `comment:"This is field comment" json:"ballot" pg:"-"`
 	}
 
 	mockCtrl, mockSC := initMocks(t)
@@ -242,7 +242,7 @@ func TestMakeCommentsIgnoreFieldsWithEmptyComment(t *testing.T) {
 	type Ballot struct {
 		//nolint
 		tableName struct{} `pg:"ballots"`
-		Ballot    string   `json:"ballot" comment:""`
+		Ballot    string   `comment:""   json:"ballot"`
 	}
 
 	mockCtrl, mockSC := initMocks(t)
@@ -299,16 +299,16 @@ func TestMakeCommentsIgnoreNoModels(t *testing.T) {
 
 func TestMakeCommentsWithStructCompositionAndCorrectOrder(t *testing.T) {
 	type Operation struct {
-		CreatedAt int64  `json:"-" comment:"Date of creation in seconds since UNIX epoch."`
-		UpdatedAt int64  `json:"-" comment:"Date of last update in seconds since UNIX epoch."`
-		Network   string `json:"network" pg:",pk" comment:"Identifies belonging network."`
+		CreatedAt int64  `comment:"Date of creation in seconds since UNIX epoch."    json:"-"`
+		UpdatedAt int64  `comment:"Date of last update in seconds since UNIX epoch." json:"-"`
+		Network   string `comment:"Identifies belonging network."                    json:"network" pg:",pk"`
 	}
 
 	type Ballot struct {
 		//nolint
-		tableName struct{} `pg:"ballots" comment:"This table name comment"`
+		tableName struct{} `comment:"This table name comment" pg:"ballots"`
 		Operation
-		Ballot string `json:"ballot" comment:"This is field comment"`
+		Ballot string `comment:"This is field comment" json:"ballot"`
 	}
 
 	mockCtrl, mockSC := initMocks(t)
@@ -360,24 +360,24 @@ func TestMakeCommentsWithStructCompositionAndCorrectOrder(t *testing.T) {
 
 func TestMakeCommentsWithDeepStructComposition(t *testing.T) {
 	type CreatedMetadata struct {
-		CreatedAt int64 `json:"-" comment:"Date of creation in seconds since UNIX epoch."`
+		CreatedAt int64 `comment:"Date of creation in seconds since UNIX epoch." json:"-"`
 	}
 
 	type UpdatedMetadata struct {
 		CreatedMetadata
-		UpdatedAt int64 `json:"-" comment:"Date of last update in seconds since UNIX epoch."`
+		UpdatedAt int64 `comment:"Date of last update in seconds since UNIX epoch." json:"-"`
 	}
 
 	type Operation struct {
 		UpdatedMetadata
-		Network string `json:"network" pg:",pk" comment:"Identifies belonging network."`
+		Network string `comment:"Identifies belonging network." json:"network" pg:",pk"`
 	}
 
 	type Ballot struct {
 		//nolint
-		tableName struct{} `pg:"ballots" comment:"This table name comment"`
+		tableName struct{} `comment:"This table name comment" pg:"ballots"`
 		Operation
-		Ballot string `json:"ballot" comment:"This is field comment"`
+		Ballot string `comment:"This is field comment" json:"ballot"`
 	}
 
 	mockCtrl, mockSC := initMocks(t)
@@ -430,17 +430,17 @@ func TestMakeCommentsWithDeepStructComposition(t *testing.T) {
 func TestMakeCommentsWithStructCompositionErrorOnEmbeddedTableName(t *testing.T) {
 	type Operation struct {
 		//nolint
-		tableName struct{} `pg:"operation" comment:"This embedded type tableName comment."`
-		CreatedAt int64    `json:"-" comment:"Date of creation in seconds since UNIX epoch."`
-		UpdatedAt int64    `json:"-" comment:"Date of last update in seconds since UNIX epoch."`
-		Network   string   `json:"network" pg:",pk" comment:"Identifies belonging network."`
+		tableName struct{} `comment:"This embedded type tableName comment."            pg:"operation"`
+		CreatedAt int64    `comment:"Date of creation in seconds since UNIX epoch."    json:"-"`
+		UpdatedAt int64    `comment:"Date of last update in seconds since UNIX epoch." json:"-"`
+		Network   string   `comment:"Identifies belonging network."                    json:"network" pg:",pk"`
 	}
 
 	type Ballot struct {
 		//nolint
-		tableName struct{} `pg:"ballots" comment:"This table name comment"`
+		tableName struct{} `comment:"This table name comment" pg:"ballots"`
 		Operation
-		Ballot string `json:"ballot" comment:"This is field comment"`
+		Ballot string `comment:"This is field comment" json:"ballot"`
 	}
 
 	mockCtrl, mockSC := initMocks(t)
@@ -464,10 +464,10 @@ func TestMakeCommentsWithStructCompositionErrorOnEmbeddedTableName(t *testing.T)
 
 func TestMakeCommentsWithBunBaseModel(t *testing.T) {
 	type Operation struct {
-		bun.BaseModel `pg:"-" bun:"table:operation" comment:"This is bun comment."`
-		CreatedAt     int64  `json:"-" comment:"Date of creation in seconds since UNIX epoch."`
-		UpdatedAt     int64  `json:"-" comment:"Date of last update in seconds since UNIX epoch."`
-		Network       string `json:"network" bun:",pk" comment:"Identifies belonging network."`
+		bun.BaseModel `bun:"table:operation"                                      comment:"This is bun comment."          pg:"-"`
+		CreatedAt     int64  `comment:"Date of creation in seconds since UNIX epoch."    json:"-"`
+		UpdatedAt     int64  `comment:"Date of last update in seconds since UNIX epoch." json:"-"`
+		Network       string `bun:",pk"                                                  comment:"Identifies belonging network." json:"network"`
 	}
 
 	mockCtrl, mockSC := initMocks(t)

@@ -30,7 +30,7 @@ func (s *SignalR) SetLogger(log zerolog.Logger) {
 
 // Connect - connect to server
 func (s *SignalR) Connect(ctx context.Context, version Version) error {
-	resp, err := s.t.Negotiate(version)
+	resp, err := s.t.Negotiate(ctx, version)
 	if err != nil {
 		return err
 	}

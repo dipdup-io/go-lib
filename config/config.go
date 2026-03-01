@@ -11,12 +11,12 @@ import (
 
 // Config
 type Config struct {
-	Version     string                `yaml:"version" validate:"required"`
-	Database    Database              `yaml:"database" validate:"required"`
+	Version     string                `validate:"required"          yaml:"version"`
+	Database    Database              `validate:"required"          yaml:"database"`
 	DataSources map[string]DataSource `yaml:"datasources,omitempty"`
 	Contracts   map[string]Contract   `yaml:"contracts,omitempty"`
-	Hasura      *Hasura               `yaml:"hasura,omitempty" validate:"omitempty"`
-	Prometheus  *Prometheus           `yaml:"prometheus,omitempty" validate:"omitempty"`
+	Hasura      *Hasura               `validate:"omitempty"         yaml:"hasura,omitempty"`
+	Prometheus  *Prometheus           `validate:"omitempty"         yaml:"prometheus,omitempty"`
 }
 
 // Substitute -
@@ -27,27 +27,27 @@ func (c *Config) Substitute() error {
 // DataSource -
 type DataSource struct {
 	Kind              string       `yaml:"kind"`
-	URL               string       `yaml:"url" validate:"required,url"`
-	Credentials       *Credentials `yaml:"credentials,omitempty" validate:"omitempty"`
-	Timeout           uint         `yaml:"timeout" validate:"omitempty"`
-	RequestsPerSecond int          `yaml:"rps" validate:"omitempty,min=1"`
+	URL               string       `validate:"required,url"    yaml:"url"`
+	Credentials       *Credentials `validate:"omitempty"       yaml:"credentials,omitempty"`
+	Timeout           uint         `validate:"omitempty"       yaml:"timeout"`
+	RequestsPerSecond int          `validate:"omitempty,min=1" yaml:"rps"`
 }
 
 // Contracts -
 type Contract struct {
-	Address  string `yaml:"address" validate:"required,len=36"`
+	Address  string `validate:"required,len=36" yaml:"address"`
 	TypeName string `yaml:"typename"`
 }
 
 // Database
 type Database struct {
 	Path                   string `yaml:"path,omitempty"`
-	Kind                   string `yaml:"kind" validate:"required,oneof=sqlite postgres mysql clickhouse elasticsearch"`
-	Host                   string `yaml:"host" validate:"required_with=Port User Database"`
-	Port                   int    `yaml:"port" validate:"required_with=Host User Database,gt=-1,lt=65535"`
-	User                   string `yaml:"user" validate:"required_with=Host Port Database"`
+	Kind                   string `validate:"required,oneof=sqlite postgres mysql clickhouse elasticsearch" yaml:"kind"`
+	Host                   string `validate:"required_with=Port User Database"                              yaml:"host"`
+	Port                   int    `validate:"required_with=Host User Database,gt=-1,lt=65535"               yaml:"port"`
+	User                   string `validate:"required_with=Host Port Database"                              yaml:"user"`
 	Password               string `yaml:"password"`
-	Database               string `yaml:"database" validate:"required_with=Host Port User"`
+	Database               string `validate:"required_with=Host Port User"                                  yaml:"database"`
 	SchemaName             string `yaml:"schema_name"`
 	ApplicationName        string `yaml:"application_name"`
 	MaxOpenConnections     int    `yaml:"max_open_connections"`
@@ -57,9 +57,9 @@ type Database struct {
 
 // Hasura -
 type Hasura struct {
-	URL                string        `yaml:"url" validate:"required,url"`
-	Secret             string        `yaml:"admin_secret" validate:"required"`
-	RowsLimit          uint64        `yaml:"select_limit" validate:"gt=0"`
+	URL                string        `validate:"required,url"  yaml:"url"`
+	Secret             string        `validate:"required"      yaml:"admin_secret"`
+	RowsLimit          uint64        `validate:"gt=0"          yaml:"select_limit"`
 	EnableAggregations bool          `yaml:"allow_aggregation"`
 	Source             *HasuraSource `yaml:"source"`
 	Rest               *bool         `yaml:"rest"`
@@ -67,7 +67,7 @@ type Hasura struct {
 }
 
 type HasuraSource struct {
-	Name                  string `yaml:"name" validate:"required"`
+	Name                  string `validate:"required"            yaml:"name"`
 	DatabaseHost          string `yaml:"database_host"`
 	UsePreparedStatements bool   `yaml:"use_prepared_statements"`
 	IsolationLevel        string `yaml:"isolation_level"`
@@ -89,7 +89,7 @@ func (h *Hasura) UnmarshalYAML(unmarshal func(interface{}) error) error {
 
 // Prometheus -
 type Prometheus struct {
-	URL string `yaml:"url" validate:"required"`
+	URL string `validate:"required" yaml:"url"`
 }
 
 // Load - load default config from `filename`

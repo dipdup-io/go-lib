@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"sync"
+	"time"
 
 	"github.com/dipdup-net/go-lib/config"
 	"github.com/prometheus/client_golang/prometheus"
@@ -28,7 +29,11 @@ func NewService(cfg *config.Prometheus) *Service {
 	s.gauge = make(map[string]*prometheus.GaugeVec)
 
 	if cfg != nil && cfg.URL != "" {
-		s.server = &http.Server{Addr: cfg.URL}
+		s.server = &http.Server{
+			Addr:         cfg.URL,
+			ReadTimeout:  time.Second * 30,
+			WriteTimeout: time.Second * 30,
+		}
 		http.Handle("/metrics", promhttp.Handler())
 	}
 

@@ -1,14 +1,43 @@
+version: "2"
 linters:
   enable:
+    - containedctx
+    - copyloopvar
     - goconst
     - gocritic
-    - gofmt
-    - govet
+    - gosec
+    - makezero
+    - mirror
+    - misspell
+    - musttag
+    - noctx
     - prealloc
+    - protogetter
+    - tagalign
     - unconvert
-    - errcheck
-    - ineffassign
-    - typecheck
-    - containedctx
     - usetesting
-    - unused
+    - zerologlint
+  settings:
+    gosec:
+      excludes:
+        - G115
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gofmt
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

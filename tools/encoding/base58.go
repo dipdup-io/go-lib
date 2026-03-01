@@ -108,7 +108,7 @@ func getBase58EncodingForDecode(data []byte) (base58Encoding, error) {
 			return e, nil
 		}
 	}
-	return base58Encoding{}, errors.New("Unknown base58 encoding")
+	return base58Encoding{}, errors.New("unknown base58 encoding")
 }
 
 func getBase58EncodingForEncode(data, prefix []byte) (base58Encoding, error) {
@@ -127,7 +127,7 @@ func getBase58EncodingForEncode(data, prefix []byte) (base58Encoding, error) {
 			return e, nil
 		}
 	}
-	return base58Encoding{}, errors.New("Unknown base58 encoding")
+	return base58Encoding{}, errors.New("unknown base58 encoding")
 }
 
 // DecodeBase58 -

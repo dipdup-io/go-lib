@@ -2,17 +2,17 @@ package config
 
 // Credentials -
 type Credentials struct {
-	User   *UserCredentials `yaml:"user,omitempty"    validate:"omitempty"`
-	ApiKey *ApiKey          `yaml:"api_key,omitempty" validate:"omitempty"`
+	User   *UserCredentials `validate:"omitempty" yaml:"user,omitempty"`
+	ApiKey *ApiKey          `validate:"omitempty" yaml:"api_key,omitempty"`
 }
 
 // UserCredentials -
 type UserCredentials struct {
-	Name     string `yaml:"name" validate:"required"`
-	Password string `yaml:"password" validate:"required"`
+	Name     string `validate:"required" yaml:"name"`
+	Password string `validate:"required" yaml:"password"`
 }
 
 type ApiKey struct {
-	Header string `yaml:"header" validate:"required"`
-	Key    string `yaml:"key"    validate:"required"`
+	Header string `validate:"required" yaml:"header"`
+	Key    string `validate:"required" yaml:"key"`
 }

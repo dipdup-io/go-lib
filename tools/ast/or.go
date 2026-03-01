@@ -137,7 +137,7 @@ func (or *Or) ToMiguel() (*MiguelNode, error) {
 
 // GetEntrypoints -
 func (or *Or) GetEntrypoints() []string {
-	e := make([]string, 0)
+	e := make([]string, 0, 2)
 	for _, t := range []Node{or.LeftType, or.RightType} {
 		e = append(e, t.GetEntrypoints()...)
 	}
