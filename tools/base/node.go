@@ -28,15 +28,17 @@ func (node *Node) UnmarshalJSON(data []byte) error {
 	if len(data) == 0 {
 		return consts.ErrInvalidJSON
 	}
-	if data[0] == '[' {
+	switch data[0] {
+	case '[':
 		node.Prim = consts.PrimArray
 		node.Args = make([]*Node, 0)
 		return json.Unmarshal(data, &node.Args)
-	} else if data[0] == '{' {
+	case '{':
 		type buf Node
 		return json.Unmarshal(data, (*buf)(node))
+	default:
+		return consts.ErrInvalidJSON
 	}
-	return consts.ErrInvalidJSON
 }
 
 // MarshalJSON -

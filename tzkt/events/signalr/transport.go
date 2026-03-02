@@ -1,6 +1,7 @@
 package signalr
 
 import (
+	"context"
 	"net/http"
 	"net/url"
 	"time"
@@ -46,7 +47,7 @@ func NewTransport(baseURL string) *Transport {
 }
 
 // Negotiate - is used to establish a connection between the client and the server.
-func (t *Transport) Negotiate(version Version) (response NegotiateResponse, err error) {
+func (t *Transport) Negotiate(ctx context.Context, version Version) (response NegotiateResponse, err error) {
 	u, err := url.Parse(t.url)
 	if err != nil {
 		return
@@ -58,7 +59,7 @@ func (t *Transport) Negotiate(version Version) (response NegotiateResponse, err 
 
 	t.log.Debug().Str("url", u.String()).Msg("send negotiate request...")
 
-	req, err := http.NewRequest(http.MethodPost, u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, u.String(), nil)
 	if err != nil {
 		return
 	}

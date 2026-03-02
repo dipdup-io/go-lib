@@ -10,16 +10,16 @@ import (
 // State -
 type State struct {
 	//nolint
-	tableName     struct{} `gorm:"-" bun:"-" pg:"dipdup_state" json:"-" comment:"Indexer state table"`
-	bun.BaseModel `gorm:"-" pg:"-" bun:"dipdup_state" json:"-" comment:"Indexer state table"`
+	tableName     struct{} `bun:"-"            comment:"Indexer state table" gorm:"-" json:"-" pg:"dipdup_state"`
+	bun.BaseModel `bun:"dipdup_state" comment:"Indexer state table" gorm:"-" json:"-" pg:"-"`
 
-	IndexName string    `gorm:"primaryKey" pg:",pk" bun:",pk" json:"index_name" comment:"Index name"`
-	IndexType string    `json:"index_type" comment:"Index type"`
-	Hash      string    `json:"hash" comment:"Current hash"`
-	Timestamp time.Time `json:"timestamp" comment:"Current timestamp"`
-	Level     uint64    `json:"level" comment:"Index level"`
-	UpdatedAt int       `gorm:"autoUpdateTime" comment:"Last updated timestamp"`
-	CreatedAt int       `gorm:"autoCreateTime" comment:"Created timestamp"`
+	IndexName string    `bun:",pk"                        comment:"Index name"  gorm:"primaryKey" json:"index_name" pg:",pk"`
+	IndexType string    `comment:"Index type"             json:"index_type"`
+	Hash      string    `comment:"Current hash"           json:"hash"`
+	Timestamp time.Time `comment:"Current timestamp"      json:"timestamp"`
+	Level     uint64    `comment:"Index level"            json:"level"`
+	UpdatedAt int       `comment:"Last updated timestamp" gorm:"autoUpdateTime"`
+	CreatedAt int       `comment:"Created timestamp"      gorm:"autoCreateTime"`
 }
 
 var _ bun.BeforeAppendModelHook = (*State)(nil)

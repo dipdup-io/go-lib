@@ -12,12 +12,12 @@ import (
 )
 
 type ExpectedMetadata struct {
-	Tables []ExpectedTable `yaml:"tables" validate:"required"`
+	Tables []ExpectedTable `validate:"required" yaml:"tables"`
 }
 
 type ExpectedTable struct {
-	Name    string   `yaml:"name" validate:"required"`
-	Columns []string `yaml:"columns" validate:"required"`
+	Name    string   `validate:"required" yaml:"name"`
+	Columns []string `validate:"required" yaml:"columns"`
 }
 
 func TestExpectedMetadataWithActual(

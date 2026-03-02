@@ -68,7 +68,7 @@ func (t *expandTransformer) Transform(dst, src []byte, atEOF bool) (int, int, er
 			def = `""`
 		}
 
-		if _, err := buf.Write([]byte(def)); err != nil {
+		if _, err := buf.WriteString(def); err != nil {
 			return 0, 0, err
 		}
 

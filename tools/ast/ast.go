@@ -137,7 +137,7 @@ func (a *TypedAst) ToMiguel() ([]*MiguelNode, error) {
 
 // GetEntrypoints -
 func (a *TypedAst) GetEntrypoints() []string {
-	entrypoints := make([]string, 0)
+	entrypoints := make([]string, 0, len(a.Nodes))
 	for i := range a.Nodes {
 		entrypoints = append(entrypoints, a.Nodes[i].GetEntrypoints()...)
 	}
