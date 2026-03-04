@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/dipdup-io/go-lib/hasura"
+	"github.com/ettle/strcase"
 	"github.com/pkg/errors"
 )
 
@@ -40,7 +40,7 @@ func MakeComments(ctx context.Context, sc SchemeCommenter, models ...interface{}
 				var ok bool
 				tableName, ok = getDatabaseTagName(fieldType)
 				if !ok {
-					tableName = hasura.ToSnakeCase(modelType.Name())
+					tableName = strcase.ToSnake(modelType.Name())
 				}
 
 				comment, ok := getComment(fieldType)
@@ -107,7 +107,7 @@ func makeFieldComment(ctx context.Context, sc SchemeCommenter, tableName string,
 	}
 
 	if !ok {
-		columnName = hasura.ToSnakeCase(fieldType.Name)
+		columnName = strcase.ToSnake(fieldType.Name)
 	}
 
 	if err := sc.MakeColumnComment(ctx, tableName, columnName, comment); err != nil {
