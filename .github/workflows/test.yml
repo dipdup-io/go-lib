@@ -23,7 +23,10 @@ jobs:
           version: v2.8.0
           args: --timeout=5m
   test:
-    name: Test
+    strategy:
+      matrix:
+        module: [config, database, hasura, node, prometheus, tools, tzkt]
+    name: Test ${{ matrix.module }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -38,5 +41,6 @@ jobs:
         env:
           GO111MODULE: on
         run: |
+          cd ${{ matrix.module }}
           go mod download
           go test -p 8 ./...

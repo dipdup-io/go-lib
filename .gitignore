@@ -20,3 +20,6 @@ vendor/
 .env*
 *.db
 config.yaml
+
+go.work.sum 
+.claude

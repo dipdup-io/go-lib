@@ -1,0 +1,11 @@
+go 1.25.7
+
+use (
+	./config
+	./database
+	./hasura
+	./node
+	./prometheus
+	./tools
+	./tzkt
+)
