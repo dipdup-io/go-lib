@@ -41,7 +41,10 @@ func New(baseURL, secret string) *API {
 func (api *API) buildURL(endpoint string, args map[string]string) (string, error) {
 	u, err := url.Parse(api.baseURL)
 	if err != nil {
-		return "", err
+		return "", errors.Wrap(err, "parse url")
+	}
+	if u.Scheme != "https" && u.Scheme != "http" {
+		return "", errors.Errorf("invalid scheme: %s", u.Scheme)
 	}
 	u.Path = path.Join(u.Path, endpoint)
 
@@ -63,7 +66,7 @@ func (api *API) get(ctx context.Context, endpoint string, args map[string]string
 		return nil, err
 	}
 
-	return api.client.Do(req)
+	return api.client.Do(req) //nolint:gosec
 }
 
 // nolint

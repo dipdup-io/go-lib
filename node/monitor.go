@@ -206,7 +206,7 @@ func (monitor *Monitor) longPollingApplied(ctx context.Context, url string, ch c
 		Timeout: time.Minute,
 	}
 
-	resp, err := client.Do(req)
+	resp, err := client.Do(req) //nolint:gosec
 	if err != nil {
 		return err
 	}
@@ -248,7 +248,7 @@ func (monitor *Monitor) longPollingFailed(ctx context.Context, url string, ch ch
 		return err
 	}
 
-	resp, err := monitor.client.Do(req)
+	resp, err := monitor.client.Do(req) //nolint:gosec
 	if err != nil {
 		return err
 	}

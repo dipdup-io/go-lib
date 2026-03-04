@@ -109,7 +109,7 @@ type AvailableTransport struct {
 // RedirectResponse -
 type RedirectResponse struct {
 	URL         string `json:"url"`
-	AccessToken string `json:"accessToken"`
+	AccessToken string `json:"accessToken"` //nolint:gosec
 }
 
 // NewInvocation -

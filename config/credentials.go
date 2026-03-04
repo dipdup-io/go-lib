@@ -9,7 +9,7 @@ type Credentials struct {
 // UserCredentials -
 type UserCredentials struct {
 	Name     string `validate:"required" yaml:"name"`
-	Password string `validate:"required" yaml:"password"`
+	Password string `validate:"required" yaml:"password"` //nolint:gosec
 }
 
 type ApiKey struct {

@@ -547,7 +547,7 @@ func unwrap(node Node, path string) (Node, string) {
 func marshalJSON(prim string, annots []string, args ...Node) ([]byte, error) {
 	var builder bytes.Buffer
 	builder.WriteByte('{')
-	builder.WriteString(fmt.Sprintf(`"prim": "%s"`, prim))
+	fmt.Fprintf(&builder, `"prim": "%s"`, prim)
 	if len(args) > 0 {
 		builder.WriteString(`, "args": [`)
 		for i := range args {
@@ -565,7 +565,7 @@ func marshalJSON(prim string, annots []string, args ...Node) ([]byte, error) {
 		builder.WriteByte(']')
 	}
 	if len(annots) > 0 {
-		builder.WriteString(fmt.Sprintf(`, "annots": ["%s"]`, strings.Join(annots, `","`)))
+		fmt.Fprintf(&builder, `, "annots": ["%s"]`, strings.Join(annots, `","`))
 
 	}
 	builder.WriteByte('}')

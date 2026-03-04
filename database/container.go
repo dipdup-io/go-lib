@@ -20,7 +20,7 @@ type (
 
 	PostgreSQLContainerConfig struct {
 		User     string
-		Password string
+		Password string //nolint:gosec
 		Database string
 		Host     string
 		Port     int
