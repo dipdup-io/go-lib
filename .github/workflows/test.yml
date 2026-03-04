@@ -45,9 +45,10 @@ jobs:
           working-directory: ${{ matrix.modules }}
 
   tests:
+    needs: detect-modules
     strategy:
       matrix:
-        module: [config, database, hasura, node, prometheus, tools, tzkt]
+        modules: ${{ fromJSON(needs.detect-modules.outputs.modules) }}
     name: Test ${{ matrix.module }}
     runs-on: ubuntu-latest
     steps:
