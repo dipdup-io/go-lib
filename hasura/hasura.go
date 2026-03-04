@@ -312,7 +312,7 @@ func getTableName(value reflect.Value, typ reflect.Type) string {
 	return res[0].String()
 }
 
-func getSchema(cfg config.Database) string {
+func getSchema(_ config.Database) string {
 	return "public"
 }
 
@@ -370,11 +370,17 @@ func createQueryCollections(metadata *Metadata) error {
 		if err != nil {
 			return err
 		}
-		defer f.Close()
 
 		data, err := io.ReadAll(f)
 		if err != nil {
+			if errClose := f.Close(); errClose != nil {
+				return errors.Wrap(err, errClose.Error())
+			}
 			return err
+		}
+
+		if err := f.Close(); err != nil {
+			return errors.Wrap(err, "closing file error")
 		}
 
 		queries = append(queries, Query{
@@ -423,7 +429,7 @@ func ReadCustomConfigs(ctx context.Context, database config.Database, hasuraConf
 		return nil, err
 	}
 
-	custom_configs := make([]Request, 0)
+	customСonfigs := make([]Request, 0, len(files))
 	for i := range files {
 		if files[i].IsDir() || strings.HasPrefix(files[i].Name(), ".") {
 			continue
@@ -441,8 +447,8 @@ func ReadCustomConfigs(ctx context.Context, database config.Database, hasuraConf
 		if err != nil {
 			return nil, err
 		}
-		custom_configs = append(custom_configs, conf)
+		customСonfigs = append(customСonfigs, conf)
 	}
 
-	return custom_configs, nil
+	return customСonfigs, nil
 }
