@@ -6,6 +6,7 @@ replace github.com/dipdup-io/go-lib/config => ../config
 
 require (
 	github.com/dipdup-io/go-lib/config v0.0.0-00010101000000-000000000000
+	github.com/ettle/strcase v0.2.0
 	github.com/go-playground/validator/v10 v10.30.1
 	github.com/json-iterator/go v1.1.12
 	github.com/pkg/errors v0.9.1
