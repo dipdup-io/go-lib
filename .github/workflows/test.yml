@@ -5,10 +5,26 @@ name: Tests
 permissions:
   contents: read
   pull-requests: read
+
 jobs:
-  golangci:
-    name: Linter
+  detect-modules:
     runs-on: ubuntu-latest
+    outputs:
+      modules: ${{ steps.set-modules.outputs.modules }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - id: set-modules
+        run: echo "modules=$(go list -m -json | jq -s '.' | jq -c '[.[].Dir]')" >> $GITHUB_OUTPUT
+
+  golangci:
+    needs: detect-modules
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        modules: ${{ fromJSON(needs.detect-modules.outputs.modules) }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -17,12 +33,14 @@ jobs:
         with:
           go-version: '1.25'
           cache: false
-      - name: golangci-lint
+      - name: golangci-lint ${{ matrix.modules }}
         uses: golangci/golangci-lint-action@v8
         with:
           version: v2.8.0
           args: --timeout=5m
-  test:
+          working-directory: ${{ matrix.modules }}
+
+  tests:
     strategy:
       matrix:
         module: [config, database, hasura, node, prometheus, tools, tzkt]
