@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dipdup-net/go-lib/config"
+	"github.com/dipdup-io/go-lib/config"
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
 

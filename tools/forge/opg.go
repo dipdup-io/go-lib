@@ -3,8 +3,8 @@ package forge
 import (
 	"bytes"
 
-	"github.com/dipdup-net/go-lib/node"
-	"github.com/dipdup-net/go-lib/tools/encoding"
+	"github.com/dipdup-io/go-lib/node"
+	"github.com/dipdup-io/go-lib/tools/encoding"
 	"github.com/pkg/errors"
 )
 

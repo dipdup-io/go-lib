@@ -9,7 +9,7 @@ import (
 	"path"
 	"time"
 
-	"github.com/dipdup-net/go-lib/config"
+	"github.com/dipdup-io/go-lib/config"
 	jsoniter "github.com/json-iterator/go"
 
 	"github.com/pkg/errors"

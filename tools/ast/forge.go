@@ -1,6 +1,6 @@
 package ast
 
-import "github.com/dipdup-net/go-lib/tools/forge"
+import "github.com/dipdup-io/go-lib/tools/forge"
 
 // Forge -
 func Forge(node Base, optimized bool) (string, error) {

@@ -2,7 +2,7 @@ package types
 
 import (
 	"github.com/dave/jennifer/jen"
-	"github.com/dipdup-net/go-lib/tzkt/data"
+	"github.com/dipdup-io/go-lib/tzkt/data"
 )
 
 // Address -
@@ -19,7 +19,7 @@ func (Address) AsField(name, path string, schema data.JSONSchema, isRequired boo
 	}
 
 	return jen.Id(fieldName("Address", name)).Add(
-		jen.Qual("github.com/dipdup-net/go-lib/tools/tezgen", "Address"),
+		jen.Qual("github.com/dipdup-io/go-lib/tools/tezgen", "Address"),
 	).Tag(tags), nil
 }
 
@@ -28,7 +28,7 @@ func (Address) AsCode(name, path string, schema data.JSONSchema, result *Contrac
 	typName := result.GetName("Address", name)
 	return Code{
 		Statement: jen.Comment(typName).Line().Type().Id(typName).Add(
-			jen.Qual("github.com/dipdup-net/go-lib/tools/tezgen", "Address"),
+			jen.Qual("github.com/dipdup-io/go-lib/tools/tezgen", "Address"),
 		).Line(),
 		Name: typName,
 	}, nil
@@ -38,7 +38,7 @@ func (Address) AsCode(name, path string, schema data.JSONSchema, result *Contrac
 func (Address) AsType(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	return Code{
 		Statement: jen.Add(
-			jen.Qual("github.com/dipdup-net/go-lib/tools/tezgen", "Address"),
+			jen.Qual("github.com/dipdup-io/go-lib/tools/tezgen", "Address"),
 		),
 		Name: name,
 	}, nil

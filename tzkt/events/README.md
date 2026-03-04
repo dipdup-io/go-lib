@@ -10,7 +10,7 @@ Full docs for TzKT API can be found [here](https://api.tzkt.io/).
 First of all, import library
 
 ```golang
-import events "github.com/dipdup-net/go-lib/tzkt/events"
+import events "github.com/dipdup-io/go-lib/tzkt/events"
 ```
 
 Then create `TzKT` client, connect to server and subscribe to channels.
@@ -57,7 +57,7 @@ If you want to write custom client or re-use SignalR in another package you can 
 
 
 ```golang
-import "github.com/dipdup-net/go-lib/tzkt/events/signalr"
+import "github.com/dipdup-io/go-lib/tzkt/events/signalr"
 
 client := signalr.NewSignalR("https://api.tzkt.io/v1/ws")
 ```

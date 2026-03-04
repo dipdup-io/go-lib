@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/dave/jennifer/jen"
-	"github.com/dipdup-net/go-lib/tzkt/data"
+	"github.com/dipdup-io/go-lib/tzkt/data"
 	"github.com/iancoleman/strcase"
 	"github.com/pkg/errors"
 )
@@ -101,7 +101,7 @@ func GenerateContractTypes(schema data.ContractJSONSchema, packageName string) (
 	}
 
 	result.File.PackageComment("DO NOT EDIT!!!")
-	result.File.ImportName("github.com/dipdup-net/go-lib/tools/tezgen", "tezgen")
+	result.File.ImportName("github.com/dipdup-io/go-lib/tools/tezgen", "tezgen")
 
 	if err := generateForContract(schema, &result); err != nil {
 		return result, err

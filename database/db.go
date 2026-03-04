@@ -6,7 +6,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/dipdup-net/go-lib/config"
+	"github.com/dipdup-io/go-lib/config"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )

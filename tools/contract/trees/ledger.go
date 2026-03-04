@@ -1,6 +1,6 @@
 package trees
 
-import "github.com/dipdup-net/go-lib/tools/ast"
+import "github.com/dipdup-io/go-lib/tools/ast"
 
 var (
 	NewNftLedgerSingleAsset, _ = ast.NewTypedAstFromString(`{"prim":"big_map","args":[{"prim":"address"},{"prim":"nat"}]}`)

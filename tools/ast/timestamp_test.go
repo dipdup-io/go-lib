@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dipdup-net/go-lib/tools/base"
+	"github.com/dipdup-io/go-lib/tools/base"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"math/big"
 
-	"github.com/dipdup-net/go-lib/tools/types"
+	"github.com/dipdup-io/go-lib/tools/types"
 	"github.com/pkg/errors"
 )
 

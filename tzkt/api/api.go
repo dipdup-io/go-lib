@@ -12,8 +12,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/dipdup-net/go-lib/tools/crypto"
-	"github.com/dipdup-net/go-lib/tzkt/data"
+	"github.com/dipdup-io/go-lib/tools/crypto"
+	"github.com/dipdup-io/go-lib/tzkt/data"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/pkg/errors"
 )

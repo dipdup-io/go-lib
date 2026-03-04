@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/dipdup-net/go-lib/hasura"
+	"github.com/dipdup-io/go-lib/hasura"
 	"github.com/pkg/errors"
 )
 

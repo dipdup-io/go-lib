@@ -1,6 +1,6 @@
 package forge
 
-import "github.com/dipdup-net/go-lib/tools/base"
+import "github.com/dipdup-io/go-lib/tools/base"
 
 // Object -
 type Object struct {

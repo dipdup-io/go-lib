@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/dipdup-net/go-lib/node"
+	"github.com/dipdup-io/go-lib/node"
 	"github.com/stretchr/testify/assert"
 )
 

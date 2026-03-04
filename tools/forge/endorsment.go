@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/binary"
 
-	"github.com/dipdup-net/go-lib/node"
-	"github.com/dipdup-net/go-lib/tools/types"
+	"github.com/dipdup-io/go-lib/node"
+	"github.com/dipdup-io/go-lib/tools/types"
 )
 
 // Endorsement -

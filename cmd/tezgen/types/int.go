@@ -2,7 +2,7 @@ package types
 
 import (
 	"github.com/dave/jennifer/jen"
-	"github.com/dipdup-net/go-lib/tzkt/data"
+	"github.com/dipdup-io/go-lib/tzkt/data"
 )
 
 // Int -
@@ -19,7 +19,7 @@ func (Int) AsField(name, path string, schema data.JSONSchema, isRequired bool, r
 	}
 
 	return jen.Id(fieldName(schema.Comment, name)).Add(
-		jen.Qual("github.com/dipdup-net/go-lib/tools/tezgen", "Int"),
+		jen.Qual("github.com/dipdup-io/go-lib/tools/tezgen", "Int"),
 	).Tag(tags), nil
 }
 
@@ -28,7 +28,7 @@ func (Int) AsCode(name, path string, schema data.JSONSchema, result *ContractTyp
 	typ := result.GetName(schema.Comment, name)
 	return Code{
 		Statement: jen.Comment(typ).Line().Type().Id(typ).Add(
-			jen.Qual("github.com/dipdup-net/go-lib/tools/tezgen", "Int"),
+			jen.Qual("github.com/dipdup-io/go-lib/tools/tezgen", "Int"),
 		).Line(),
 		Name: typ,
 	}, nil
@@ -38,7 +38,7 @@ func (Int) AsCode(name, path string, schema data.JSONSchema, result *ContractTyp
 func (Int) AsType(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	return Code{
 		Statement: jen.Add(
-			jen.Qual("github.com/dipdup-net/go-lib/tools/tezgen", "Int"),
+			jen.Qual("github.com/dipdup-io/go-lib/tools/tezgen", "Int"),
 		),
 		Name: result.GetName(schema.Comment, name),
 	}, nil

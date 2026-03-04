@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/dipdup-net/go-lib/config"
+	"github.com/dipdup-io/go-lib/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/uptrace/bun"
 )

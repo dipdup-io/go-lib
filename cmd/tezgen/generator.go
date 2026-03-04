@@ -8,8 +8,8 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/dipdup-net/go-lib/cmd/tezgen/types"
-	"github.com/dipdup-net/go-lib/tzkt/data"
+	"github.com/dipdup-io/go-lib/cmd/tezgen/types"
+	"github.com/dipdup-io/go-lib/tzkt/data"
 	"github.com/iancoleman/strcase"
 )
 

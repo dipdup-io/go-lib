@@ -3,9 +3,9 @@ package ast
 import (
 	"fmt"
 
-	"github.com/dipdup-net/go-lib/tools/base"
-	"github.com/dipdup-net/go-lib/tools/encoding"
-	"github.com/dipdup-net/go-lib/tools/forge"
+	"github.com/dipdup-io/go-lib/tools/base"
+	"github.com/dipdup-io/go-lib/tools/encoding"
+	"github.com/dipdup-io/go-lib/tools/forge"
 	"golang.org/x/crypto/blake2b"
 )
 

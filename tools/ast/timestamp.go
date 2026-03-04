@@ -6,9 +6,9 @@ import (
 	"math/big"
 	"time"
 
-	"github.com/dipdup-net/go-lib/tools/base"
-	"github.com/dipdup-net/go-lib/tools/consts"
-	"github.com/dipdup-net/go-lib/tools/types"
+	"github.com/dipdup-io/go-lib/tools/base"
+	"github.com/dipdup-io/go-lib/tools/consts"
+	"github.com/dipdup-io/go-lib/tools/types"
 	"github.com/pkg/errors"
 )
 

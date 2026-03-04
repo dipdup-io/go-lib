@@ -2,7 +2,7 @@ package types
 
 import (
 	"github.com/dave/jennifer/jen"
-	"github.com/dipdup-net/go-lib/tzkt/data"
+	"github.com/dipdup-io/go-lib/tzkt/data"
 )
 
 // Timestamp -
@@ -19,7 +19,7 @@ func (Timestamp) AsField(name, path string, schema data.JSONSchema, isRequired b
 	}
 
 	return jen.Id(fieldName("Time", name)).Add(
-		jen.Qual("github.com/dipdup-net/go-lib/tools/tezgen", "Timestamp"),
+		jen.Qual("github.com/dipdup-io/go-lib/tools/tezgen", "Timestamp"),
 	).Tag(tags), nil
 }
 
@@ -28,7 +28,7 @@ func (Timestamp) AsCode(name, path string, schema data.JSONSchema, result *Contr
 	typName := result.GetName("Time", name)
 	return Code{
 		Statement: jen.Comment(typName).Line().Type().Id(typName).Add(
-			jen.Qual("github.com/dipdup-net/go-lib/tools/tezgen", "Timestamp"),
+			jen.Qual("github.com/dipdup-io/go-lib/tools/tezgen", "Timestamp"),
 		).Line(),
 		Name: typName,
 	}, nil
@@ -38,7 +38,7 @@ func (Timestamp) AsCode(name, path string, schema data.JSONSchema, result *Contr
 func (Timestamp) AsType(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	return Code{
 		Statement: jen.Add(
-			jen.Qual("github.com/dipdup-net/go-lib/tools/tezgen", "Timestamp"),
+			jen.Qual("github.com/dipdup-io/go-lib/tools/tezgen", "Timestamp"),
 		).Line(),
 		Name: result.GetName("Time", name),
 	}, nil

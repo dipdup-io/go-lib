@@ -3,15 +3,14 @@ package database
 import (
 	"testing"
 
-	"github.com/dipdup-net/go-lib/mocks"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 	"github.com/uptrace/bun"
 )
 
-func initMocks(t *testing.T) (*gomock.Controller, *mocks.MockSchemeCommenter) {
+func initMocks(t *testing.T) (*gomock.Controller, *MockSchemeCommenter) {
 	mockCtrl := gomock.NewController(t)
-	mockSchemeCommenter := mocks.NewMockSchemeCommenter(mockCtrl)
+	mockSchemeCommenter := NewMockSchemeCommenter(mockCtrl)
 
 	return mockCtrl, mockSchemeCommenter
 }
@@ -164,7 +163,7 @@ func TestMakeCommentsWithMultipleModels(t *testing.T) {
 		Times(3).
 		Return(nil)
 
-	// Be aware: there is on issue with default order in checking
+	// Be aware: there is an issue with default order in checking
 	// methods call: https://github.com/golang/mock/issues/653
 	mockSC.
 		EXPECT().
@@ -198,7 +197,7 @@ func TestMakeCommentsWithMultipleModelsByPointers(t *testing.T) {
 		Times(3).
 		Return(nil)
 
-	// Be aware: there is on issue with default order in checking
+	// Be aware: there is an issue with default order in checking
 	// methods call: https://github.com/golang/mock/issues/653
 	mockSC.
 		EXPECT().

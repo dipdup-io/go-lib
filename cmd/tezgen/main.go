@@ -7,8 +7,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/dipdup-net/go-lib/tzkt/api"
-	"github.com/dipdup-net/go-lib/tzkt/data"
+	"github.com/dipdup-io/go-lib/tzkt/api"
+	"github.com/dipdup-io/go-lib/tzkt/data"
 	"github.com/go-playground/validator/v10"
 )
 

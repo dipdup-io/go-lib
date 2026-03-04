@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dipdup-net/go-lib/tzkt/data"
+	"github.com/dipdup-io/go-lib/tzkt/data"
 )
 
 // GetBlock -

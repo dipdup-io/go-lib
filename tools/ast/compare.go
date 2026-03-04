@@ -3,7 +3,7 @@ package ast
 import (
 	"strings"
 
-	"github.com/dipdup-net/go-lib/tools/types"
+	"github.com/dipdup-io/go-lib/tools/types"
 )
 
 func compareNotOptimizedTypes(x, y Default, optimizer func(string) (string, error)) (int, error) {

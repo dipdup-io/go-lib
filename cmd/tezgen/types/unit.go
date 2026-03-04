@@ -2,7 +2,7 @@ package types
 
 import (
 	"github.com/dave/jennifer/jen"
-	"github.com/dipdup-net/go-lib/tzkt/data"
+	"github.com/dipdup-io/go-lib/tzkt/data"
 )
 
 // Unit -
@@ -19,7 +19,7 @@ func (Unit) AsField(name, path string, schema data.JSONSchema, isRequired bool, 
 	}
 
 	return jen.Id(fieldName("Unit", name)).Add(
-		jen.Qual("github.com/dipdup-net/go-lib/tools/tezgen", "Unit"),
+		jen.Qual("github.com/dipdup-io/go-lib/tools/tezgen", "Unit"),
 	).Tag(tags), nil
 }
 
@@ -28,7 +28,7 @@ func (Unit) AsCode(name, path string, schema data.JSONSchema, result *ContractTy
 	typName := result.GetName("Unit", name)
 	return Code{
 		Statement: jen.Comment(typName).Line().Type().Id(typName).Add(
-			jen.Qual("github.com/dipdup-net/go-lib/tools/tezgen", "Unit"),
+			jen.Qual("github.com/dipdup-io/go-lib/tools/tezgen", "Unit"),
 		),
 		Name: typName,
 	}, nil
@@ -38,7 +38,7 @@ func (Unit) AsCode(name, path string, schema data.JSONSchema, result *ContractTy
 func (Unit) AsType(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	return Code{
 		Statement: jen.Add(
-			jen.Qual("github.com/dipdup-net/go-lib/tools/tezgen", "Unit"),
+			jen.Qual("github.com/dipdup-io/go-lib/tools/tezgen", "Unit"),
 		).Line(),
 		Name: result.GetName("Unit", name),
 	}, nil

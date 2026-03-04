@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/dipdup-net/go-lib/config"
+	"github.com/dipdup-io/go-lib/config"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
 )

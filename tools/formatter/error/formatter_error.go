@@ -5,7 +5,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/dipdup-net/go-lib/tools/formatter"
+	"github.com/dipdup-io/go-lib/tools/formatter"
 	"github.com/pkg/errors"
 	"github.com/tidwall/gjson"
 )
