@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/dipdup-io/go-lib/config"
+	"github.com/ettle/strcase"
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
 
@@ -299,19 +300,19 @@ func getTableName(value reflect.Value, typ reflect.Type) string {
 				}
 			}
 		}
-		return ToSnakeCase(typ.Name())
+		return strcase.ToSnake(typ.Name())
 	}
 	res := value.MethodByName("TableName").Call([]reflect.Value{})
 	if len(res) != 1 {
-		return ToSnakeCase(typ.Name())
+		return strcase.ToSnake(typ.Name())
 	}
 	if res[0].Kind() != reflect.String {
-		return ToSnakeCase(typ.Name())
+		return strcase.ToSnake(typ.Name())
 	}
 	return res[0].String()
 }
 
-func getSchema(cfg config.Database) string {
+func getSchema(_ config.Database) string {
 	return "public"
 }
 
@@ -322,18 +323,18 @@ func getColumns(typ reflect.Type) []string {
 		if !field.Anonymous {
 			if tag := field.Tag.Get("gorm"); tag != "" {
 				if !strings.HasPrefix(tag, "-") {
-					columns = append(columns, ToSnakeCase(field.Name))
+					columns = append(columns, strcase.ToSnake(field.Name))
 				}
 			} else if tag := field.Tag.Get("pg"); tag != "" {
 				if !strings.HasPrefix(tag, "-") && field.Name != "tableName" && !strings.Contains(tag, "rel:") {
-					columns = append(columns, ToSnakeCase(field.Name))
+					columns = append(columns, strcase.ToSnake(field.Name))
 				}
 			} else if tag := field.Tag.Get("bun"); tag != "" {
 				if !strings.HasPrefix(tag, "-") && field.Name != "BaseModel" && !strings.Contains(tag, "rel:") {
-					columns = append(columns, ToSnakeCase(field.Name))
+					columns = append(columns, strcase.ToSnake(field.Name))
 				}
 			} else {
-				columns = append(columns, ToSnakeCase(field.Name))
+				columns = append(columns, strcase.ToSnake(field.Name))
 			}
 		} else {
 			cols := getColumns(field.Type)
@@ -369,11 +370,17 @@ func createQueryCollections(metadata *Metadata) error {
 		if err != nil {
 			return err
 		}
-		defer f.Close()
 
 		data, err := io.ReadAll(f)
 		if err != nil {
+			if errClose := f.Close(); errClose != nil {
+				return errors.Wrap(err, errClose.Error())
+			}
 			return err
+		}
+
+		if err := f.Close(); err != nil {
+			return errors.Wrap(err, "closing file error")
 		}
 
 		queries = append(queries, Query{
@@ -422,7 +429,7 @@ func ReadCustomConfigs(ctx context.Context, database config.Database, hasuraConf
 		return nil, err
 	}
 
-	custom_configs := make([]Request, 0)
+	customСonfigs := make([]Request, 0, len(files))
 	for i := range files {
 		if files[i].IsDir() || strings.HasPrefix(files[i].Name(), ".") {
 			continue
@@ -440,8 +447,8 @@ func ReadCustomConfigs(ctx context.Context, database config.Database, hasuraConf
 		if err != nil {
 			return nil, err
 		}
-		custom_configs = append(custom_configs, conf)
+		customСonfigs = append(customСonfigs, conf)
 	}
 
-	return custom_configs, nil
+	return customСonfigs, nil
 }
