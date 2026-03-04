@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/dipdup-net/go-lib/tools/base"
-	"github.com/dipdup-net/go-lib/tools/consts"
-	"github.com/dipdup-net/go-lib/tools/types"
+	"github.com/dipdup-io/go-lib/tools/base"
+	"github.com/dipdup-io/go-lib/tools/consts"
+	"github.com/dipdup-io/go-lib/tools/types"
 	"github.com/pkg/errors"
 )
 
@@ -292,7 +292,7 @@ func (or *Or) ToParameters() ([]byte, error) {
 	}
 
 	var builder bytes.Buffer
-	if _, err := builder.WriteString(fmt.Sprintf(`{"prim":"%s","args":[`, prim)); err != nil {
+	if _, err := fmt.Fprintf(&builder, `{"prim":"%s","args":[`, prim); err != nil {
 		return nil, err
 	}
 	b, err := node.ToParameters()

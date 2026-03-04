@@ -1,6 +1,6 @@
 package interfaces
 
-import "github.com/dipdup-net/go-lib/tools/consts"
+import "github.com/dipdup-io/go-lib/tools/consts"
 
 // Fa1_2 -
 type Fa1_2 struct{}

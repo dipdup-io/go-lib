@@ -3,7 +3,7 @@ package forge
 import (
 	"fmt"
 
-	"github.com/dipdup-net/go-lib/tools/base"
+	"github.com/dipdup-io/go-lib/tools/base"
 	"github.com/pkg/errors"
 )
 

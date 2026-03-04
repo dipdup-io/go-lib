@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/dipdup-net/go-lib/tools/encoding"
+	"github.com/dipdup-io/go-lib/tools/encoding"
 )
 
 func TestEd25519_Sign(t *testing.T) {

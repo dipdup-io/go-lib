@@ -3,10 +3,10 @@ package ast
 import (
 	"strings"
 
-	"github.com/dipdup-net/go-lib/tools/base"
-	"github.com/dipdup-net/go-lib/tools/consts"
-	"github.com/dipdup-net/go-lib/tools/forge"
-	"github.com/dipdup-net/go-lib/tools/formatter"
+	"github.com/dipdup-io/go-lib/tools/base"
+	"github.com/dipdup-io/go-lib/tools/consts"
+	"github.com/dipdup-io/go-lib/tools/forge"
+	"github.com/dipdup-io/go-lib/tools/formatter"
 	"github.com/pkg/errors"
 )
 

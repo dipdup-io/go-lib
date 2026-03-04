@@ -64,7 +64,7 @@ func (t *Transport) Negotiate(ctx context.Context, version Version) (response Ne
 		return
 	}
 
-	resp, err := t.client.Do(req)
+	resp, err := t.client.Do(req) //nolint:gosec
 	if err != nil {
 		return
 	}

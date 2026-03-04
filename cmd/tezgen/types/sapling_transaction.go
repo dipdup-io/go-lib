@@ -2,7 +2,7 @@ package types
 
 import (
 	"github.com/dave/jennifer/jen"
-	"github.com/dipdup-net/go-lib/tzkt/data"
+	"github.com/dipdup-io/go-lib/tzkt/data"
 )
 
 // SaplingTransaction -
@@ -19,7 +19,7 @@ func (SaplingTransaction) AsField(name, path string, schema data.JSONSchema, isR
 	}
 
 	return jen.Id(fieldName("SaplingTransaction", name)).Add(
-		jen.Qual("github.com/dipdup-net/go-lib/tools/tezgen", "SaplingTransaction"),
+		jen.Qual("github.com/dipdup-io/go-lib/tools/tezgen", "SaplingTransaction"),
 	).Tag(tags), nil
 }
 
@@ -28,7 +28,7 @@ func (SaplingTransaction) AsCode(name, path string, schema data.JSONSchema, resu
 	typName := result.GetName("SaplingTransaction", name)
 	return Code{
 		Statement: jen.Comment(typName).Line().Type().Id(typName).Add(
-			jen.Qual("github.com/dipdup-net/go-lib/tools/tezgen", "SaplingTransaction"),
+			jen.Qual("github.com/dipdup-io/go-lib/tools/tezgen", "SaplingTransaction"),
 		).Line(),
 		Name: typName,
 	}, nil
@@ -38,7 +38,7 @@ func (SaplingTransaction) AsCode(name, path string, schema data.JSONSchema, resu
 func (SaplingTransaction) AsType(name, path string, schema data.JSONSchema, result *ContractTypeResult) (Code, error) {
 	return Code{
 		Statement: jen.Add(
-			jen.Qual("github.com/dipdup-net/go-lib/tools/tezgen", "SaplingTransaction"),
+			jen.Qual("github.com/dipdup-io/go-lib/tools/tezgen", "SaplingTransaction"),
 		),
 		Name: name,
 	}, nil

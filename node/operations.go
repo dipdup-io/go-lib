@@ -151,7 +151,7 @@ func NewTypedOperation[M OperationConstraint](operation Operation) (M, error) {
 // AccountActivation -
 type AccountActivation struct {
 	Pkh      string                      `json:"pkh"`
-	Secret   string                      `json:"secret"`
+	Secret   string                      `json:"secret"` //nolint:gosec
 	Metadata *OnlyBalanceUpdatesMetadata `json:"metadata,omitempty"`
 }
 

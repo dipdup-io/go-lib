@@ -6,8 +6,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/dipdup-net/go-lib/tools/consts"
-	"github.com/dipdup-net/go-lib/tools/types"
+	"github.com/dipdup-io/go-lib/tools/consts"
+	"github.com/dipdup-io/go-lib/tools/types"
 	jsoniter "github.com/json-iterator/go"
 )
 
@@ -102,11 +102,11 @@ func (node *Node) print(depth int) string {
 			s.WriteString(node.Args[i].print(depth + 1))
 		}
 	case node.IntValue != nil:
-		s.WriteString(fmt.Sprintf("Int=%d", *node.IntValue))
+		fmt.Fprintf(&s, "Int=%d", *node.IntValue)
 	case node.BytesValue != nil:
-		s.WriteString(fmt.Sprintf("Bytes=%s", *node.BytesValue))
+		fmt.Fprintf(&s, "Bytes=%s", *node.BytesValue)
 	case node.StringValue != nil:
-		s.WriteString(fmt.Sprintf("String=%s", *node.StringValue))
+		fmt.Fprintf(&s, "String=%s", *node.StringValue)
 	}
 	return s.String()
 }

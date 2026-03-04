@@ -12,8 +12,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/dipdup-net/go-lib/tools/crypto"
-	"github.com/dipdup-net/go-lib/tzkt/data"
+	"github.com/dipdup-io/go-lib/tools/crypto"
+	"github.com/dipdup-io/go-lib/tzkt/data"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/pkg/errors"
 )
@@ -55,6 +55,9 @@ func (tzkt *API) get(ctx context.Context, endpoint string, args map[string]strin
 	if err != nil {
 		return nil, err
 	}
+	if u.Scheme != "https" && u.Scheme != "http" {
+		return nil, errors.Errorf("invalid scheme: %s", u.Scheme)
+	}
 	u.Path = path.Join(u.Path, endpoint)
 
 	values := u.Query()
@@ -74,13 +77,16 @@ func (tzkt *API) get(ctx context.Context, endpoint string, args map[string]strin
 		}
 	}
 
-	return tzkt.client.Do(req)
+	return tzkt.client.Do(req) //nolint:gosec
 }
 
 func (tzkt *API) post(ctx context.Context, endpoint string, args map[string]string, body interface{}) (*http.Response, error) {
 	u, err := url.Parse(tzkt.url)
 	if err != nil {
 		return nil, err
+	}
+	if u.Scheme != "https" && u.Scheme != "http" {
+		return nil, errors.Errorf("invalid scheme: %s", u.Scheme)
 	}
 	u.Path = path.Join(u.Path, endpoint)
 
@@ -103,7 +109,7 @@ func (tzkt *API) post(ctx context.Context, endpoint string, args map[string]stri
 	}
 	req.Header.Add("Content-Type", "application/json")
 
-	return tzkt.client.Do(req)
+	return tzkt.client.Do(req) //nolint:gosec
 }
 
 func (tzkt *API) json(ctx context.Context, endpoint string, args map[string]string, withAuth bool, output interface{}) error {

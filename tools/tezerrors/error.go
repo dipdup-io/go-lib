@@ -9,10 +9,10 @@ import (
 	"encoding/hex"
 	stdJSON "encoding/json"
 
-	"github.com/dipdup-net/go-lib/tools/ast"
-	"github.com/dipdup-net/go-lib/tools/consts"
-	"github.com/dipdup-net/go-lib/tools/forge"
-	"github.com/dipdup-net/go-lib/tools/formatter"
+	"github.com/dipdup-io/go-lib/tools/ast"
+	"github.com/dipdup-io/go-lib/tools/consts"
+	"github.com/dipdup-io/go-lib/tools/forge"
+	"github.com/dipdup-io/go-lib/tools/formatter"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/pkg/errors"
 )

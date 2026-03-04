@@ -3,11 +3,11 @@ package contract
 import (
 	"strings"
 
-	"github.com/dipdup-net/go-lib/tools/ast"
-	"github.com/dipdup-net/go-lib/tools/base"
-	"github.com/dipdup-net/go-lib/tools/consts"
-	"github.com/dipdup-net/go-lib/tools/contract/trees"
-	"github.com/dipdup-net/go-lib/tools/forge"
+	"github.com/dipdup-io/go-lib/tools/ast"
+	"github.com/dipdup-io/go-lib/tools/base"
+	"github.com/dipdup-io/go-lib/tools/consts"
+	"github.com/dipdup-io/go-lib/tools/contract/trees"
+	"github.com/dipdup-io/go-lib/tools/forge"
 )
 
 func isDelegatorContract(code []byte, storage ast.UntypedAST) bool {

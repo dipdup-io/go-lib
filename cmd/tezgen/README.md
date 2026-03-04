@@ -7,7 +7,7 @@ Application generates Golang code for TzKT contract types. It requests JSON sche
 To install binary
 
 ```bash
-go install github.com/dipdup-net/go-lib/cmd/tezgen
+go install github.com/dipdup-io/go-lib/cmd/tezgen
 ```
 
 ```bash

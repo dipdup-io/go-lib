@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dipdup-net/go-lib/tools"
-	"github.com/dipdup-net/go-lib/tzkt/data"
+	"github.com/dipdup-io/go-lib/tools"
+	"github.com/dipdup-io/go-lib/tzkt/data"
 	"github.com/pkg/errors"
 )
 

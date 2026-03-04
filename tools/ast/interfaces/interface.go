@@ -3,7 +3,7 @@ package interfaces
 import (
 	stdJSON "encoding/json"
 
-	"github.com/dipdup-net/go-lib/tools/consts"
+	"github.com/dipdup-io/go-lib/tools/consts"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/pkg/errors"
 )

@@ -1,55 +1,104 @@
-# Tezos RPC client
+# node
 
-The library realize almost all RPC methods of Tezos node.
+Tezos RPC node client covering the full Tezos RPC specification. All API groups are exposed as interfaces for easy mocking in tests.
 
-## Usage
-
-### Simple example
-
-```go
-rpc := node.NewRPC("https://rpc.tzkt.io/mainnet", "main")
-ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
-defer cancel()
-
-block, err := rpc.Block(ctx, "head")
-if err != nil {
-	panic(err)
-}
-log.Printf("%##v", block)
+```bash
+go get github.com/dipdup-io/go-lib/node
 ```
 
-You can use main RPC constructor where chain id set by default to `main`
+## Quickstart
 
 ```go
+import "github.com/dipdup-io/go-lib/node"
+
 rpc := node.NewMainRPC("https://rpc.tzkt.io/mainnet")
-```
 
-### Usage certain API part
-
-RPC struct contains some internal parts: `Chain`, `Block`, `Context`, `Config`, `General`, `Protocols`, `Inject` and `Network`. You can use it without creation of full RPC client.
-
-```go
-rpc := node.NewMainBlockRPC("https://rpc.tzkt.io/mainnet")
-ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 defer cancel()
 
 block, err := rpc.Block(ctx, "head")
 if err != nil {
-	panic(err)
+    panic(err)
 }
-log.Printf("%##v", block)
+log.Printf("%+v", block)
 ```
 
-### Interfaces
+## Constructors
 
-For testing purpose RPC was wrapped by interfaces. Also each part of RPC has interface. You can mock it with code generation tools.
+| Constructor | Description |
+|---|---|
+| `NewRPC(url, chain)` | Full client with explicit chain ID |
+| `NewMainRPC(url)` | Shorthand for mainnet (`chain = "main"`) |
+| `NewMainBlockRPC(url)` | Block API only |
+| `NewMainChainRPC(url)` | Chain API only |
+| `NewMainContextRPC(url)` | Context API only |
 
-Interfaces list:
-* `BlockAPI`
-* `ChainAPI`
-* `ContextAPI`
-* `ConfigAPI`
-* `GeneralAPI`
-* `ProtocolsAPI`
-* `NetworkAPI`
-* `InjectAPI`
+## API groups
+
+The `RPC` struct composes all groups. Each group can also be instantiated independently if you need only part of the API.
+
+### Block API — `BlockAPI`
+
+```go
+block, err := rpc.Block(ctx, "head")      // latest block
+block, err := rpc.Block(ctx, "1234567")   // by level
+block, err := rpc.Block(ctx, "<hash>")    // by hash
+
+ops,  err := rpc.BlockOperations(ctx, "head")
+hash, err := rpc.BlockHash(ctx, "head")
+```
+
+### Chain API — `ChainAPI`
+
+```go
+chainID,    err := rpc.ChainID(ctx)
+checkpoint, err := rpc.Checkpoint(ctx)
+```
+
+### Context API — `ContextAPI`
+
+```go
+storage,   err := rpc.ContractStorage(ctx, "head", "KT1...")
+delegate,  err := rpc.Delegate(ctx, "head", "tz1...")
+delegates, err := rpc.Delegates(ctx, "head")
+constants, err := rpc.Constants(ctx, "head")
+```
+
+### Protocols API — `ProtocolsAPI`
+
+```go
+protocol,  err := rpc.Protocol(ctx, "head")
+protocols, err := rpc.Protocols(ctx)
+```
+
+### Network API — `NetworkAPI`
+
+```go
+peers, err := rpc.Peers(ctx)
+conns, err := rpc.Connections(ctx)
+stat,  err := rpc.Stat(ctx)
+```
+
+### Inject API — `InjectAPI`
+
+```go
+hash, err := rpc.InjectOperation(ctx, signedBytes)
+```
+
+## Interfaces for mocking
+
+Each API group has a corresponding interface. Use them in your own structs to enable substitution in tests:
+
+```go
+type MyIndexer struct {
+    rpc node.BlockAPI
+}
+```
+
+Available interfaces: `BlockAPI`, `ChainAPI`, `ContextAPI`, `ConfigAPI`, `GeneralAPI`, `ProtocolsAPI`, `NetworkAPI`, `InjectAPI`, `RpcAPI` (all-in-one).
+
+Generate mocks with `mockgen`:
+
+```bash
+mockgen -source=node/interface.go -destination=mocks/node_mock.go
+```

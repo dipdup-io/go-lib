@@ -1,8 +1,8 @@
 package ast
 
 import (
-	"github.com/dipdup-net/go-lib/tools/ast/interfaces"
-	"github.com/dipdup-net/go-lib/tools/consts"
+	"github.com/dipdup-io/go-lib/tools/ast/interfaces"
+	"github.com/dipdup-io/go-lib/tools/consts"
 )
 
 // contract tags

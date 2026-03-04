@@ -56,7 +56,7 @@ func (r *request) do(ctx context.Context, client *client) (*http.Response, error
 	if err != nil {
 		return nil, errors.Errorf("request.do: %v", err)
 	}
-	return client.Do(req)
+	return client.Do(req) //nolint:gosec
 }
 
 func (r *request) checkStatusCode(resp *http.Response) error {

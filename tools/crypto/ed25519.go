@@ -4,7 +4,7 @@ import (
 	"crypto/ed25519"
 	"crypto/rand"
 
-	"github.com/dipdup-net/go-lib/tools/encoding"
+	"github.com/dipdup-io/go-lib/tools/encoding"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/blake2b"
 )

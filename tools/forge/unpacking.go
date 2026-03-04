@@ -5,8 +5,8 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/dipdup-net/go-lib/tools/base"
-	"github.com/dipdup-net/go-lib/tools/formatter"
+	"github.com/dipdup-io/go-lib/tools/base"
+	"github.com/dipdup-io/go-lib/tools/formatter"
 	jsoniter "github.com/json-iterator/go"
 )
 

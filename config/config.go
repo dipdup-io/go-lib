@@ -46,7 +46,7 @@ type Database struct {
 	Host                   string `validate:"required_with=Port User Database"                              yaml:"host"`
 	Port                   int    `validate:"required_with=Host User Database,gt=-1,lt=65535"               yaml:"port"`
 	User                   string `validate:"required_with=Host Port Database"                              yaml:"user"`
-	Password               string `yaml:"password"`
+	Password               string `yaml:"password"` //nolint:gosec
 	Database               string `validate:"required_with=Host Port User"                                  yaml:"database"`
 	SchemaName             string `yaml:"schema_name"`
 	ApplicationName        string `yaml:"application_name"`
@@ -58,7 +58,7 @@ type Database struct {
 // Hasura -
 type Hasura struct {
 	URL                string        `validate:"required,url"  yaml:"url"`
-	Secret             string        `validate:"required"      yaml:"admin_secret"`
+	Secret             string        `validate:"required"      yaml:"admin_secret"` //nolint:gosec
 	RowsLimit          uint64        `validate:"gt=0"          yaml:"select_limit"`
 	EnableAggregations bool          `yaml:"allow_aggregation"`
 	Source             *HasuraSource `yaml:"source"`

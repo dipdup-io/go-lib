@@ -3,7 +3,7 @@ package ast
 import (
 	"testing"
 
-	"github.com/dipdup-net/go-lib/tools/base"
+	"github.com/dipdup-io/go-lib/tools/base"
 )
 
 func TestBigMapKeyHash(t *testing.T) {

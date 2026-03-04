@@ -4,8 +4,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/dipdup-net/go-lib/tools"
-	"github.com/dipdup-net/go-lib/tools/encoding"
+	"github.com/dipdup-io/go-lib/tools"
+	"github.com/dipdup-io/go-lib/tools/encoding"
 	"github.com/pkg/errors"
 )
 

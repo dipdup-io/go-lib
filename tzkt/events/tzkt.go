@@ -7,9 +7,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/dipdup-net/go-lib/tzkt/events/signalr"
+	"github.com/dipdup-io/go-lib/tzkt/events/signalr"
 
-	tzktData "github.com/dipdup-net/go-lib/tzkt/data"
+	tzktData "github.com/dipdup-io/go-lib/tzkt/data"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"

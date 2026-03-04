@@ -5,10 +5,10 @@ import (
 
 	stdJSON "encoding/json"
 
-	"github.com/dipdup-net/go-lib/tools/ast"
-	"github.com/dipdup-net/go-lib/tools/base"
-	"github.com/dipdup-net/go-lib/tools/consts"
-	"github.com/dipdup-net/go-lib/tools/types"
+	"github.com/dipdup-io/go-lib/tools/ast"
+	"github.com/dipdup-io/go-lib/tools/base"
+	"github.com/dipdup-io/go-lib/tools/consts"
+	"github.com/dipdup-io/go-lib/tools/types"
 )
 
 var json = jsoniter.ConfigCompatibleWithStandardLibrary

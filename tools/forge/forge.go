@@ -6,7 +6,7 @@ import (
 	"math"
 	"strconv"
 
-	"github.com/dipdup-net/go-lib/tools/types"
+	"github.com/dipdup-io/go-lib/tools/types"
 	"github.com/ebellocchia/go-base58"
 	"github.com/pkg/errors"
 )
