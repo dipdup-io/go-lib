@@ -7,6 +7,7 @@ require (
 	github.com/ettle/strcase v0.2.0
 	github.com/go-testfixtures/testfixtures/v3 v3.19.0
 	github.com/golang/mock v1.7.0-rc.1
+	github.com/jackc/pgx-shopspring-decimal v0.0.0-20220624020537-1d36b5a1853e
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/lib/pq v1.11.2
 	github.com/pkg/errors v0.9.1
@@ -25,6 +26,7 @@ require (
 	github.com/go-playground/validator/v10 v10.30.1 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.28.0 // indirect
 	github.com/leodido/go-urn v1.4.0 // indirect
+	github.com/shopspring/decimal v1.3.1 // indirect
 	go.opentelemetry.io/otel/sdk v1.40.0 // indirect
 	go.opentelemetry.io/otel/sdk/metric v1.40.0 // indirect
 	google.golang.org/grpc v1.79.1 // indirect

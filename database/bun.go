@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/dipdup-io/go-lib/config"
+	pgxdecimal "github.com/jackc/pgx-shopspring-decimal"
 	pgx "github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -75,6 +76,7 @@ func (db *Bun) Connect(ctx context.Context, cfg config.Database) error {
 	connCfg.ConnConfig.RuntimeParams["TimeZone"] = "UTC"
 
 	connCfg.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
+		pgxdecimal.Register(conn.TypeMap())
 		conn.TypeMap().RegisterType(&pgtype.Type{
 			Name:  "timestamp",
 			OID:   pgtype.TimestampOID,
