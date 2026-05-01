@@ -29,7 +29,7 @@ type Operation struct {
 	Block      string      `json:"block"`
 	Delegate   *Address    `json:"delegate,omitempty"`
 	GasUsed    *uint64     `json:"gasUsed,omitempty"`
-	BakerFee   *uint64     `json:"bakerFee,omitempty"`
+	BakerFee   *int64      `json:"bakerFee,omitempty"`
 	Parameters *Parameters `json:"parameter,omitempty"`
 }
 
@@ -55,7 +55,7 @@ type Origination struct {
 	GasUsed          uint64              `json:"gasUsed"`
 	StorageLimit     uint64              `json:"storageLimit"`
 	StorageUsed      uint64              `json:"storageUsed"`
-	BakerFee         uint64              `json:"bakerFee"`
+	BakerFee         int64               `json:"bakerFee"`
 	StorageFee       uint64              `json:"storageFee"`
 	AllocationFee    uint64              `json:"allocationFee"`
 	ContractBalance  uint64              `json:"contractBalance"`
@@ -86,7 +86,7 @@ type Transaction struct {
 	GasUsed       uint64          `json:"gasUsed"`
 	StorageLimit  uint64          `json:"storageLimit"`
 	StorageUsed   uint64          `json:"storageUsed"`
-	BakerFee      uint64          `json:"bakerFee"`
+	BakerFee      int64           `json:"bakerFee"`
 	StorageFee    uint64          `json:"storageFee"`
 	AllocationFee uint64          `json:"allocationFee"`
 	Status        string          `json:"status"`
@@ -115,7 +115,7 @@ type Delegation struct {
 	Counter      uint64          `json:"counter"`
 	GasLimit     uint64          `json:"gasLimit"`
 	GasUsed      uint64          `json:"gasUsed"`
-	BakerFee     uint64          `json:"bakerFee"`
+	BakerFee     int64           `json:"bakerFee"`
 	Nonce        *uint64         `json:"nonce,omitempty"`
 	Quote        *Quote          `json:"quote,omitempty"`
 }
@@ -133,7 +133,7 @@ type Reveal struct {
 	Counter   uint64    `json:"counter"`
 	GasLimit  uint64    `json:"gasLimit"`
 	GasUsed   uint64    `json:"gasUsed"`
-	BakerFee  uint64    `json:"bakerFee"`
+	BakerFee  int64     `json:"bakerFee"`
 	PublicKey string    `json:"publicKey,omitempty"`
 	Nonce     *uint64   `json:"nonce,omitempty"`
 	Quote     *Quote    `json:"quote,omitempty"`
@@ -226,7 +226,7 @@ type RegisterConstant struct {
 	GasUsed      uint64             `json:"gasUsed"`
 	StorageLimit uint64             `json:"storageLimit"`
 	StorageUsed  uint64             `json:"storageUsed"`
-	BakerFee     uint64             `json:"bakerFee"`
+	BakerFee     int64              `json:"bakerFee"`
 	StorageFee   uint64             `json:"storageFee"`
 	Value        stdJSON.RawMessage `json:"value"`
 	Timestamp    time.Time          `json:"timestamp"`
@@ -286,7 +286,7 @@ type TransferTicket struct {
 	GasUsed      uint64             `json:"gasUsed"`
 	StorageLimit uint64             `json:"storageLimit"`
 	StorageUsed  uint64             `json:"storageUsed"`
-	BakerFee     uint64             `json:"bakerFee"`
+	BakerFee     int64              `json:"bakerFee"`
 	StorageFee   uint64             `json:"storageFee"`
 	Target       Address            `json:"target"`
 	Ticketer     Address            `json:"ticketer"`
@@ -311,7 +311,7 @@ type TxRollupCommit struct {
 	GasUsed      uint64    `json:"gasUsed"`
 	StorageLimit uint64    `json:"storageLimit"`
 	StorageUsed  uint64    `json:"storageUsed"`
-	BakerFee     uint64    `json:"bakerFee"`
+	BakerFee     int64     `json:"bakerFee"`
 	Bond         uint64    `json:"bond"`
 	Sender       Address   `json:"sender"`
 	Rollup       Address   `json:"rollup"`
@@ -331,7 +331,7 @@ type TxRollupDispatchTicket struct {
 	GasUsed      uint64    `json:"gasUsed"`
 	StorageLimit uint64    `json:"storageLimit"`
 	StorageUsed  uint64    `json:"storageUsed"`
-	BakerFee     uint64    `json:"bakerFee"`
+	BakerFee     int64     `json:"bakerFee"`
 	StorageFee   uint64    `json:"storageFee"`
 	ID           uint64    `json:"id"`
 	Level        uint64    `json:"level"`
@@ -354,7 +354,7 @@ type TxRollupFinalizeCommitment struct {
 	GasUsed      uint64    `json:"gasUsed"`
 	StorageLimit uint64    `json:"storageLimit"`
 	StorageUsed  uint64    `json:"storageUsed"`
-	BakerFee     uint64    `json:"bakerFee"`
+	BakerFee     int64     `json:"bakerFee"`
 	Timestamp    time.Time `json:"timestamp"`
 	Sender       Address   `json:"sender"`
 	Rollup       Address   `json:"rollup"`
@@ -371,7 +371,7 @@ type TxRollupOrigination struct {
 	GasUsed       uint64    `json:"gasUsed"`
 	StorageLimit  uint64    `json:"storageLimit"`
 	StorageUsed   uint64    `json:"storageUsed"`
-	BakerFee      uint64    `json:"bakerFee"`
+	BakerFee      int64     `json:"bakerFee"`
 	AllocationFee uint64    `json:"allocationFee"`
 	Rollup        Address   `json:"rollup"`
 	Sender        Address   `json:"sender"`
@@ -397,7 +397,7 @@ type TxRollupRejection struct {
 	GasUsed      uint64    `json:"gasUsed"`
 	StorageLimit uint64    `json:"storageLimit"`
 	StorageUsed  uint64    `json:"storageUsed"`
-	BakerFee     uint64    `json:"bakerFee"`
+	BakerFee     int64     `json:"bakerFee"`
 	Reward       uint64    `json:"reward"`
 	Loss         uint64    `json:"loss"`
 	Rollup       Address   `json:"rollup"`
@@ -421,7 +421,7 @@ type TxRollupRemoveCommitment struct {
 	GasUsed      uint64    `json:"gasUsed"`
 	StorageLimit uint64    `json:"storageLimit"`
 	StorageUsed  uint64    `json:"storageUsed"`
-	BakerFee     uint64    `json:"bakerFee"`
+	BakerFee     int64     `json:"bakerFee"`
 	Sender       Address   `json:"sender"`
 	Rollup       Address   `json:"rollup"`
 	Timestamp    time.Time `json:"timestamp"`
@@ -442,7 +442,7 @@ type TxRollupReturnBond struct {
 	GasUsed      uint64    `json:"gasUsed"`
 	StorageLimit uint64    `json:"storageLimit"`
 	StorageUsed  uint64    `json:"storageUsed"`
-	BakerFee     uint64    `json:"bakerFee"`
+	BakerFee     int64     `json:"bakerFee"`
 	Bond         uint64    `json:"bond"`
 	Timestamp    time.Time `json:"timestamp"`
 	Rollup       Address   `json:"rollup"`
@@ -464,7 +464,7 @@ type TxRollupSubmitBatch struct {
 	GasUsed      uint64    `json:"gasUsed"`
 	StorageLimit uint64    `json:"storageLimit"`
 	StorageUsed  uint64    `json:"storageUsed"`
-	BakerFee     uint64    `json:"bakerFee"`
+	BakerFee     int64     `json:"bakerFee"`
 	StorageFee   uint64    `json:"storageFee"`
 	Rollup       Address   `json:"rollup"`
 	Sender       Address   `json:"sender"`
@@ -486,7 +486,7 @@ type SetDepositsLimit struct {
 	GasLimit     uint64    `json:"gasLimit"`
 	GasUsed      uint64    `json:"gasUsed"`
 	StorageLimit uint64    `json:"storageLimit"`
-	BakerFee     uint64    `json:"bakerFee"`
+	BakerFee     int64     `json:"bakerFee"`
 	Status       string    `json:"status"`
 	Limit        string    `json:"limit"`
 	Errors       []Error   `json:"errors,omitempty"`
@@ -505,7 +505,7 @@ type SetDelegateParameters struct {
 	GasLimit                 uint64    `json:"gasLimit"`
 	GasUsed                  uint64    `json:"gasUsed"`
 	StorageLimit             uint64    `json:"storageLimit"`
-	BakerFee                 uint64    `json:"bakerFee"`
+	BakerFee                 int64     `json:"bakerFee"`
 	LimitOfStakingOverBaking uint64    `json:"limitOfStakingOverBaking"`
 	EdgeOfBakingOverStaking  uint64    `json:"edgeOfBakingOverStaking"`
 	ActivationCycle          uint64    `json:"activationCycle"`
@@ -668,7 +668,7 @@ type IncreasePaidStorage struct {
 	GasUsed      uint64          `json:"gasUsed"`
 	StorageLimit uint64          `json:"storageLimit"`
 	StorageUsed  uint64          `json:"storageUsed"`
-	BakerFee     uint64          `json:"bakerFee"`
+	BakerFee     int64           `json:"bakerFee"`
 	StorageFee   uint64          `json:"storageFee"`
 	Status       string          `json:"status"`
 	Contract     Address         `json:"contract"`
@@ -688,7 +688,7 @@ type UpdateSecondaryKey struct {
 	GasLimit        uint64    `json:"gasLimit"`
 	GasUsed         uint64    `json:"gasUsed"`
 	StorageLimit    uint64    `json:"storageLimit"`
-	BakerFee        uint64    `json:"bakerFee"`
+	BakerFee        int64     `json:"bakerFee"`
 	Status          string    `json:"status"`
 	ActivationCycle uint64    `json:"activationCycle"`
 	PublicKey       string    `json:"publicKey"`
@@ -724,7 +724,7 @@ type SmartRollupAddMessage struct {
 	GasLimit      uint64    `json:"gasLimit"`
 	GasUsed       uint64    `json:"gasUsed"`
 	StorageLimit  uint64    `json:"storageLimit"`
-	BakerFee      uint64    `json:"bakerFee"`
+	BakerFee      int64     `json:"bakerFee"`
 	Status        string    `json:"status"`
 	MessagesCount uint64    `json:"messagesCount"`
 	Errors        []Error   `json:"errors,omitempty"`
@@ -743,7 +743,7 @@ type SmartRollupCement struct {
 	GasLimit     uint64            `json:"gasLimit"`
 	GasUsed      uint64            `json:"gasUsed"`
 	StorageLimit uint64            `json:"storageLimit"`
-	BakerFee     uint64            `json:"bakerFee"`
+	BakerFee     int64             `json:"bakerFee"`
 	Status       string            `json:"status"`
 	Rollup       *Address          `json:"rollup,omitempty"`
 	Commitment   *SrCommitmentInfo `json:"commitment,omitempty"`
@@ -776,7 +776,7 @@ type SmartRollupExecute struct {
 	GasUsed      uint64            `json:"gasUsed"`
 	StorageLimit uint64            `json:"storageLimit"`
 	StorageUsed  uint64            `json:"storageUsed"`
-	BakerFee     uint64            `json:"bakerFee"`
+	BakerFee     int64             `json:"bakerFee"`
 	StorageFee   uint64            `json:"storageFee"`
 	Status       string            `json:"status"`
 	Rollup       *Address          `json:"rollup,omitempty"`
@@ -798,7 +798,7 @@ type SmartRollupOriginate struct {
 	GasUsed       uint64             `json:"gasUsed"`
 	StorageLimit  uint64             `json:"storageLimit"`
 	StorageUsed   uint64             `json:"storageUsed"`
-	BakerFee      uint64             `json:"bakerFee"`
+	BakerFee      int64              `json:"bakerFee"`
 	StorageFee    uint64             `json:"storageFee"`
 	Status        string             `json:"status"`
 	Rollup        *Address           `json:"rollup,omitempty"`
@@ -819,7 +819,7 @@ type SmartRollupPublish struct {
 	GasLimit     uint64            `json:"gasLimit"`
 	GasUsed      uint64            `json:"gasUsed"`
 	StorageLimit uint64            `json:"storageLimit"`
-	BakerFee     uint64            `json:"bakerFee"`
+	BakerFee     int64             `json:"bakerFee"`
 	Status       string            `json:"status"`
 	Rollup       *Address          `json:"rollup,omitempty"`
 	Commitment   *SrCommitmentInfo `json:"commitment,omitempty"`
@@ -838,7 +838,7 @@ type SmartRollupRecoverBond struct {
 	GasLimit     uint64    `json:"gasLimit"`
 	GasUsed      uint64    `json:"gasUsed"`
 	StorageLimit uint64    `json:"storageLimit"`
-	BakerFee     uint64    `json:"bakerFee"`
+	BakerFee     int64     `json:"bakerFee"`
 	Status       string    `json:"status"`
 	Rollup       *Address  `json:"rollup,omitempty"`
 	Staker       *Address  `json:"staker,omitempty"`
@@ -857,7 +857,7 @@ type SmartRollupRefute struct {
 	GasLimit     uint64      `json:"gasLimit"`
 	GasUsed      uint64      `json:"gasUsed"`
 	StorageLimit uint64      `json:"storageLimit"`
-	BakerFee     uint64      `json:"bakerFee"`
+	BakerFee     int64       `json:"bakerFee"`
 	Status       string      `json:"status"`
 	Rollup       *Address    `json:"rollup,omitempty"`
 	Game         *SrGameInfo `json:"game"`
@@ -890,7 +890,7 @@ type DalPublishCommitment struct {
 	GasLimit     uint64    `json:"gasLimit"`
 	GasUsed      uint64    `json:"gasUsed"`
 	StorageLimit uint64    `json:"storageLimit"`
-	BakerFee     uint64    `json:"bakerFee"`
+	BakerFee     int64     `json:"bakerFee"`
 	Slot         int       `json:"slot"`
 	Commitment   string    `json:"commitment"`
 	Status       string    `json:"status"`
@@ -925,7 +925,7 @@ type Staking struct {
 	GasLimit            uint64    `json:"gasLimit"`
 	GasUsed             uint64    `json:"gasUsed"`
 	StorageLimit        uint64    `json:"storageLimit"`
-	BakerFee            uint64    `json:"bakerFee"`
+	BakerFee            int64     `json:"bakerFee"`
 	Action              string    `json:"action"`
 	RequestedAmount     uint64    `json:"requestedAmount"`
 	Amount              uint64    `json:"amount"`
