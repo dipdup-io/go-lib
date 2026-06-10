@@ -1,9 +1,9 @@
 module github.com/dipdup-io/go-lib/tools
 
-go 1.25.7
+go 1.26.4
 
 require (
-	github.com/dipdup-io/go-lib/node v0.0.0-00010101000000-000000000000
+	github.com/dipdup-io/go-lib/node v1.0.0
 	github.com/ebellocchia/go-base58 v0.1.0
 	github.com/json-iterator/go v1.1.12
 	github.com/pkg/errors v0.9.1
@@ -27,5 +27,3 @@ require (
 	golang.org/x/sys v0.41.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
-
-replace github.com/dipdup-io/go-lib/node => ../node
