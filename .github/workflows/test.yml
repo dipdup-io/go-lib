@@ -7,8 +7,8 @@ permissions:
   pull-requests: read
 
 env:
-  GO_VERSION: '1.25'
-  GOLANGCI_LINT_VERSION: v2.10
+  GO_VERSION: '1.26'
+  GOLANGCI_LINT_VERSION: v2.11
 
 jobs:
   detect-modules:
@@ -59,7 +59,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.25.x
+          go-version: 1.26.x
 
       - name: Golang tests
         env:

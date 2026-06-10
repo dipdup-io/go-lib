@@ -1,4 +1,4 @@
-package database
+package testhelpers
 
 import (
 	"context"
@@ -46,7 +46,9 @@ func NewPostgreSQLContainer(ctx context.Context, cfg PostgreSQLContainerConfig) 
 		testcontainers.WithWaitStrategy(
 			wait.ForLog("database system is ready to accept connections").
 				WithOccurrence(2).
-				WithStartupTimeout(30*time.Second)),
+				WithStartupTimeout(30*time.Second),
+			wait.ForListeningPort("5432/tcp"),
+		),
 	)
 	if err != nil {
 		return nil, err
@@ -58,7 +60,7 @@ func NewPostgreSQLContainer(ctx context.Context, cfg PostgreSQLContainerConfig) 
 	}
 	cfg.Host = host
 
-	mappedPort, err := container.MappedPort(ctx, nat.Port(port))
+	mappedPort, err := container.MappedPort(ctx, port)
 	if err != nil {
 		return nil, fmt.Errorf("getting mapped port for %s: %w", port, err)
 	}
@@ -66,7 +68,7 @@ func NewPostgreSQLContainer(ctx context.Context, cfg PostgreSQLContainerConfig) 
 	return &PostgreSQLContainer{
 		Container:  container,
 		Config:     cfg,
-		mappedPort: mappedPort,
+		mappedPort: nat.Port(mappedPort.String()),
 	}, nil
 }
 

@@ -1,11 +1,9 @@
 module github.com/dipdup-io/go-lib/hasura
 
-go 1.25.7
-
-replace github.com/dipdup-io/go-lib/config => ../config
+go 1.26.4
 
 require (
-	github.com/dipdup-io/go-lib/config v0.0.0-00010101000000-000000000000
+	github.com/dipdup-io/go-lib/config v1.0.0
 	github.com/ettle/strcase v0.2.0
 	github.com/go-playground/validator/v10 v10.30.1
 	github.com/json-iterator/go v1.1.12
