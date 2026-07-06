@@ -6,7 +6,7 @@ require (
 	github.com/ettle/strcase v0.2.0
 	github.com/golang/mock v1.7.0-rc.1
 	github.com/jackc/pgx-shopspring-decimal v0.0.0-20220624020537-1d36b5a1853e
-	github.com/jackc/pgx/v5 v5.9.0
+	github.com/jackc/pgx/v5 v5.9.2
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.34.0
 	github.com/stretchr/testify v1.11.1
