@@ -101,7 +101,14 @@ func (service *Service) RegisterGoBuildMetrics() {
 	prometheus.MustRegister(collectors.NewBuildInfoCollector())
 }
 
-// RegisterHistogram -
+// RegisterHistogram registers a histogram vector metric with the given name,
+// help text and label names. Buckets are the upper bounds of observation
+// buckets and must be sorted in increasing order. Choose them to match the
+// unit and range of the observed values (e.g. seconds for latencies, bytes
+// for sizes): values above the top bucket are only counted in +Inf, making
+// quantile queries meaningless. Pass nil to use prometheus.DefBuckets, which
+// targets request latencies in seconds (0.005s to 10s). Panics if a metric
+// with the same name is already registered.
 func (service *Service) RegisterHistogram(name, help string, buckets []float64, labels ...string) {
 	if len(buckets) == 0 {
 		buckets = prometheus.DefBuckets

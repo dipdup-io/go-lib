@@ -18,6 +18,10 @@ defer svc.Close()
 
 If `cfg.Prometheus` is `nil` or `URL` is empty, `NewService` returns a no-op service — all metric calls become safe no-ops, which is useful in test environments.
 
+Examples below that use `prometheus.Labels`, `prometheus.DefBuckets` or
+`prometheus.ExponentialBuckets` refer to the underlying
+`github.com/prometheus/client_golang/prometheus` package.
+
 ## Metric types
 
 ### Counter
@@ -42,12 +46,25 @@ vec.With(prometheus.Labels{"network": "mainnet", "status": "failed"}).Add(3)
 
 Samples observations into configurable buckets. Use for latencies and sizes.
 
+Buckets are the upper bounds of observation buckets, sorted in increasing order.
+Pick them to match the unit and range of the observed values: the defaults
+(`prometheus.DefBuckets`, used when `nil` is passed) cover request latencies of
+0.005–10 seconds; values outside the bucket range all fall into the top bucket,
+making quantile queries meaningless.
+
 ```go
-svc.RegisterHistogram("indexer_operation_duration_seconds", "Operation processing time", "kind")
+// latency in seconds — DefBuckets fit well
+svc.RegisterHistogram("indexer_operation_duration_seconds", "Operation processing time", nil, "kind")
 
 svc.AddHistogramValue("indexer_operation_duration_seconds",
     map[string]string{"kind": "transaction"},
     elapsed.Seconds(),
+)
+
+// payload size in bytes — custom buckets required
+svc.RegisterHistogram("indexer_payload_bytes", "Payload size",
+    prometheus.ExponentialBuckets(256, 4, 10), // 256B .. ~64MB
+    "kind",
 )
 ```
 
