@@ -102,10 +102,14 @@ func (service *Service) RegisterGoBuildMetrics() {
 }
 
 // RegisterHistogram -
-func (service *Service) RegisterHistogram(name, help string, labels ...string) {
+func (service *Service) RegisterHistogram(name, help string, buckets []float64, labels ...string) {
+	if len(buckets) == 0 {
+		buckets = prometheus.DefBuckets
+	}
 	vec := prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Name: name,
-		Help: help,
+		Name:    name,
+		Help:    help,
+		Buckets: buckets,
 	}, labels)
 	service.histograms[name] = vec
 	prometheus.MustRegister(vec)
