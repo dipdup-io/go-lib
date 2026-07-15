@@ -25,7 +25,11 @@ type API struct {
 	client *http.Client
 }
 
-// New -
+// New creates an API client talking to the Hasura instance at baseURL, sending
+// secret as the X-Hasura-Admin-Secret header on every request when non-empty. The
+// returned client reuses a single *http.Client with connection pooling tuned for
+// concurrent use (up to 100 idle connections, 100 per host) and a one-minute
+// per-request timeout.
 func New(baseURL, secret string) *API {
 	t := http.DefaultTransport.(*http.Transport).Clone()
 	t.MaxIdleConns = 100
@@ -111,7 +115,8 @@ func (api *API) post(ctx context.Context, endpoint string, args map[string]strin
 	return json.NewDecoder(resp.Body).Decode(output)
 }
 
-// Health
+// Health calls Hasura's /healthz endpoint and returns any error from performing the
+// request itself (network failure, non-2xx transport error, etc).
 func (api *API) Health(ctx context.Context) error {
 	resp, err := api.get(ctx, "/healthz", nil)
 	if err != nil {
@@ -122,10 +127,14 @@ func (api *API) Health(ctx context.Context) error {
 	if resp.StatusCode == http.StatusOK {
 		return nil
 	}
-	return err
+	return errors.Errorf("invalid status code: %d", resp.StatusCode)
 }
 
-// AddSource -
+// AddSource issues a pg_add_source metadata request that (re)configures the source
+// named hasura.Source.Name to point at the Postgres database described by cfg,
+// replacing any existing connection configuration. hasura.Source.DatabaseHost
+// overrides cfg.Host when set, and hasura.Source.IsolationLevel overrides the
+// default "read-committed" isolation level.
 func (api *API) AddSource(ctx context.Context, hasura *config.Hasura, cfg config.Database) error {
 	host := cfg.Host
 	if hasura.Source.DatabaseHost != "" {
@@ -157,7 +166,8 @@ func (api *API) AddSource(ctx context.Context, hasura *config.Hasura, cfg config
 	return err
 }
 
-// ExportMetadata -
+// ExportMetadata fetches the full metadata currently applied to the Hasura instance
+// via the versioned export_metadata metadata API (v2).
 func (api *API) ExportMetadata(ctx context.Context) (Metadata, error) {
 	req := versionedRequest{
 		Type:    "export_metadata",
@@ -169,7 +179,9 @@ func (api *API) ExportMetadata(ctx context.Context) (Metadata, error) {
 	return resp, err
 }
 
-// ReplaceMetadata -
+// ReplaceMetadata replaces Hasura's entire metadata with data via the versioned
+// replace_metadata metadata API (v2), allowing inconsistent metadata so that
+// partially invalid state does not block the call.
 func (api *API) ReplaceMetadata(ctx context.Context, data *Metadata) error {
 	req := versionedRequest{
 		Type:    "replace_metadata",
@@ -182,7 +194,8 @@ func (api *API) ReplaceMetadata(ctx context.Context, data *Metadata) error {
 	return api.post(ctx, "/v1/metadata", nil, req, nil)
 }
 
-// TrackTable -
+// TrackTable starts tracking the Postgres table name from source in Hasura via
+// pg_track_table, exposing it through the GraphQL API.
 func (api *API) TrackTable(ctx context.Context, name string, source string) error {
 	req := Request{
 		Type: "pg_track_table",
@@ -194,12 +207,16 @@ func (api *API) TrackTable(ctx context.Context, name string, source string) erro
 	return api.post(ctx, "/v1/metadata", nil, req, nil)
 }
 
-// CustomConfiguration
+// CustomConfiguration sends conf as-is to Hasura's /v1/metadata endpoint, allowing
+// arbitrary metadata API requests — such as those produced by ReadCustomConfigs or
+// IterateCustomConfigs — that are not otherwise wrapped by a dedicated API method.
 func (api *API) CustomConfiguration(ctx context.Context, conf interface{}) error {
 	return api.post(ctx, "/v1/metadata", nil, conf, nil)
 }
 
-// CreateSelectPermissions - A select permission is used to restrict access to only the specified columns and rows.
+// CreateSelectPermissions grants role select access to table (in source) via
+// pg_create_select_permission, restricted to the columns and row filter described
+// by perm.
 func (api *API) CreateSelectPermissions(ctx context.Context, table, source string, role string, perm Permission) error {
 	req := Request{
 		Type: "pg_create_select_permission",
@@ -213,7 +230,8 @@ func (api *API) CreateSelectPermissions(ctx context.Context, table, source strin
 	return api.post(ctx, "/v1/metadata", nil, req, nil)
 }
 
-// DropSelectPermissions -
+// DropSelectPermissions removes any select permission previously granted to role on
+// table (in source) via pg_drop_select_permission.
 func (api *API) DropSelectPermissions(ctx context.Context, table, source string, role string) error {
 	req := Request{
 		Type: "pg_drop_select_permission",
@@ -227,7 +245,8 @@ func (api *API) DropSelectPermissions(ctx context.Context, table, source string,
 	return api.post(ctx, "/v1/metadata", nil, req, nil)
 }
 
-// CreateRestEndpoint -
+// CreateRestEndpoint exposes queryName from collectionName as a GET REST endpoint
+// named name, reachable at url, via create_rest_endpoint.
 func (api *API) CreateRestEndpoint(ctx context.Context, name, url, queryName, collectionName string) error {
 	req := Request{
 		Type: "create_rest_endpoint",

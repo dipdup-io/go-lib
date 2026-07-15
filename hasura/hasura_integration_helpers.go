@@ -20,6 +20,11 @@ type ExpectedTable struct {
 	Columns []string `validate:"required" yaml:"columns"`
 }
 
+// TestExpectedMetadataWithActual is a test helper that connects to the Hasura
+// instance described by the config file at configPath, exports its live metadata,
+// and asserts (failing t via t.Fatalf/t.Errorf) that every table listed in the YAML
+// file at expectedMetadataPath exists in that metadata for the "user" role with
+// exactly the expected set of columns, order-independent.
 func TestExpectedMetadataWithActual(
 	t *testing.T,
 	configPath string,
