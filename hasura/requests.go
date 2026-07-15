@@ -60,7 +60,9 @@ type DatabaseUrlFromEnv struct {
 	FromEnv string `json:"from_env"`
 }
 
-// UnmarshalJSON -
+// UnmarshalJSON decodes a Hasura database_url value, accepting either a literal
+// connection string or the {"from_env": "VAR_NAME"} form, in which case *d is set
+// to the value of the VAR_NAME environment variable.
 func (d *DatabaseUrl) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err == nil {
@@ -114,7 +116,9 @@ type PGTable struct {
 	Schema string `json:"schema"`
 }
 
-// UnmarshalJSON -
+// UnmarshalJSON decodes a Hasura table reference, accepting either the full object
+// form ({"name": ..., "schema": ...}) or the bare-string shorthand for a table in
+// the default schema.
 func (t *PGTable) UnmarshalJSON(data []byte) error {
 	type buf PGTable
 	if err := json.Unmarshal(data, (*buf)(t)); err == nil {
@@ -124,7 +128,9 @@ func (t *PGTable) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, &t.Name)
 }
 
-// MarshalJSON -
+// MarshalJSON encodes t as a bare JSON string when Schema is empty (Hasura's
+// shorthand for a table in the default schema), or as a full
+// {"name": ..., "schema": ...} object otherwise.
 func (t *PGTable) MarshalJSON() ([]byte, error) {
 	if t.Schema == "" {
 		return json.Marshal(t.Name)
@@ -180,7 +186,9 @@ type SelectPermission struct {
 // Columns -
 type Columns []string
 
-// UnmarshalJSON -
+// UnmarshalJSON decodes a Hasura columns value, accepting either the "*" wildcard
+// string or a JSON array of column names (non-string array elements are silently
+// skipped); any other JSON shape is rejected with an error.
 func (columns *Columns) UnmarshalJSON(data []byte) error {
 	var val interface{}
 	if err := json.Unmarshal(data, &val); err != nil {
@@ -203,7 +211,8 @@ func (columns *Columns) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON -
+// MarshalJSON encodes columns as the bare "*" wildcard string when it is the
+// single-element slice {"*"}, or as a regular JSON array of strings otherwise.
 func (columns Columns) MarshalJSON() ([]byte, error) {
 	if len(columns) == 1 && columns[0] == "*" {
 		return []byte(`"*"`), nil

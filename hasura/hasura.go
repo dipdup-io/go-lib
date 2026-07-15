@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"iter"
 	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"time"
@@ -50,7 +52,14 @@ type GenerateArgs struct {
 	Models               []any           `validate:"omitempty"`
 }
 
-// Create - creates hasura models
+// Create builds Hasura metadata from args.Models and applies it to a running Hasura
+// instance: it waits for Hasura's /healthz to come up, adds the database source (if
+// args.Config.Source is set), generates and merges in table tracking/relationships/
+// permissions, merges in hand-written GraphQL query collections from the "graphql"
+// directory and any args.CustomConfigurations, then optionally tracks args.Views and
+// creates REST endpoints for the allowed queries. Errors applying an individual custom
+// configuration or view permission are logged and do not abort the call. Returns nil
+// without doing anything if args.Config is nil.
 func Create(ctx context.Context, args GenerateArgs) error {
 	if args.Config == nil {
 		return nil
@@ -153,7 +162,11 @@ func Create(ctx context.Context, args GenerateArgs) error {
 	return nil
 }
 
-// Generate - creates hasura table structure in JSON from `models`. `models` should be pointer to your table models. `cfg` is DB config from YAML.
+// Generate builds a Hasura metadata document (schema version 3) describing a single
+// source named after hasura.Source.Name, with one table per entry in models. Each
+// model must be passed as a pointer; its table name, columns and relationships are
+// derived from struct tags via reflection (see generateOne). Generate does not talk
+// to Hasura itself — use Create to apply the resulting metadata.
 func Generate(hasura config.Hasura, cfg config.Database, models ...interface{}) (*Metadata, error) {
 	schema := getSchema(cfg)
 	source := Source{
@@ -406,49 +419,79 @@ func createQueryCollections(metadata *Metadata) error {
 }
 
 func mergeQueries(a []Query, b []Query) []Query {
-	for i := range a {
-		var found bool
-		for j := range b {
-			if b[j].Name == a[i].Name {
-				found = true
-				break
-			}
-		}
+	existing := make(map[string]struct{}, len(b))
+	for i := range b {
+		existing[b[i].Name] = struct{}{}
+	}
 
-		if !found {
+	for i := range a {
+		if _, ok := existing[a[i].Name]; !ok {
 			b = append(b, a[i])
+			existing[a[i].Name] = struct{}{}
 		}
 	}
 	return b
 }
 
-// ReadCustomConfigs -
-func ReadCustomConfigs(ctx context.Context, database config.Database, hasuraConfigDir string) ([]Request, error) {
-	files, err := os.ReadDir(hasuraConfigDir)
+// IterateCustomConfigs returns an iterator over the custom Hasura metadata requests
+// stored as JSON files directly inside dir (subdirectories and dot-files are
+// skipped). Files are opened and decoded into a Request lazily, one at a time, as the
+// caller ranges over the sequence. If reading or unmarshalling a file fails, that
+// error is yielded alongside a zero Request instead of aborting the whole directory,
+// so a single malformed file does not prevent the other valid configs from being
+// produced; callers should check the yielded error before using the Request. Only
+// the initial os.ReadDir call is eager, so a missing or unreadable dir is reported
+// immediately via the returned error rather than through the sequence.
+func IterateCustomConfigs(dir string) (iter.Seq2[Request, error], error) {
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, err
 	}
+	return func(yield func(Request, error) bool) {
+		for i := range files {
+			if files[i].IsDir() || strings.HasPrefix(files[i].Name(), ".") {
+				continue
+			}
+			filePath := filepath.Join(dir, files[i].Name())
+			raw, err := os.ReadFile(filePath)
+			if err != nil {
+				if !yield(Request{}, err) {
+					return
+				}
+				continue
+			}
 
-	customСonfigs := make([]Request, 0, len(files))
-	for i := range files {
-		if files[i].IsDir() || strings.HasPrefix(files[i].Name(), ".") {
-			continue
+			var conf Request
+			if err = json.Unmarshal(raw, &conf); err != nil {
+				if !yield(Request{}, err) {
+					return
+				}
+				continue
+			}
+
+			if !yield(conf, nil) {
+				return
+			}
 		}
+	}, nil
+}
 
-		path := fmt.Sprintf("%s/%s", hasuraConfigDir, files[i].Name())
-		raw, err := os.ReadFile(path)
-		if err != nil {
-			return nil, err
-		}
-
-		conf := Request{}
-
-		err = json.Unmarshal(raw, &conf)
-		if err != nil {
-			return nil, err
-		}
-		customСonfigs = append(customСonfigs, conf)
+// ReadCustomConfigs reads every file directly inside dir (subdirectories
+// and dot-files are skipped), JSON-decodes each one into a Request, and returns them
+// all as a slice suitable for GenerateArgs.CustomConfigurations. Unlike
+// IterateCustomConfigs, this is all-or-nothing: the first file that fails to be read
+// or unmarshalled aborts the call, discarding any configs already parsed.
+func ReadCustomConfigs(dir string) ([]Request, error) {
+	seq, err := IterateCustomConfigs(dir)
+	if err != nil {
+		return nil, err
 	}
-
-	return customСonfigs, nil
+	configs := make([]Request, 0)
+	for conf, err := range seq {
+		if err != nil {
+			return nil, err
+		}
+		configs = append(configs, conf)
+	}
+	return configs, nil
 }
