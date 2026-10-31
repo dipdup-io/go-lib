@@ -27,7 +27,7 @@ func MakeComments(ctx context.Context, sc SchemeCommenter, models ...interface{}
 
 		modelType := reflect.TypeOf(model)
 
-		if reflect.ValueOf(model).Kind() == reflect.Ptr {
+		if reflect.ValueOf(model).Kind() == reflect.Pointer {
 			modelType = modelType.Elem()
 		}
 

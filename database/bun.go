@@ -139,6 +139,13 @@ func (db *Bun) Connect(ctx context.Context, cfg config.Database) error {
 	return nil
 }
 
+// WithLogger -
+func (db *Bun) WithLogger(hook bun.QueryHook) {
+	if hook != nil {
+		db.conn = db.conn.WithQueryHook(hook)
+	}
+}
+
 // Close -
 func (db *Bun) Close() error {
 	if err := db.conn.Close(); err != nil {
