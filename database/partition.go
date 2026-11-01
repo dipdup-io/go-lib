@@ -159,7 +159,7 @@ func CreateTables(ctx context.Context, conn Database, models ...any) error {
 			continue
 		}
 		modelType := reflect.TypeOf(models[i])
-		if reflect.ValueOf(models[i]).Kind() == reflect.Ptr {
+		if reflect.ValueOf(models[i]).Kind() == reflect.Pointer {
 			modelType = modelType.Elem()
 		}
 
