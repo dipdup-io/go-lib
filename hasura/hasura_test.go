@@ -82,7 +82,7 @@ func Test_getTableName(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			value := reflect.ValueOf(tt.model)
 			typ := reflect.TypeOf(tt.model)
-			for typ.Kind() == reflect.Ptr {
+			for typ.Kind() == reflect.Pointer {
 				typ = typ.Elem()
 			}
 			got := getTableName(value, typ)
@@ -120,7 +120,7 @@ func Test_getColumns(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			typ := reflect.TypeOf(tt.model)
-			for typ.Kind() == reflect.Ptr {
+			for typ.Kind() == reflect.Pointer {
 				typ = typ.Elem()
 			}
 			if got := getColumns(typ); !reflect.DeepEqual(got, tt.want) {

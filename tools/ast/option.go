@@ -156,7 +156,7 @@ func (opt *Option) ToJSONSchema() (*JSONSchema, error) {
 		}
 	}
 
-	someSchema.Properties["schemaKey"] = someProperties
+	someSchema.Properties[schemaKeyField] = someProperties
 
 	return &JSONSchema{
 		Type:  JSONSchemaTypeObject,
@@ -166,7 +166,7 @@ func (opt *Option) ToJSONSchema() (*JSONSchema, error) {
 			{
 				Title: consts.None,
 				Properties: map[string]*JSONSchema{
-					"schemaKey": noneSchema,
+					schemaKeyField: noneSchema,
 				},
 			},
 			someSchema,
@@ -192,7 +192,7 @@ func (opt *Option) FromJSONSchema(data map[string]interface{}) error {
 			}
 			optionMap = arrVal
 			isBreak = true
-		case "schemaKey":
+		case schemaKeyField:
 			optionMap = data
 			isBreak = true
 		}
@@ -201,11 +201,11 @@ func (opt *Option) FromJSONSchema(data map[string]interface{}) error {
 			break
 		}
 	}
-	schemaKey, ok := optionMap["schemaKey"]
+	schemaKey, ok := optionMap[schemaKeyField]
 	if !ok {
 		return errors.Wrap(consts.ErrJSONDataIsAbsent, "Option.FromJSONSchema")
 	}
-	delete(optionMap, "schemaKey")
+	delete(optionMap, schemaKeyField)
 
 	switch schemaKey {
 	case consts.None:
@@ -386,7 +386,7 @@ func (opt *Option) GetJSONModel(model JSONModel) {
 		return
 	}
 	item := JSONModel{
-		"schemaKey": opt.Value,
+		schemaKeyField: opt.Value,
 	}
 	if opt.Value == consts.Some {
 		opt.Type.GetJSONModel(item)
