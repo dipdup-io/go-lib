@@ -1,6 +1,6 @@
 module github.com/dipdup-io/go-lib/database
 
-go 1.26.4
+go 1.27.4
 
 require (
 	github.com/ettle/strcase v0.2.0

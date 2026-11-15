@@ -1,6 +1,6 @@
 module github.com/dipdup-io/go-lib/node
 
-go 1.26.4
+go 1.27.4
 
 require (
 	github.com/json-iterator/go v1.1.12
