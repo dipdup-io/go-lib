@@ -9,6 +9,12 @@ import (
 	"github.com/yhirose/go-peg"
 )
 
+// PEG grammar node names referenced by the translator.
+const (
+	nodeInstrs = "instrs"
+	nodePrim   = "prim"
+)
+
 // MichelineTranslator -
 type MichelineTranslator struct {
 	handlers map[string]func(ast *peg.Ast) (string, error)
@@ -18,10 +24,10 @@ type MichelineTranslator struct {
 func NewJSONTranslator() *MichelineTranslator {
 	t := MichelineTranslator{}
 	t.handlers = map[string]func(ast *peg.Ast) (string, error){
-		"instrs":        t.arrayTranslate,
+		nodeInstrs:      t.arrayTranslate,
 		"instr":         t.pass,
 		"expr":          t.exprTranslate,
-		"prim":          t.tokenTranslate,
+		nodePrim:        t.tokenTranslate,
 		"args":          t.arrayTranslate,
 		"arg":           t.argTranslate,
 		"Int":           t.intTranslate,
@@ -75,7 +81,7 @@ func (t *MichelineTranslator) exprTranslate(ast *peg.Ast) (string, error) {
 }
 
 func (t *MichelineTranslator) tokenTranslate(ast *peg.Ast) (string, error) {
-	if ast.Name == "prim" {
+	if ast.Name == nodePrim {
 		if err := validatePrimitive(ast.Token); err != nil {
 			return "", err
 		}
@@ -111,7 +117,7 @@ func (t *MichelineTranslator) arrayTranslate(ast *peg.Ast) (string, error) {
 
 func (t *MichelineTranslator) argTranslate(ast *peg.Ast) (string, error) {
 	for i := range ast.Nodes {
-		if ast.Nodes[i].Name == "prim" {
+		if ast.Nodes[i].Name == nodePrim {
 			prim, err := t.Translate(ast.Nodes[i])
 			if err != nil {
 				return "", err
@@ -119,7 +125,7 @@ func (t *MichelineTranslator) argTranslate(ast *peg.Ast) (string, error) {
 			return fmt.Sprintf(`{"prim":"%s"}`, prim), nil
 		}
 		if ast.Nodes[i].Name != "expr" &&
-			ast.Nodes[i].Name != "instrs" &&
+			ast.Nodes[i].Name != nodeInstrs &&
 			ast.Nodes[i].Name != "complex_instr" &&
 			ast.Nodes[i].Name != "Int" &&
 			ast.Nodes[i].Name != "String" &&
@@ -146,7 +152,7 @@ func (t *MichelineTranslator) bytesTranslate(ast *peg.Ast) (string, error) {
 
 func (t *MichelineTranslator) complexInstrTranslate(ast *peg.Ast) (string, error) {
 	for i := range ast.Nodes {
-		if ast.Nodes[i].Name != "instrs" {
+		if ast.Nodes[i].Name != nodeInstrs {
 			continue
 		}
 

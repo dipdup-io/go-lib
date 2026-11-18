@@ -12,3 +12,6 @@ const (
 	valueKindBytes
 	valueKindInt
 )
+
+// schemaKeyField is the JSON key that holds the variant discriminator of option and or values.
+const schemaKeyField = "schemaKey"

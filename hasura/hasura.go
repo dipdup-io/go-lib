@@ -201,11 +201,11 @@ func newTable(schema, name string) table {
 
 func generateOne(hasura config.Hasura, schema string, model interface{}) (table, error) {
 	value := reflect.ValueOf(model)
-	if value.Kind() != reflect.Ptr {
+	if value.Kind() != reflect.Pointer {
 		return table{}, errors.Errorf("Model has to be pointer")
 	}
 	typ := reflect.TypeOf(model)
-	for typ.Kind() == reflect.Ptr {
+	for typ.Kind() == reflect.Pointer {
 		typ = typ.Elem()
 	}
 

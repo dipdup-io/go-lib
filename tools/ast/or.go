@@ -183,14 +183,14 @@ func (or *Or) ToJSONSchema() (*JSONSchema, error) {
 
 		if arg.IsPrim(consts.OR) {
 			for i := range child.OneOf {
-				child.OneOf[i].Properties["schemaKey"].Const = string(key) + child.OneOf[i].Properties["schemaKey"].Const
+				child.OneOf[i].Properties[schemaKeyField].Const = string(key) + child.OneOf[i].Properties[schemaKeyField].Const
 				oneOf = append(oneOf, child.OneOf[i])
 			}
 		} else {
 			item := &JSONSchema{
 				Title: arg.GetName(),
 				Properties: map[string]*JSONSchema{
-					"schemaKey": {
+					schemaKeyField: {
 						Type:  JSONSchemaTypeString,
 						Const: string(key),
 					},
@@ -234,7 +234,7 @@ func (or *Or) FromJSONSchema(data map[string]interface{}) error {
 		break
 	}
 
-	schemaKey, ok := orMap["schemaKey"]
+	schemaKey, ok := orMap[schemaKeyField]
 	if !ok {
 		return errors.Wrap(consts.ErrJSONDataIsAbsent, "Or.FromJSONSchema")
 	}
@@ -245,7 +245,7 @@ func (or *Or) FromJSONSchema(data map[string]interface{}) error {
 	}
 	chr := sk[0]
 	sk = sk[1:]
-	orMap["schemaKey"] = sk
+	orMap[schemaKeyField] = sk
 	switch chr {
 	case leftKey:
 		if or.LeftType.IsPrim(consts.OR) {
@@ -508,12 +508,12 @@ func (or *Or) GetJSONModel(model JSONModel) {
 			return
 		}
 		child := val.(JSONModel)
-		child["schemaKey"] = fmt.Sprintf("%s%v", string(or.key), child["schemaKey"])
+		child[schemaKeyField] = fmt.Sprintf("%s%v", string(or.key), child[schemaKeyField])
 		delete(model, node.GetName())
 		model[or.GetName()] = child
 	} else {
 		newModel := JSONModel{
-			"schemaKey": string(or.key),
+			schemaKeyField: string(or.key),
 		}
 		for key := range item {
 			newModel[key] = item[key]

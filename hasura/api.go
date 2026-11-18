@@ -17,6 +17,13 @@ import (
 
 var json = jsoniter.ConfigCompatibleWithStandardLibrary
 
+// Argument keys shared by Hasura metadata API requests.
+const (
+	argName   = "name"
+	argTable  = "table"
+	argSource = "source"
+)
+
 // API -
 type API struct {
 	baseURL string
@@ -151,7 +158,7 @@ func (api *API) AddSource(ctx context.Context, hasura *config.Hasura, cfg config
 	req := Request{
 		Type: "pg_add_source",
 		Args: map[string]interface{}{
-			"name": hasura.Source.Name,
+			argName: hasura.Source.Name,
 			"configuration": Configuration{
 				ConnectionInfo: ConnectionInfo{
 					DatabaseUrl:           databaseUrl,
@@ -200,8 +207,8 @@ func (api *API) TrackTable(ctx context.Context, name string, source string) erro
 	req := Request{
 		Type: "pg_track_table",
 		Args: map[string]string{
-			"table":  name,
-			"source": source,
+			argTable:  name,
+			argSource: source,
 		},
 	}
 	return api.post(ctx, "/v1/metadata", nil, req, nil)
@@ -221,10 +228,10 @@ func (api *API) CreateSelectPermissions(ctx context.Context, table, source strin
 	req := Request{
 		Type: "pg_create_select_permission",
 		Args: map[string]interface{}{
-			"table":      table,
+			argTable:     table,
 			"role":       role,
 			"permission": perm,
-			"source":     source,
+			argSource:    source,
 		},
 	}
 	return api.post(ctx, "/v1/metadata", nil, req, nil)
@@ -236,9 +243,9 @@ func (api *API) DropSelectPermissions(ctx context.Context, table, source string,
 	req := Request{
 		Type: "pg_drop_select_permission",
 		Args: map[string]interface{}{
-			"table":  table,
-			"role":   role,
-			"source": source,
+			argTable:  table,
+			"role":    role,
+			argSource: source,
 		},
 	}
 
@@ -251,7 +258,7 @@ func (api *API) CreateRestEndpoint(ctx context.Context, name, url, queryName, co
 	req := Request{
 		Type: "create_rest_endpoint",
 		Args: map[string]interface{}{
-			"name":    name,
+			argName:   name,
 			"url":     url,
 			"methods": []string{"GET"},
 			"definition": map[string]interface{}{

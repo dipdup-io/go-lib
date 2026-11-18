@@ -1,6 +1,6 @@
 module github.com/dipdup-io/go-lib/tzkt
 
-go 1.26.4
+go 1.27.4
 
 require (
 	github.com/dipdup-io/go-lib/tools v1.0.1
